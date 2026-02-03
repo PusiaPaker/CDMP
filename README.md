@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ## Running the App
 To run the flask app simply type in 
 ```sh
-flsak run
+flask run
 ```
 and this should open a live server on 
 ```sh
