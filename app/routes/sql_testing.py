@@ -1,20 +1,39 @@
-from flask import g, Blueprint
-import sqlite3
-
-DATABASE = './../database.db'
+from flask import Blueprint, jsonify
+from app.src.database import db
+from app.tables.users import User
 
 TestBP = Blueprint('test', __name__)
 
-def getDB():
-    db = getattr(g, '_database', None)
-    if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
-    return db
-
 @TestBP.route('/get')
 def getData():
-    pass
+    users = db.session.query(User).all()
 
-@TestBP.route('/upload')
-def uploadData():
+    res = []
+    for user in users:
+        res.append({
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "group_id": user.group_id
+        })
+    
+    return jsonify(res), 201
+
+@TestBP.route('/upload/<username>', methods=['GET'])
+def uploadData(username: str):
+    user = User(
+        username = username,
+        email = username + "@gmail.com",
+        group_id = None,
+    )
+
+    db.session.add(user)
+    db.session.commit()
+
+    return jsonify({
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "group_id": user.group_id,
+    }), 201
 
