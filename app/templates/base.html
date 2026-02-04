@@ -1,0 +1,11 @@
+<!-- https://flask.palletsprojects.com/en/stable/tutorial/templates/ -->
+
+<!doctype html>
+<title>{% block title %}{% endblock %}</title>
+
+<section class="content">
+    <header>
+        {% block header %}{% endblock %}
+    </header>
+    {% block content %}{% endblock %}
+</section>

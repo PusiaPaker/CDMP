@@ -1,7 +1,22 @@
-<!DOCTYPE html>
-<html>
-    <head>
-    </head>
-    <body>
-        </body>
-</html>
+{% extends './base.html' %}
+
+{% block header %}
+    <h1>{% block title %}Users{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    {% for i in dict_list: %}
+    <div style="
+        margin-bottom: 2rem;
+        ">
+        {% for item, value in i.items(): %}
+        <div>
+            <tr>
+                <td>{{ item }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        </div>
+        {% endfor %}
+    </div>
+    {% endfor %} 
+{% endblock %}

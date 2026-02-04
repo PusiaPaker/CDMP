@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, render_template
 from app.src.database import db
 from app.tables.users import User
 
@@ -17,7 +17,7 @@ def getData():
             "group_id": user.group_id
         })
     
-    return jsonify(res), 201
+    return render_template("demo_sql_test/list_users.html", dict_list=res), 200
 
 @TestBP.route('/upload/<username>', methods=['GET'])
 def uploadData(username: str):
