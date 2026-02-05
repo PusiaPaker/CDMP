@@ -1,6 +1,8 @@
 # Flask instance folder
 instance/
 
+flask_session/
+
 # Environment variables
 .env
 .env.local
