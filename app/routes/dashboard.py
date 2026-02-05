@@ -1,10 +1,8 @@
-from flask import Blueprint
+from flask import Blueprint, render_template
 
 DashBP= Blueprint('user', __name__)
 
 @DashBP.route('/dashboard')
 def get_dashboard():
-    return {
-        "message": "Hello, World!",
-        "status": "success"
-    }
+    return render_template("dashboard/dashboard_index.html"), 200
+
