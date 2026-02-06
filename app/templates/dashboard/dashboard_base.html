@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    
+    <style>
+        :root {
+            --sidebar-width: 12%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--cdmp-color-base-background);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background-color: var(--cdmp-color-main);
+            padding-top: 1rem;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .sidebar .nav-link {
+            color: #ecf0f1;
+            padding: 0.75rem 1.5rem;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: var(--cdmp-color-main-hover);
+            border-left-color: #000000;
+            color: #fff;
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        .navbar {
+            background-color: #fff;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .navbar-brand {
+            font-weight: 600;
+            font-size: 1.25rem;
+            color: #2c3e50 !important;
+        }
+        
+        .content-wrapper {
+            padding: 5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="ps-3 pe-3 mb-4">
+            <h5 class="text-white mb-0">CDMP</h5>
+        </div>
+        
+        <ul class="nav flex-column">
+            {% block sidebar_nav %}
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-folder"></i> Projects
+                </a>
+            </li>
+            {% endblock %}
+        </ul>
+    </nav>
+    
+    <div class="main-content">
+
+        <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+            <!-- This commented out html is some boilerplate bootstrap navbar stuff, it could be useful.
+             it also shows how to use the boostrap dropdowns (which look very cool).  
+            
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle"></i> Profile
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="#">My Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div> -->
+
+            <div class="container-fluid">
+                <ul class="navbar-nav">
+                    <li class="nav-link">
+                        <a>test</a>
+                    </li>
+                    <li class="nav-link">
+                        <a>test</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        
+        <div class="content-wrapper">
+            {%block dashboard_page_name %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

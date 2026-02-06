@@ -1,0 +1,12 @@
+/*
+Some CSS classes that are shared across the project
+*/
+
+/* Here's a bunch of global css color variables that we can reuse.
+    To use them: var(VARIABLE_NAME)
+*/
+:root{
+    --cdmp-color-main: #7a649d;
+    --cdmp-color-main-hover: #72579e;
+    --cdmp-color-base-background: #f6f1f1;
+}
