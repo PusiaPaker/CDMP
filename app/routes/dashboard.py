@@ -4,5 +4,7 @@ DashBP= Blueprint('user', __name__)
 
 @DashBP.route('/')
 def get_dashboard():
-    return render_template("dashboard/dashboard_index.html"), 200
+    dashboard_title = 'All Projects View'
+
+    return render_template("dashboard/dashboard_index.html", dashboard_title=dashboard_title), 200
 

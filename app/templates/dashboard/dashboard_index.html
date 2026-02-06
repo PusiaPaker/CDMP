@@ -5,11 +5,26 @@
 {% endblock %}
     
 {% block dashboard_page_name %}
-    <h1>Overall Summary</h1>
+    <h1>{{ dashboard_title }}</h1>
 {% endblock %}
 
 {% block content %}
-    <div>
-        <p>whatever whatever</p>
+    <div class="container dashboard-container">
+        <div class="row">
+            <div class="col-sm p-3">
+                This is the upper left column
+            </div>
+            <div class="col-sm p-3">
+                This is another box in the grid!!!!!!!!!!
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm p-3">
+                this is a cool box
+            </div>
+            <div class="col-sm p-3">
+                helloooooo
+            </div>
+        </div>
     </div>
 {% endblock %}

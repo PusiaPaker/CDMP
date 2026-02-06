@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     
     <style>
         :root {
@@ -74,13 +75,16 @@
         </div>
         
         <ul class="nav flex-column">
-            {% block sidebar_nav %}
             <li class="nav-item">
                 <a class="nav-link" href="#">
                     <i class="bi bi-folder"></i> Projects
                 </a>
             </li>
-            {% endblock %}
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="bi bi-folder"></i> Timeline
+                </a>
+            </li>
         </ul>
     </nav>
     
@@ -126,6 +130,9 @@
         
         <div class="content-wrapper">
             {%block dashboard_page_name %}{% endblock %}
+            <div>
+                
+            </div>
             {% block content %}{% endblock %}
         </div>
     </div>

@@ -1,0 +1,6 @@
+.dashboard-container{
+    background-color: var(--cdmp-color-dashboard-panel);
+    border-radius: 5px;
+
+    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.5);
+}
