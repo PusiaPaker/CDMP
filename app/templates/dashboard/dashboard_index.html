@@ -9,22 +9,83 @@
 {% endblock %}
 
 {% block content %}
-    <div class="dashboard-container m-0">
-        <div class="row">
-            <div class="col-sm p-3">
-                This is the upper left column
+    <div class="container-fluid dashboard-container m-0 p-5">
+        <div class="row justify-content-around">
+            <div class="col-4 d-flex justify-content-center align-items-center">
+                <canvas id="dummychart"></canvas>
             </div>
-            <div class="col-sm p-3">
-                This is another box in the grid!!!!!!!!!!
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm p-3">
-                this is a cool box
-            </div>
-            <div class="col-sm p-3">
-                helloooooo
+            <div class="col-4 d-flex justify-content-center align-items-center">
+                In the wild, pineapples are pollinated primarily by hummingbirds.[2][9] Certain wild pineapples are foraged and pollinated at night by bats.[10] Under cultivation, because seed development diminishes fruit quality, pollination is performed by hand, and seeds are retained only for breeding.[2] In Hawaii, where pineapples were cultivated and canned industrially throughout the 20th century,[11] importation of hummingbirds was prohibited.
+
             </div>
         </div>
+        
+        <div class="row justify-content-around">
+            <div class="col-6 d-flex justify-content-center align-items-center">
+            A pine cone, which was called a pineapple at least two centuries before use of the name for the tropical fruit
+
+            Pineapple fruit, whole and in cross section
+            The words, pine apple, first referred to the cone (fruit) of the pine tree in the 14th century.[7] This name convention occurred because medieval botanists called any unfamiliar tree fruit an apple if it had a firm, round shape.
+            </div>
+            <div class="col-4 d-flex justify-content-center align-items-center">
+                <canvas id="dummychart2"></canvas>
+            </div>
+        </div>
+
+        
     </div>
+
+    <script>
+            const ctx = document.getElementById('dummychart').getContext('2d');
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'First Half - # of Whatevers/Month',
+                        data: [34, 51, 12, 11, 11, 1],
+                        backgroundColor: 'rgba(122, 100, 157, 0.2)',
+                        borderColor: 'rgba(122, 100, 157, 0.5)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            const ctx2= document.getElementById('dummychart2').getContext('2d');
+            const myChart2 = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        data: [99, 51, 12, 11, 11, 1],
+                        backgroundColor: [
+                            "rgba(122, 100, 157, 1)",
+                            "rgba(90, 120, 160, 1)",   
+                            "rgba(110, 150, 130, 1)",  
+                            "rgba(160, 120, 100, 1)",  
+                            "rgba(150, 100, 120, 1)",  
+                            "rgba(100, 140, 140, 1)",  
+                            ],
+                        borderColor: 'rgba(122, 100, 157, 0.5)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        </script>
 {% endblock %}
