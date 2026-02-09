@@ -16,7 +16,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-    app.register_blueprint(DashBP)
+    app.register_blueprint(DashBP, url_prefix='/dashboard/')
     app.register_blueprint(TestBP, url_prefix='/sql/')
 
     return app
