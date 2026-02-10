@@ -1,0 +1,19 @@
+.dashboard-container{
+    background-color: var(--cdmp-color-dashboard-panel);
+    border-radius: 5px;
+
+    border: 1px solid rgb(199, 199, 199);
+    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.3);
+}
+.dash-chart, .project-title {
+    display: inline-block;
+    transition: transform 0.3s ease; 
+    transform: scale(1);
+}
+.dash-chart:hover, .project-title:hover {
+    transform: scale(1.0125);
+}
+
+.section-header {
+    scroll-margin-top: 80px;
+}
