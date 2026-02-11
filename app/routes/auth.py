@@ -28,7 +28,9 @@ def login():
         
         session["id"] = user_id
         
-        resp = make_response(redirect("/dashboard"))
+        next_url = request.args.get("next")
+        resp = make_response(redirect(next_url or "/dashboard"))
+
         
         if remember:
             resp.set_cookie(
