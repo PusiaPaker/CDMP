@@ -7,7 +7,7 @@ projects = {'alpha': 'Project Alpha', 'beta': 'Project Beta', 'gamma': 'Project 
 
 @DashBP.before_request
 def require_login():
-    if "id" not in session:
+    if "user_id" not in session:
         return redirect(url_for("authentication.login", next=request.path))
 
 

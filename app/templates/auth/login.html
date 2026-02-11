@@ -5,13 +5,12 @@
 {% endblock %}
 
 {% block content %}
-    <div class="container-fluid text-center m-0 p-5">
-        <h1>Register</h1>
-        <form action="/login" method="POST" class="login">
-            <input placeholder="Name" autocomplete="off" type="text" name="name" required>
-            <input type="submit" value="Register">
-        </form> 
-    </div>
+    <h1>Register</h1>
+    <form action="/login" method="POST">
+        <input name="username" required>
+        <input type="password" name="password" required>
+        <input type="submit" value="Register">
+    </form> 
 {% endblock %}
 
 <form method="post">
