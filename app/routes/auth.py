@@ -2,45 +2,35 @@
 
 from flask import Flask, Blueprint, render_template, redirect, request, session, make_response, url_for
 from flask_session import Session
+from werkzeug.security import generate_password_hash, check_password_hash
+
+
+from app.src.database import db
+from app.tables.users import User
 
 AuthBP = Blueprint('authentication', __name__)
 
-@AuthBP.route('/logout')
+@AuthBP.route("/logout")
 def logout():
-    session.pop("id", None)
-    
-    resp = make_response(redirect("/login"))
-    resp.set_cookie('remember_me', '', max_age=0)  # Delete cookie
-    
-    return resp
+    session.clear()
+    return redirect(url_for("authentication.login"))
 
-@AuthBP.route('/login', methods=["GET", "POST"])
+@AuthBP.route("/login", methods=["GET", "POST"])
 def login():
-    if request.method == "GET":
-        remember_token = request.cookies.get('remember_me')
-        if remember_token:
-            session["id"] = remember_token
-            return redirect("/dashboard")
-    
     if request.method == "POST":
-        user_id = request.form.get("id")
-        remember = request.form.get("remember_me") == "true"
-        
-        session["id"] = user_id
-        
-        next_url = request.args.get("next")
-        resp = make_response(redirect(next_url or "/dashboard"))
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
-        
-        if remember:
-            resp.set_cookie(
-                'remember_me',
-                user_id,
-                max_age=30*24*60*60,
-                secure=False,
-                httponly=True,
-                samesite='Lax'
-            )
-        return resp
-    
+        user = db.session.query(User).filter_by(username=username).first()
+        if not user or not check_password_hash(user.password, password):
+            return render_template("auth/login.html", error="Bad username or password"), 401
+
+        remember = request.form.get("remember_me") == "true"
+        session.permanent = remember
+
+        session["user_id"] = user.id
+
+        next_url = request.args.get("next")
+        return redirect(next_url or url_for("dashboard.get_dashboard_main"))
+
     return render_template("auth/login.html")
