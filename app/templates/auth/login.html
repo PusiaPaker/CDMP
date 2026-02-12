@@ -7,7 +7,8 @@
 {% block content %}
     <h1>Register</h1>
     <form action="/login" method="POST">
-        <input placeholder="Name" autocomplete="off" type="text" name="name" required>
+        <input name="username" required>
+        <input type="password" name="password" required>
         <input type="submit" value="Register">
     </form> 
 {% endblock %}
