@@ -18,6 +18,10 @@ After the script is done running
 
 #### Activating the Virtual Enviorment
 ###### Windows
+first you must allow scripts for the current user:
+```sh
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 ```sh
 ./venv/bin/activate.ps1
 ```
