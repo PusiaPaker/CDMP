@@ -22,6 +22,7 @@ first you must allow scripts for the current user:
 ```sh
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
+then you can activate the env
 ```sh
 ./venv/bin/activate.ps1
 ```
