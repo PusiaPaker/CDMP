@@ -16,7 +16,6 @@ dummy_data = {
     'Diebold Nixdorf AI Chatbot': 'Focused on how the chatbot should behave in real situations instead of the idealized flows. Sitting in on support calls, noting common customer frustrations, and translating that into conversation logic that doesn’t feel robotic. Coordinating with the vendor on integrations and agent handoff. It’s still iterative, but early pilots show a drop in repetitive tickets.'
 }
 
-
 @ProjectsBP.route('/createdummies')
 def create_dummy_projects():
     proj = db.session.query(Project).filter_by(title=list(dummy_data.items())[0][0]).first()
@@ -36,6 +35,6 @@ def get_projects():
 
     out = {}
     for p in proj:
-        out[p.title] = p.description
+        out[p.title] = {'description': p.description, 'id': p.id}
     
     return jsonify(out), 200
