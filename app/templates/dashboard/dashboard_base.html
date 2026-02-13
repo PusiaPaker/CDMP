@@ -15,7 +15,7 @@
     
     <style>
         :root {
-            --sidebar-width: 12%;
+            --sidebar-width: 18%;
         }
         
         body {
@@ -97,9 +97,20 @@
 
                 <ul class="list-unstyled collapse show" id="project-list">
                     {% for id, name in projects.items() %}
-                        <li>
-                            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project', project_name=id)}}">{{name}}</a>
-                        </li>
+                        {% if id == "_add_button" %}
+                            <li>
+                                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project', project_name=id)}}">
+                                    <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
+                                    {{name}}
+                                </a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project', project_name=id)}}">
+                                    {{name}}
+                                </a>
+                            </li>
+                        {% endif %}
                     {% endfor %}
                 </ul>
             </li>

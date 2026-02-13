@@ -3,7 +3,9 @@ from flask import Blueprint, render_template, session, redirect, request, url_fo
 DashBP= Blueprint('dashboard', __name__)
 
 # temporary project id:name
-projects = {'alpha': 'Project Alpha', 'beta': 'Project Beta', 'gamma': 'Project Gamma'}
+# first one should always be add project
+projects = {'_add_button': 'Add Project', 'alpha': 'Project Alpha',
+             'beta': 'Project Beta', 'gamma': 'Project Gamma'}
 
 @DashBP.before_request
 def require_login():
