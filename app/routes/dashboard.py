@@ -45,7 +45,7 @@ def get_dashboard_project(project_id):
     project = db.session.get(Project, project_id)
 
     if not project:
-        # project not found page
+        # TODO: project not found page
         pass
 
     projects = get_all_projects()
