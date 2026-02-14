@@ -17,10 +17,20 @@ dummy_data = {
     'Diebold Nixdorf AI Chatbot': 'Focused on how the chatbot should behave in real situations instead of the idealized flows. Sitting in on support calls, noting common customer frustrations, and translating that into conversation logic that doesn’t feel robotic. Coordinating with the vendor on integrations and agent handoff. It’s still iterative, but early pilots show a drop in repetitive tickets.'
 }
 
-@ProjectsBP.route('/new')
+@ProjectsBP.route('/new', methods=['GET', 'POST'])
 def create_project():
+    if request.method == 'GET':
+        return render_template("pages/create_project.html", projects={}, status=None), 200
+    elif request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
 
-    return render_template("pages/create_project.html", projects={}), 200
+        project = Project(title=title, description=description)
+        db.session.add(project)
+        db.session.commit()
+
+        return render_template('pages/create_project.html', projects={}, status='success'), 204
+
 
 @ProjectsBP.route('/createdummies')
 def create_dummy_projects():
