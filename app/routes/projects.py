@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify
 from app.src.database import db
 from app.tables.projects import Project
+from app.src.util_functions import get_all_projects
 
 ProjectsBP = Blueprint('projects', __name__)
 
@@ -20,7 +21,7 @@ dummy_data = {
 @ProjectsBP.route('/new', methods=['GET', 'POST'])
 def create_project():
     if request.method == 'GET':
-        return render_template("pages/project_create.html", projects={}, status=None), 200
+        return render_template("pages/project_create.html", projects=get_all_projects(), status=None), 200
     elif request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
@@ -29,14 +30,14 @@ def create_project():
         db.session.add(project)
         db.session.commit()
 
-        return render_template('pages/project_create.html', projects={}, status='success'), 204
+        return render_template('pages/project_create.html', projects=get_all_projects(), status='success'), 204
 
 @ProjectsBP.route('/edit/<project_id>', methods=['GET', 'POST'])
 def add_data_project(project_id):
     if request.method == 'GET':
         project = db.session.get(Project, project_id)
 
-        return render_template("pages/project_add_data.html", projects={}, active_project=project, status=None), 200
+        return render_template("pages/project_add_data.html", projects=get_all_projects(), active_project=project, status=None), 200
     
     elif request.method == 'POST':
         project = db.session.get(Project, project_id)
@@ -47,7 +48,7 @@ def add_data_project(project_id):
         db.session.commit()
 
         # for now just redirect to main page after update is applied
-        return render_template("dashboard/dashboard_index.html", dashboard_title='temp', projects={}), 200
+        return render_template("dashboard/dashboard_index.html", dashboard_title='temp', projects=get_all_projects()), 200
 
 
 
