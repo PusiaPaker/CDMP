@@ -50,5 +50,6 @@ def get_dashboard_project(project_id):
 
     projects = get_all_projects()
 
-    return render_template("dashboard/dashboard_index.html", dashboard_title=project.title, description=project.description, projects=projects), 200
+    return render_template("dashboard/dashboard_index.html", dashboard_title=project.title, description=project.description,
+                            projects=projects, active_project_id=project.id), 200
 

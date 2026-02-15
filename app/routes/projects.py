@@ -20,7 +20,7 @@ dummy_data = {
 @ProjectsBP.route('/new', methods=['GET', 'POST'])
 def create_project():
     if request.method == 'GET':
-        return render_template("pages/create_project.html", projects={}, status=None), 200
+        return render_template("pages/project_create.html", projects={}, status=None), 200
     elif request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
@@ -29,7 +29,14 @@ def create_project():
         db.session.add(project)
         db.session.commit()
 
-        return render_template('pages/create_project.html', projects={}, status='success'), 204
+        return render_template('pages/project_create.html', projects={}, status='success'), 204
+
+@ProjectsBP.route('/edit/<project_id>', methods=['GET', 'POST'])
+def add_data_project(project_id):
+    if request.method == 'GET':
+        project = db.session.get(Project, project_id)
+
+        return render_template("pages/project_add_data.html", projects={}, active_project_title=project.title, status=None), 200
 
 
 @ProjectsBP.route('/createdummies')
