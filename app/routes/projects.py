@@ -36,7 +36,19 @@ def add_data_project(project_id):
     if request.method == 'GET':
         project = db.session.get(Project, project_id)
 
-        return render_template("pages/project_add_data.html", projects={}, active_project_title=project.title, status=None), 200
+        return render_template("pages/project_add_data.html", projects={}, active_project=project, status=None), 200
+    
+    elif request.method == 'POST':
+        project = db.session.get(Project, project_id)
+
+        project.title = request.form['title']
+        project.description = request.form['description']
+
+        db.session.commit()
+
+        # for now just redirect to main page after update is applied
+        return render_template("dashboard/dashboard_index.html", dashboard_title='temp', projects={}), 200
+
 
 
 @ProjectsBP.route('/createdummies')
