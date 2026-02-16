@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from app.routes.dashboard import DashBP
 from app.routes.sql_testing import DebugBP 
+from app.routes.projects import ProjectsBP 
 from app.routes.auth import AuthBP
 from app.config import Config
 from app.src.database import db
@@ -22,5 +23,6 @@ def create_app():
     app.register_blueprint(AuthBP)
     app.register_blueprint(DashBP, url_prefix='/dashboard/')
     app.register_blueprint(DebugBP, url_prefix='/debug/')
+    app.register_blueprint(ProjectsBP, url_prefix='/projects/')
 
     return app
