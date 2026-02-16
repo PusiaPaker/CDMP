@@ -3,7 +3,7 @@
     border-radius: 5px;
 
     border: 1px solid rgb(199, 199, 199);
-    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.15);
 }
 .dash-chart, .project-title {
     display: inline-block;
@@ -46,4 +46,21 @@
 
     background-color: var(--cdmp-color-main-active);
     border-color: var(--cdmp-color-main);
+}
+
+.card-body, .project-links {
+    background-color: var(--cdmp-color-dashboard-panel);
+}
+.card-footer {
+    background-color: var(--cdmp-color-main)
+}
+.card {
+    border: 1px solid rgb(199, 199, 199);
+    box-shadow: 6px 6px 5px rgba(0, 0, 0, 0.15);
+
+    transition: transform 0.3s ease; 
+    transform: scale(1);
+}
+.card:hover {
+    transform: scale(1.0125);
 }
