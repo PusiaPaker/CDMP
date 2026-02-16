@@ -4,12 +4,12 @@ from app.tables.projects import Project
 from app.src.util_functions import get_all_projects
 
 DashBP= Blueprint('dashboard', __name__)
-"""
+
 @DashBP.before_request
 def require_login():
     if "user_id" not in session:
         return redirect(url_for("authentication.login", next=request.path))
-"""
+
 
 @DashBP.before_request
 def require_login():
@@ -26,7 +26,6 @@ def get_dashboard_main():
     return render_template("dashboard/dashboard_overview.html", dashboard_title=dashboard_title, projects=projects), 200
 
 
-# eventually replace this with some kind of project id? then get name and details from db
 @DashBP.route('/<project_id>') 
 def get_dashboard_project(project_id):
     project = db.session.get(Project, project_id)

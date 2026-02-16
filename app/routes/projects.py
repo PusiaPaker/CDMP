@@ -30,7 +30,7 @@ def create_project():
         db.session.add(project)
         db.session.commit()
 
-        return render_template('pages/project_create.html', projects=get_all_projects(), status='success'), 204
+        return render_template('dashboard/dashboard_overview.html', projects=get_all_projects(), status='success'), 200
 
 @ProjectsBP.route('/edit/<project_id>', methods=['GET', 'POST'])
 def add_data_project(project_id):
