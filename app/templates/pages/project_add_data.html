@@ -1,0 +1,55 @@
+{% extends './dashboard/dashboard_base.html' %}
+
+{% block title %}
+    New Project
+{% endblock %}
+
+{% block dashboard_page_name %}
+    <h1 class="ps-2 mb-5 display-5 project-title">Add data to "{{ active_project.title }}"</h1>
+{% endblock %}
+
+{% block dashboard_description %}
+    <p>Use this page to add data to projects. You can edit project properties (title, description and others). Additionally, you can raw documents or submit new information.</p>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid dashboard-container m-0 p-5">
+    <form method="POST" action="{{ url_for('projects.add_data_project', project_id=active_project.id) }}">
+    
+        <h1 class="mb-5">Update Fields</h1>
+
+        <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input
+            type="text"
+            class="form-control"
+            id="title"
+            name="title"
+            value="{{ active_project.title }}"
+            minlength="3"
+            maxlength="100"
+            required
+        >
+        </div>
+
+        <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+            class="form-control"
+            id="description"
+            name="description"
+            rows="5"
+            minlength="25"
+            maxlength="512"
+        >{{ active_project.description }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary form-submit-button">
+            Apply Changes
+        </button>
+
+  </form>
+
+  <h1 class="mt-5 mb-5">More...</h1>
+</div>
+{% endblock %}

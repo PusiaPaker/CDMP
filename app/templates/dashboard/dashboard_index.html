@@ -3,49 +3,21 @@
 {% block title %}
     Dashboard Home
 {% endblock %}
-    
-{% block navbar %}
-<nav class="navbar navbar-expand-lg navbar-light sticky-top">
-    <!-- This commented out html is some boilerplate bootstrap navbar stuff, it could be useful.
-    it also shows how to use the boostrap dropdowns (which look very cool).   -->
-    <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> Profile
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                        <li><a class="dropdown-item" href="#">My Profile</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                    </ul>
-                </li>
-            </ul>
-        </div>
-    </div>  
-    <div class="container-fluid">
-        <ul class="navbar-nav">
-            <li class="nav-link">
-                <a>test</a>
-            </li>
-            <li class="nav-link">
-                <a>test</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-{% endblock %}
 
 {% block dashboard_page_name %}
-    <h1 class="ps-2 mb-5 display-3 project-title">{{ dashboard_title }}</h1>
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="ps-2 display-5 project-title">{{ dashboard_title }}</h1>
+        <a class="dashboard-add-data-button me-5" href="{{url_for('projects.add_data_project', project_id=active_project_id)}}">
+            Add Data
+        </a>
+    </div>
 {% endblock %}
 
-{% block visualization %}
+{% block dashboard_description %}
+    <h1 class="small">{{ description }}</h1>
+{% endblock %}
+
+{% block main_content %}
 <h2 class="ps-2 section-header" id="visualization">Visualization</h2>
 <div class="container-fluid dashboard-container m-0 p-5">
     <div class="row justify-content-center py-2">
