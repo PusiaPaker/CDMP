@@ -1,16 +1,54 @@
 {% extends './base.html' %}
 
 {% block header %}
-    <h1>{% block title %}Login{% endblock %}</h1>
+    <div class="container-fluid">
+        <h1 class="ps-2 mb-5 display-3 project-title text-center">C.D.M.P</h1>
+    </div>
+{% endblock %}
+
+{% block css %} 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
 {% block content %}
-    <h1>Login</h1>
+<div class="login-container container-fluid w-25 p-3">
     <form action="/login" method="POST">
-        <input name="username" required>
-        <input type="password" name="password" required>
-        <input type="submit" value="Login">
-    </form> 
+        <legend class="text-center">{% block title %}Login{% endblock %}</legend> 
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            <input name="username" id="username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="pass" class="form-label">Password</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <div class="mb-3 form-check checkbox-purp">
+            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" checked>
+            <label class="form-check-label" for="remember_me">Remember me for 30 days</label>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-purp">Login</button>
+        </div>
+    </form>
+    <a class="btn mb-0" role="button" data-bs-toggle="collapse" data-bs-target="#register-container" aria-expanded="false">Register</a>
+</div>
+<div class="container-fluid collapse" id="register-container">
+    <form action="" method="">
+        <legend class="text-center">Register</legend>
+        <div class="mb-3">
+            <label for="reg-username" class="form-label">Username</label>
+            <input name="reg-username" id="reg-username" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="reg-password" class="form-label">Password</label>
+            <input name="reg-password" id="reg-password" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-purp">Login</button>
+        </div>
+    </form>
+</div>
 {% endblock %}
 
 <form method="post">

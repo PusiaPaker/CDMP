@@ -11,6 +11,12 @@ def require_login():
         return redirect(url_for("authentication.login", next=request.path))
 
 
+@DashBP.before_request
+def require_login():
+    if "user_id" not in session:
+        return redirect(url_for("authentication.login", next=request.path))
+
+
 @DashBP.route('/')
 def get_dashboard_main():
     dashboard_title = 'All Projects View'
