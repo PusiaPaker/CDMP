@@ -88,7 +88,7 @@
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
-                    All Project View
+                    Dashboard
                 </a>
 
                 <!-- Collapsable project selection -->
@@ -112,24 +112,7 @@
                     {% endfor %}
                 </ul>
             </li>
-            <li class="nav-item">
-                <!-- This timeline button could be cool if it just jumps to the timeline for whatever project you're looking at using #timeline in the link -->
-                <a class="nav-link fs-5" data-bs-toggle="collapse" data-bs-target="#goto-list" aria-expanded="false">
-                    <i class="bi bi-arrow-return-right"></i> Go To:
-                </a>
-                <ul class="list-unstyled collapse" id="goto-list">
-                    <li>
-                        <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="#visualization">
-                            <i class="bi bi-graph-up"></i> Visualization
-                        </a>
-                    </li>
-                    <li>
-                        <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="#timeline">
-                            <i class="bi bi-stopwatch"></i> Timeline
-                        </a>
-                    </li>
-                </ul>
-            </li>
+            {% block go_to_section %}{% endblock %}
         </ul>
     </nav>
     

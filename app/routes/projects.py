@@ -48,7 +48,7 @@ def add_data_project(project_id):
         db.session.commit()
 
         # for now just redirect to main page after update is applied
-        return render_template("dashboard/dashboard_index.html", dashboard_title='temp', projects=get_all_projects()), 200
+        return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
 
 
 
