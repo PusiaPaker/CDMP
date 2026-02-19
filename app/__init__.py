@@ -1,4 +1,4 @@
-from flask import Flask, session, render_template
+from flask import Flask, session, render_template, redirect, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -23,6 +23,10 @@ def create_app():
     @app.errorhandler(404)
     def not_found(e):
         return render_template("error/404.html"), 404
+
+    @app.route('/')
+    def mainPage():
+        return redirect(url_for("dashboard.get_dashboard_main"))
 
     app.register_blueprint(AuthBP)
     app.register_blueprint(DashBP, url_prefix='/dashboard/')
