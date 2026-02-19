@@ -2,8 +2,9 @@ class Config:
     SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
     SECRET_KEY = 'dev' # !!! DO NOT COMMIT WITH THIS ANYTHING ELSE BUT DEV
     #   https://www.geeksforgeeks.org/python/how-to-use-flask-session-in-python-flask/
-    SESSION_PERMANENT = True # Sessions do not expire when the browser is closed
+    SESSION_PERMANENT = False # Sessions expire when browser closes (unless remember_me is checked)
     SESSION_TYPE = 'filesystem'     # Store session data in files
+    PERMANENT_SESSION_LIFETIME = 30 * 24 * 60 * 60  # 30 days in seconds
 
     SESSION_COOKIE_SECURE = False  # Set True in production with HTTPS
     SESSION_COOKIE_HTTPONLY = True

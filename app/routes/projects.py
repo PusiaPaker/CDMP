@@ -21,12 +21,17 @@ dummy_data = {
 @ProjectsBP.route('/new', methods=['GET', 'POST'])
 def create_project():
     if request.method == 'GET':
-        return render_template("pages/project_create.html", projects=get_all_projects(), status=None), 200
+        return render_template("pages/project_create.html", projects=get_all_projects(), status=None, error=None), 200
     elif request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
 
-        project = Project(title=title, description=description)
+        # Check if project with same title already exists
+        existing_project = db.session.query(Project).filter_by(title=title).first()
+        if existing_project:
+            return render_template("pages/project_create.html", projects=get_all_projects(), status=None, error=f"A project with the title '{title}' already exists."), 400
+
+        project = Project(title=title, description=description, owner_id=session.get("user_id"))
         db.session.add(project)
         db.session.commit()
 
