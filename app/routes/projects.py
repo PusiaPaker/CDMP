@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify
 from app.src.database import db
 from app.tables.projects import Project
+from app.tables.files import File
 from app.src.util_functions import get_all_projects
 from werkzeug.utils import secure_filename
 import os
@@ -69,9 +70,13 @@ def add_data_project(project_id):
                 # forbidden file extension
                 # we probably want an error page or error message pop up
                 pass
-            
+
             file_name = secure_filename(f.filename)
             f.save(os.path.join(FILE_UPLOAD_PATH, file_name))
+
+            file_in_db = File(project_id=project_id, file_name=file_name, description=request.form['upload-description'])
+            db.session.add(file_in_db)
+            db.session.commit()
 
             return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
 
@@ -101,3 +106,13 @@ def get_projects():
         out[p.title] = {'description': p.description, 'id': p.id}
     
     return jsonify(out), 200
+
+
+# debug endpoint
+@ProjectsBP.route('/<project_id>/getfiles')
+def get_project_files_debug(project_id):
+    files = db.session.query(File).filter(File.project_id == project_id).all()
+
+    file_names = [{'name': f.file_name, 'description': f.description, 'date': f.upload_date.date()} for f in files]
+    
+    return jsonify(file_names), 200

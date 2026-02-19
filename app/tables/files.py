@@ -2,6 +2,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey, String, Text
 from app.src.database import Base
 import uuid
+from sqlalchemy import DateTime, func
+from datetime import datetime
 
 class File(Base):
     __tablename__ = "files"
