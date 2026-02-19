@@ -9,10 +9,12 @@ from app.routes.auth import AuthBP
 from app.config import Config
 from app.src.database import db
 from app.src.commands import CommandsBP
+from app.src.constants import FILE_UPLOAD_PATH
 
 def create_app():
     app = Flask(__name__, template_folder='./templates/')
     app.config.from_object(Config)
+    app.config['UPLOAD_FOLDER'] = FILE_UPLOAD_PATH
     Session(app)
 
     db.init_app(app)

@@ -2,6 +2,10 @@ from flask import Blueprint, render_template, session, redirect, request, url_fo
 from app.src.database import db
 from app.tables.projects import Project
 from app.src.util_functions import get_all_projects
+from werkzeug.utils import secure_filename
+import os
+from app.src.constants import ALLOWED_FILE_EXTENSIONS, FILE_UPLOAD_PATH
+
 
 ProjectsBP = Blueprint('projects', __name__)
 
@@ -40,17 +44,40 @@ def add_data_project(project_id):
         return render_template("pages/project_add_data.html", projects=get_all_projects(), active_project=project, status=None), 200
     
     elif request.method == 'POST':
-        project = db.session.get(Project, project_id)
+        which_form = request.form['which_form']
 
-        project.title = request.form['title']
-        project.description = request.form['description']
+        if which_form == 'update_fields':
+            project = db.session.get(Project, project_id)
 
-        db.session.commit()
+            project.title = request.form['title']
+            project.description = request.form['description']
 
-        # for now just redirect to main page after update is applied
-        return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+            db.session.commit()
 
+            # for now just redirect to main page after update is applied
+            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
 
+        elif which_form == 'upload_documents':
+            f = request.files['uploaded_file']
+            if f.filename == '':
+                # browser sends empty file if none was put in form
+                # handle this here later
+                pass
+            
+            # validate extension
+            if f.filename.split('.')[-1] not in ALLOWED_FILE_EXTENSIONS:
+                # forbidden file extension
+                # we probably want an error page or error message pop up
+                pass
+            
+            file_name = secure_filename(f.filename)
+            f.save(os.path.join(FILE_UPLOAD_PATH, file_name))
+
+            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+
+        else:
+            # error
+            pass
 
 @ProjectsBP.route('/createdummies')
 def create_dummy_projects():
