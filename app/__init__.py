@@ -1,4 +1,4 @@
-from flask import Flask, session
+from flask import Flask, session, redirect, url_for
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -26,5 +26,11 @@ def create_app():
     app.register_blueprint(DebugBP, url_prefix='/debug/')
     app.register_blueprint(ProjectsBP, url_prefix='/projects/')
     app.register_blueprint(CommandsBP)
+
+    @app.route('/')
+    def index():
+        if 'user_id' in session:
+            return redirect(url_for('dashboard.get_dashboard_main'))
+        return redirect(url_for('authentication.login'))
 
     return app
