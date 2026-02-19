@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}CDMP{% endblock %}</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #6B3F69;
+            color: #DDC3C3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin: 0;
+        }
+
+        h2 {
+            margin-top: 0.5rem;
+            font-weight: 400;
+        }
+
+        p {
+            margin-top: 1.5rem;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 10px 20px;
+            text-decoration: none;
+            background-color: #A376A2;
+            color: #0f172a;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        a:hover {
+            background-color: #8D5F8C;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>
+

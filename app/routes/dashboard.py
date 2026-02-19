@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, request, url_for
+from flask import Blueprint, render_template, session, redirect, request, url_for, abort
 from app.src.database import db
 from app.tables.projects import Project
 from app.src.util_functions import get_all_projects
@@ -25,7 +25,8 @@ def get_dashboard_project(project_id):
 
     if not project:
         # TODO: project not found page
-        pass
+
+        return abort(404)
 
     projects = get_all_projects()
 
