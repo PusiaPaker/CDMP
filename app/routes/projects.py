@@ -5,7 +5,7 @@ from app.tables.files import File
 from app.src.util_functions import get_all_projects
 from werkzeug.utils import secure_filename
 import os
-from app.src.constants import ALLOWED_FILE_EXTENSIONS, FILE_UPLOAD_PATH
+from app.src.constants import ALLOWED_FILE_EXTENSIONS
 
 
 ProjectsBP = Blueprint('projects', __name__)
@@ -72,7 +72,7 @@ def add_data_project(project_id):
                 pass
 
             file_name = secure_filename(f.filename)
-            f.save(os.path.join(FILE_UPLOAD_PATH, file_name))
+            f.save(os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), file_name))
 
             file_in_db = File(project_id=project_id, file_name=file_name, description=request.form['upload-description'])
             db.session.add(file_in_db)
