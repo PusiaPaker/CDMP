@@ -69,6 +69,17 @@
                 required
             >
         </div>
+
+        <div class="mb-3">
+        <label for="file-category" class="form-label">File Category</label>
+        <select class="form-select" id="file-category" name="file_category">
+            <option value="unspecified" selected>Unspecified</option>
+            <option value="image">Image</option>
+            <option value="text">Text document</option>
+            <option value="spreadsheet">Spreadsheet</option>
+        </select>
+        </div>
+
         <input name='uploaded_file' type=file>
 
         <input type="hidden" name="which_form" value="upload_documents">

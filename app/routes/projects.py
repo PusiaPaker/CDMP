@@ -6,7 +6,7 @@ from app.src.util_functions import get_all_projects
 from werkzeug.utils import secure_filename
 import os
 from app.src.constants import ALLOWED_FILE_EXTENSIONS
-
+import uuid
 
 ProjectsBP = Blueprint('projects', __name__)
 
@@ -63,7 +63,8 @@ def add_data_project(project_id):
             if f.filename == '':
                 # browser sends empty file if none was put in form
                 # handle this here later
-                pass
+                # for now just take to 404
+                return render_template("error/404.html"), 404
             
             # validate extension
             if f.filename.split('.')[-1] not in ALLOWED_FILE_EXTENSIONS:
@@ -71,10 +72,24 @@ def add_data_project(project_id):
                 # we probably want an error page or error message pop up
                 pass
 
-            file_name = secure_filename(f.filename)
-            f.save(os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), file_name))
 
-            file_in_db = File(project_id=project_id, file_name=file_name, description=request.form['upload-description'])
+
+            file_name = secure_filename(f.filename)
+
+            # lets save to disk as id + extension
+            temp_id = str(uuid.uuid4())
+            extension = file_name.split('.')[-1]
+            disk_file_name = f'{temp_id}.{extension}'
+
+            f.save(os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), disk_file_name))
+
+            print(request.form)
+
+            file_in_db = File(id=temp_id, project_id=project_id, 
+                              file_name_original=file_name, 
+                              file_name_disk=disk_file_name,
+                              file_category=request.form['file_category'],
+                              description=request.form['upload-description'])
             db.session.add(file_in_db)
             db.session.commit()
 
@@ -90,7 +105,7 @@ def create_dummy_projects():
 
     if not proj:
         for title, description in dummy_data.items():
-            proj = Project(title = title, description = description)
+            proj = Project(title = title, description = description, owner_id=session['user_id'])
 
             db.session.add(proj)
             db.session.commit()
@@ -109,10 +124,14 @@ def get_projects():
 
 
 # debug endpoint
-@ProjectsBP.route('/<project_id>/getfiles')
+@ProjectsBP.route('/getfiles/<project_id>')
 def get_project_files_debug(project_id):
     files = db.session.query(File).filter(File.project_id == project_id).all()
 
-    file_names = [{'name': f.file_name, 'description': f.description, 'date': f.upload_date.date()} for f in files]
+    file_names = [{'file_name_original': f.file_name_original,
+                   'file_name_disk': f.file_name_disk,
+                   'file_category': f.file_category,
+                   'description': f.description, 
+                   'date': f.upload_date.date()} for f in files]
     
     return jsonify(file_names), 200
