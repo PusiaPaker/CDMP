@@ -12,44 +12,16 @@ This Platfrom is meant to be used as a hub for keeping up and managing projects.
 
 <b>NOTE:</b> see last section on setting up environment variables (required for the file uploading to work)
 
-## Installation
-#### Create a Python Virtual Enviroment
-You can create you virtual enviorment by running the following
-```sh
-python -m venv venv
+## Start the App
+#### For Windows Systems:
+- 
 ```
-After the script is done running
-
-#### Activating the Virtual Enviorment
-###### Windows
-first you must allow scripts for the current user:
-```sh
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+python .\run_win.py
 ```
-then you can activate the env
-```sh
-./venv/bin/activate.ps1
-```
-###### Unix/Linux
-```sh
-source ./venv/bin/activate
-```
-After that is done, you should see a *(venv)* indicator in front of input  
-
-### Installing Required Libraries
-When in Virtual Enviorment Run:
-```sh
-pip install -r requirements.txt
+#### For Linux Systems:
+- WIP
 ```
 
-## Running the App
-To run the flask app simply type in 
-```sh
-flask run
-```
-and this should open a live server on 
-```sh
-http://localhost:5000
 ```
 
 ## Environment Variables (REQUIRED)
