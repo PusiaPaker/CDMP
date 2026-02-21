@@ -4,3 +4,4 @@ flask-session
 pysqlite3
 sqlite-utils
 uuid
+python-dotenv

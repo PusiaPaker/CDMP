@@ -1,7 +1,12 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify
 from app.src.database import db
 from app.tables.projects import Project
+from app.tables.files import File
 from app.src.util_functions import get_all_projects
+from werkzeug.utils import secure_filename
+import os
+from app.src.constants import ALLOWED_FILE_EXTENSIONS
+import uuid
 
 ProjectsBP = Blueprint('projects', __name__)
 
@@ -40,17 +45,59 @@ def add_data_project(project_id):
         return render_template("pages/project_add_data.html", projects=get_all_projects(), active_project=project, status=None), 200
     
     elif request.method == 'POST':
-        project = db.session.get(Project, project_id)
+        which_form = request.form['which_form']
 
-        project.title = request.form['title']
-        project.description = request.form['description']
+        if which_form == 'update_fields':
+            project = db.session.get(Project, project_id)
 
-        db.session.commit()
+            project.title = request.form['title']
+            project.description = request.form['description']
 
-        # for now just redirect to main page after update is applied
-        return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+            db.session.commit()
+
+            # for now just redirect to main page after update is applied
+            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+
+        elif which_form == 'upload_documents':
+            f = request.files['uploaded_file']
+            if f.filename == '':
+                # browser sends empty file if none was put in form
+                # handle this here later
+                # for now just take to 404
+                return render_template("error/404.html"), 404
+            
+            # validate extension
+            if f.filename.split('.')[-1] not in ALLOWED_FILE_EXTENSIONS:
+                # forbidden file extension
+                # we probably want an error page or error message pop up
+                pass
 
 
+
+            file_name = secure_filename(f.filename)
+
+            # lets save to disk as id + extension
+            temp_id = str(uuid.uuid4())
+            extension = file_name.split('.')[-1]
+            disk_file_name = f'{temp_id}.{extension}'
+
+            f.save(os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), disk_file_name))
+
+            print(request.form)
+
+            file_in_db = File(id=temp_id, project_id=project_id, 
+                              file_name_original=file_name, 
+                              file_name_disk=disk_file_name,
+                              file_category=request.form['file_category'],
+                              description=request.form['upload-description'])
+            db.session.add(file_in_db)
+            db.session.commit()
+
+            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+
+        else:
+            # error
+            pass
 
 @ProjectsBP.route('/createdummies')
 def create_dummy_projects():
@@ -58,7 +105,7 @@ def create_dummy_projects():
 
     if not proj:
         for title, description in dummy_data.items():
-            proj = Project(title = title, description = description)
+            proj = Project(title = title, description = description, owner_id=session['user_id'])
 
             db.session.add(proj)
             db.session.commit()
@@ -74,3 +121,17 @@ def get_projects():
         out[p.title] = {'description': p.description, 'id': p.id}
     
     return jsonify(out), 200
+
+
+# debug endpoint
+@ProjectsBP.route('/getfiles/<project_id>')
+def get_project_files_debug(project_id):
+    files = db.session.query(File).filter(File.project_id == project_id).all()
+
+    file_names = [{'file_name_original': f.file_name_original,
+                   'file_name_disk': f.file_name_disk,
+                   'file_category': f.file_category,
+                   'description': f.description, 
+                   'date': f.upload_date.date()} for f in files]
+    
+    return jsonify(file_names), 200
