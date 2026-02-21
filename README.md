@@ -10,15 +10,14 @@ This Platfrom is meant to be used as a hub for keeping up and managing projects.
 
 <br>
 
-<b>NOTE:</b> see last section on setting up environment variables (required for the file uploading to work)
-
 ## Start the App
-#### For Windows Systems:
-- 
+### For Windows Systems:
 ```
 python .\run_win.py
 ```
-#### For Linux Systems:
+#### you will be prompted once for the file path on the first run. it should follow the format of: `C:\Users\YourName\wherever\somefolder`
+#### if the file path is entered incorrectly, you can manually change it in the .env file after the run_win script is finished
+### For Linux Systems:
 - WIP
 ```
 
