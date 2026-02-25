@@ -70,7 +70,7 @@
     width: 100%;
     height: 100%;
     border: 1px solid #9e1f1f;
-    background-color: #dc3545;
+    background-color: #b54651;
     margin: 0;
     cursor: pointer;
     transition: transform 0.12s ease, background-color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
@@ -81,7 +81,7 @@
 }
 
 .reporting-matrix-check-button:checked{
-    background-color: #198754;
+    background-color: #25885a;
     border-color: #146c43;
 }
 
@@ -104,4 +104,11 @@
     background-color: black;
     height: 100%;
     width: 100%;
+}
+
+.reporting-matrix-person-title-text{
+    font-size: 0.75rem;
+    font-weight: normal;
+
+    margin-bottom: 0;
 }

@@ -30,16 +30,16 @@ def get_dashboard_project(project_id):
 
     projects = get_all_projects()
     reporting_people = [
-        {"id": "person_1", "name": "Bryan Coblentz"},
-        {"id": "person_2", "name": "Kevin Hare"},
-        {"id": "person_3", "name": "Matt Troyer"},
-        {"id": "person_4", "name": "Jamie Coblentz"},
-        {"id": "person_5", "name": "Merl Coblentz"},
-        {"id": "person_6", "name": "Traci Miller"},
-        {"id": "person_7", "name": "Joel Coblentz"},
-        {"id": "person_8", "name": "Joe Yoder"},
-        {"id": "person_9", "name": "Teresa Bonifant"},
-        {"id": "person_10", "name": "Darrin Hess"},
+        {"id": "person_1", "name": "Bryan Coblentz", "title": "Project Manager"},
+        {"id": "person_2", "name": "Kevin Hare", "title": "Tech Lead"},
+        {"id": "person_3", "name": "Matt Troyer", "title": "CEO"},
+        {"id": "person_4", "name": "Jamie Coblentz", "title": "Software Engineer"},
+        {"id": "person_5", "name": "Merl Coblentz", "title": "Software Engineer"},
+        {"id": "person_6", "name": "Traci Miller", "title": "Software Engineer"},
+        {"id": "person_7", "name": "Joel Coblentz", "title": "Product Designer"},
+        {"id": "person_8", "name": "Joe Yoder", "title": "UX Desiner"},
+        {"id": "person_9", "name": "Teresa Bonifant", "title": "Software Engineer"},
+        {"id": "person_10", "name": "Darrin Hess", "title": "Consulting"},
     ]
 
     """

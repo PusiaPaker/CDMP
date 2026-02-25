@@ -200,14 +200,14 @@
                     <tr>
                         <th class="text-start">Person / Reports to</th>
                         {% for manager in reporting_people %}
-                            <th>{{ manager.name }}</th>
+                            <th>{{ manager.name }} <br> <p class="reporting-matrix-person-title-text text-muted">{{ manager.title }}</p> </th>
                         {% endfor %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for person in reporting_people %}
                         <tr>
-                            <th scope="row" class="text-start">{{ person.name }}</th>
+                            <th scope="row" class="text-start">{{ person.name }} <br> <p class="reporting-matrix-person-title-text text-muted">{{ person.title }}</p></th>
                             {% for manager in reporting_people %}
                                 <td>
                                     {% if person.id == manager.id %}
