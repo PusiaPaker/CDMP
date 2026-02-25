@@ -187,3 +187,46 @@
     const timelineChart = document.getElementById("timeline")
 </script>
 {% endblock %}
+
+{% block people_section %}
+<div id="org-chart" class="mt-5 section-header">
+    <h2 class="ps-2">People</h2>
+    <div class="container-fluid dashboard-container m-0 p-5">
+        <h4 class="mb-3">Reporting Matrix</h4>
+        <p class="small text-muted mb-3"></p>
+        <div class="reporting-matrix-table-container table-responsive">
+            <table class="table table-bordered align-middle text-center reporting-matrix-table">
+                <thead>
+                    <tr>
+                        <th class="text-start">Person / Reports to</th>
+                        {% for manager in reporting_people %}
+                            <th>{{ manager.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person in reporting_people %}
+                        <tr>
+                            <th scope="row" class="text-start">{{ person.name }}</th>
+                            {% for manager in reporting_people %}
+                                <td>
+                                    {% if person.id == manager.id %}
+                                        <div class="reporting-matrix-self-report-squares"></div>
+                                    {% else %}
+                                        <input
+                                            class="reporting-matrix-check-button"
+                                            type="checkbox"
+                                            id="reports-{{ person.id }}-{{ manager.id }}"
+                                            value="{{ person.id }}:{{ manager.id }}"
+                                        >
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

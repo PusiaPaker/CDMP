@@ -29,10 +29,27 @@ def get_dashboard_project(project_id):
         return abort(404)
 
     projects = get_all_projects()
+    reporting_people = [
+        {"id": "person_1", "name": "Bryan Coblentz"},
+        {"id": "person_2", "name": "Kevin Hare"},
+        {"id": "person_3", "name": "Matt Troyer"},
+        {"id": "person_4", "name": "Jamie Coblentz"},
+        {"id": "person_5", "name": "Merl Coblentz"},
+        {"id": "person_6", "name": "Traci Miller"},
+        {"id": "person_7", "name": "Joel Coblentz"},
+        {"id": "person_8", "name": "Joe Yoder"},
+        {"id": "person_9", "name": "Teresa Bonifant"},
+        {"id": "person_10", "name": "Darrin Hess"},
+    ]
 
     """
     return render_template("dashboard/dashboard_project.html", dashboard_title=project.title, description=project.description,
                             projects=projects, active_project_id=project.id), 200
     """
-    return render_template("dashboard/dashboard_project.html", project=project, projects=projects, active_project_id=project.id), 200
-
+    return render_template(
+        "dashboard/dashboard_project.html",
+        project=project,
+        projects=projects,
+        active_project_id=project.id,
+        reporting_people=reporting_people
+    ), 200
