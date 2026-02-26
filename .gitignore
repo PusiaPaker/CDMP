@@ -72,3 +72,6 @@ Thumbs.db
 # Deployment
 *.pyc
 .cache/
+
+# other
+temp
