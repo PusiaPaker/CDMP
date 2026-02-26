@@ -27,6 +27,9 @@
             <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" checked>
             <label class="form-check-label" for="remember_me">Remember me for 30 days</label>
         </div>
+        {% if error %}
+        <p class="text-danger">{{error}}</p>
+        {% endif %}
         <div class="mb-3">
             <button type="submit" class="btn btn-purp">Login</button>
         </div>

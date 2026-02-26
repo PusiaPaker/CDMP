@@ -47,7 +47,7 @@ def register():
             return render_template("auth/register.html", error="Username is taken."), 401
         
 
-        new_user = User(username=username, password=password, email=email)
+        new_user = User(username=username, password=generate_password_hash(password), email=email)
         db.session.add(new_user)
         db.session.commit()
 
