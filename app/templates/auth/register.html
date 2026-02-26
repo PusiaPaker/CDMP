@@ -21,8 +21,12 @@
             <label for="username" class="form-label">Username</label>
             <input name="username" id="username" class="form-control" required>
             {% if error %}
-            <span class="text-warning">{{ error }}</span>
+            <span class="text-danger">{{ error }}</span>
             {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" name="email" id="email" class="form-control" required>
         </div>
         <div class="mb-3">
             <label for="pass" class="form-label">Password</label>
