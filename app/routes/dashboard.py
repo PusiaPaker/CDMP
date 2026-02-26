@@ -24,15 +24,11 @@ def get_dashboard_project(project_id):
     project = db.session.get(Project, project_id)
 
     if not project:
-        # TODO: project not found page
-
         return abort(404)
-
-    projects = get_all_projects()
 
     """
     return render_template("dashboard/dashboard_project.html", dashboard_title=project.title, description=project.description,
                             projects=projects, active_project_id=project.id), 200
     """
-    return render_template("dashboard/dashboard_project.html", project=project, projects=projects, active_project_id=project.id), 200
+    return render_template("dashboard/dashboard_project.html", project=project, active_project_id=project.id), 200
 

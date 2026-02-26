@@ -85,35 +85,41 @@
             <h5 class="text-white mb-0">CDMP</h5>
         </div>
         
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
-                    Dashboard
-                </a>
+        {% if projects %}
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
+                        Dashboard
+                    </a>
 
-                <!-- Collapsable project selection -->
-                <a class="nav-link fs-5" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
-                    <i class="bi bi-folder"></i> Projects
-                </a>
+                    <!-- Collapsable project selection -->
+                    <a class="nav-link fs-5" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
+                        <i class="bi bi-folder"></i> Projects
+                    </a>
 
-                <ul class="list-unstyled collapse show" id="project-list">
-                    <li>
-                        <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('projects.create_project')}}">
-                            <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
-                            New Project
-                        </a>
-                    </li>
-                    {% for id, project_data in projects.items() %}
+                    <ul class="list-unstyled collapse show" id="project-list">
                         <li>
-                            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project', project_id=id)}}">
-                                {{project_data['title']}}
+                            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('projects.create_project')}}">
+                                <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
+                                New Project
                             </a>
                         </li>
-                    {% endfor %}
-                </ul>
-            </li>
-            {% block go_to_section %}{% endblock %}
-        </ul>
+                        {% for id, project_data in projects.items() %}
+                            <li>
+                                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project', project_id=id)}}">
+                                    {{project_data['title']}}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% block go_to_section %}{% endblock %}
+            </ul>
+        {% else %}
+            <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
+                    <i class="bi bi-arrow-return-left"></i>                   Back
+            </a>
+        {% endif %}
     </nav>
     
     <div class="main-content">
