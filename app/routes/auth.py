@@ -31,7 +31,7 @@ def login():
         session["user_id"] = user.id
 
         next_url = request.args.get("next")
-        return redirect(next_url or url_for("dashboard.get_dashboard_main"))
+        return redirect(url_for("dashboard.get_dashboard_main"))
 
     return render_template("auth/login.html")
 
@@ -40,12 +40,14 @@ def register():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
+        email = request.form.get("email", "")
 
         user = db.session.query(User).filter_by(username=username).first()
         if user:
             return render_template("auth/register.html", error="Username is taken."), 401
+        
 
-        new_user = User(username=username, password=password)
+        new_user = User(username=username, password=password, email=email)
         db.session.add(new_user)
         db.session.commit()
 
