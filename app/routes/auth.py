@@ -34,3 +34,22 @@ def login():
         return redirect(next_url or url_for("dashboard.get_dashboard_main"))
 
     return render_template("auth/login.html")
+
+@AuthBP.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+
+        user = db.session.query(User).filter_by(username=username).first()
+        if user:
+            return render_template("auth/register.html", error="Username is taken."), 401
+
+        new_user = User(username=username, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for("authentication.login"))
+
+    return render_template("auth/register.html")
+

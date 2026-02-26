@@ -11,26 +11,30 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
+{% block title %}Register{% endblock %}
+
 {% block content %}
 <div class="login-container container-fluid w-25 p-3">
-    <form action="/login" method="POST">
-        <legend class="text-center">{% block title %}Login{% endblock %}</legend> 
+    <form action="/register" method="POST">
+        <legend class="text-center">Create an Account</legend> 
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input name="username" id="username" class="form-control" required>
+            {% if error %}
+            <span class="text-warning">{{ error }}</span>
+            {% endif %}
         </div>
         <div class="mb-3">
             <label for="pass" class="form-label">Password</label>
             <input type="password" name="password" id="password" class="form-control" required>
         </div>
-        <div class="mb-3 form-check checkbox-purp">
-            <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" checked>
-            <label class="form-check-label" for="remember_me">Remember me for 30 days</label>
-        </div>
         <div class="mb-3">
-            <button type="submit" class="btn btn-purp">Login</button>
+            <button type="submit" class="btn btn-purp">Create Account</button>
         </div>
     </form>
-    <a class="mb-0" href="{{ url_for('authentication.register') }}">Register</a>
+    <p class="mb-0">
+        Have an Account?
+        <a href="{{ url_for('authentication.login') }}">Login</a>
+    </p>
 </div>
 {% endblock %}
