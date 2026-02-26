@@ -26,7 +26,7 @@
                 <p class="card-text">{{ project_data['description'] }}</p>
             </div>
             <div class="project-links ps-3 pb-3">
-                <a href="{{url_for('dashboard.get_dashboard_project', project_id=id)}}" class="card-link">View Project</a>
+                <a href="{{url_for('dashboard.get_dashboard_project_visualizations', project_id=id)}}" class="card-link">View Project</a>
                 <a href="{{url_for('projects.add_data_project', project_id=id)}}" class="card-link">Edit Project</a>
             </div>
             <div class="card-footer text-white">

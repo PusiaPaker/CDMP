@@ -42,7 +42,7 @@ def add_data_project(project_id):
     if request.method == 'GET':
         project = db.session.get(Project, project_id)
 
-        return render_template("pages/project_add_data.html", projects=get_all_projects(), active_project=project, status=None), 200
+        return render_template("pages/project_add_data.html", active_project_id=project.id, active_project=project, status=None), 200
     
     elif request.method == 'POST':
         which_form = request.form['which_form']

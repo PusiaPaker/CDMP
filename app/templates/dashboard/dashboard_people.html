@@ -1,0 +1,30 @@
+{% extends './dashboard/dashboard_base.html' %}
+
+{% block title %}
+    CDMP | {{ project['title'] }}
+{% endblock %}
+
+{% block dashboard_page_name %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
+        <a class="dashboard-add-data-button me-5" href="{{url_for('projects.add_data_project', project_id=active_project_id)}}">
+            Add Data
+        </a>
+    </div>
+{% endblock %}
+
+{% block dashboard_description %}
+    <div class="container-fluid w-75 ms-0">
+        <h1 class="desc small text-start py-3">{{ project['description'] }}</h1>
+    </div>
+{% endblock %}
+
+{% block main_content %}
+<h2 class="ps-2 section-header" id="visualization">People</h2>
+<div class="container-fluid dashboard-container m-0 p-5">
+    this is people    
+</div>
+</div>
+<script>
+</script>
+{% endblock %}

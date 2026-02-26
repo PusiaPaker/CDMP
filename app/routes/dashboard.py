@@ -19,20 +19,31 @@ def get_dashboard_main():
     return render_template("dashboard/dashboard_overview.html", dashboard_title=dashboard_title, projects=projects), 200
 
 
-@DashBP.route('/<project_id>') 
-def get_dashboard_project(project_id):
+@DashBP.route('/<project_id>/visualizations/') 
+def get_dashboard_project_visualizations(project_id):
     project = db.session.get(Project, project_id)
 
     if not project:
-        # TODO: project not found page
-
         return abort(404)
 
-    projects = get_all_projects()
+    return render_template("dashboard/dashboard_visualizations.html", project=project, active_project_id=project.id), 200
 
-    """
-    return render_template("dashboard/dashboard_project.html", dashboard_title=project.title, description=project.description,
-                            projects=projects, active_project_id=project.id), 200
-    """
-    return render_template("dashboard/dashboard_project.html", project=project, projects=projects, active_project_id=project.id), 200
 
+@DashBP.route('/<project_id>/timeline/') 
+def get_dashboard_project_timeline(project_id):
+    project = db.session.get(Project, project_id)
+
+    if not project:
+        return abort(404)
+
+    return render_template("dashboard/dashboard_timeline.html", project=project, active_project_id=project.id), 200
+
+
+@DashBP.route('/<project_id>/people/') 
+def get_dashboard_project_people(project_id):
+    project = db.session.get(Project, project_id)
+
+    if not project:
+        return abort(404)
+
+    return render_template("dashboard/dashboard_people.html", project=project, active_project_id=project.id), 200
