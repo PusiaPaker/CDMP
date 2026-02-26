@@ -58,6 +58,7 @@ e.g usage
 .generic-green-button{
     display: inline-block;
     background-color: var(--cdmp-color-generic-button-green);
+    border: none;
 
     border-radius: 7px;
     color: rgb(230, 223, 223);
@@ -68,6 +69,7 @@ e.g usage
     padding: 0.2rem 2rem;
 
     text-decoration: none;
+    cursor: pointer;
 }
 
 .generic-green-button:hover{
