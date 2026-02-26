@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, abort
+from sqlalchemy import func
 from app.src.database import db
+from app.tables.files import File
 from app.tables.projects import Project
 from app.src.util_functions import get_all_projects
 
@@ -29,6 +31,10 @@ def get_dashboard_project(project_id):
         return abort(404)
 
     projects = get_all_projects()
+    xlsx_files = db.session.query(File).filter(
+        File.project_id == project_id,
+        func.lower(File.file_name_original).like('%.xlsx')
+    ).order_by(File.upload_date.desc()).all()
     reporting_people = [
         {"id": "person_1", "name": "Bryan Coblentz", "title": "Project Manager"},
         {"id": "person_2", "name": "Kevin Hare", "title": "Tech Lead"},
@@ -51,5 +57,6 @@ def get_dashboard_project(project_id):
         project=project,
         projects=projects,
         active_project_id=project.id,
+        xlsx_files=xlsx_files,
         reporting_people=reporting_people
     ), 200
