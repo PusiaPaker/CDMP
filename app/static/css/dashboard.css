@@ -155,31 +155,3 @@ TODO: consider actually making the table smaller? if there are too many names it
     border-color: #6d8fcd;
     color: #12376a;
 }
-
-.xlsx-warning-box{
-    max-width: 40rem;
-    background-color: #fcf8e3;
-    border: 1px solid #faebcc;
-    border-radius: 2px;
-    color: #8a6d3b;
-    padding: 0.65rem 0.85rem;
-}
-
-.xlsx-warning-title{
-    font-size: 0.85rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-bottom: 0.15rem;
-}
-
-.xlsx-warning-text{
-    font-size: 0.82rem;
-    line-height: 1.35;
-}
-
-.xlsx-warning-text a{
-    color: #7f5b2e;
-    text-decoration: underline;
-}

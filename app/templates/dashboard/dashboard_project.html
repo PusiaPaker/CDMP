@@ -213,12 +213,11 @@
                 </div>
                 <input type="hidden" id="selected-xlsx-file-id" name="selected_xlsx_file_id" value="">
             {% else %}
-                <div class="xlsx-warning-box" role="alert">
-                    <div class="xlsx-warning-title">
-                        <i class="bi bi-exclamation-triangle-fill"></i>
-                        Warning
+                <div class="warning-box" role="alert">
+                    <div class="warning-box-title">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Warning!
                     </div>
-                    <div class="xlsx-warning-text">
+                    <div class="warning-box-text">
                         This project does not have any spreadsheet files.
                         Click <a href="{{url_for('projects.add_data_project', project_id=active_project_id)}}">here</a> to add files.
                     </div>
