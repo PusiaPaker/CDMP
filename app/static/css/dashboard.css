@@ -155,3 +155,26 @@ TODO: consider actually making the table smaller? if there are too many names it
     border-color: #6d8fcd;
     color: #12376a;
 }
+
+.dashboard-add-data-button{
+    background-color: var(--cdmp-color-main);
+    border-color: var(--cdmp-color-main);
+
+    border-radius: 7px;
+    border: 2px solid var(--cdmp-color-main);
+    color: rgb(230, 223, 223);
+    font-size: 1.25rem;
+
+    transition: all 0.2s ease-in-out;
+
+    padding: 0.25rem 2rem;
+
+    text-decoration: none;
+}
+
+.dashboard-add-data-button:hover{
+    transform: scale(1.05);
+
+    background-color: var(--cdmp-color-main-hover);
+    border-color: var(--cdmp-color-main);
+}
