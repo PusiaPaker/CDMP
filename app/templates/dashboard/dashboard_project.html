@@ -196,7 +196,7 @@
             <h5 class="mb-2">Data Sources</h5>
             <p class="small text-muted mb-3">Select one spreadsheet to use for importing people, job titles and hierarchy levels</p>
             {% if xlsx_files %}
-                <form id="xlsx-source-form" method="POST" action="/">
+                <form id="xlsx-source-form" method="POST" action="{{ url_for('data.import_people', project_id=active_project_id) }}">
                     <div id="xlsx-file-list" class="xlsx-file-list list-group">
                         {% for spreadsheet in xlsx_files %}
                             <button

@@ -3,6 +3,7 @@
 #
 from app.src.database import db
 from app.tables.projects import Project
+import os
 
 def get_all_projects():
     '''
@@ -17,3 +18,10 @@ def get_all_projects():
         result[project.id] = {'description': project.description, 'title': project.title}
 
     return result
+
+
+def path_to_file_from_disk(file_name_in_disk):
+    '''
+    build path to file in disk from file name
+    '''
+    return os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), file_name_in_disk)

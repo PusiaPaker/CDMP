@@ -83,8 +83,6 @@ def add_data_project(project_id):
 
             f.save(os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), disk_file_name))
 
-            print(request.form)
-
             file_in_db = File(id=temp_id, project_id=project_id, 
                               file_name_original=file_name, 
                               file_name_disk=disk_file_name,

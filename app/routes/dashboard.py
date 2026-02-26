@@ -35,6 +35,7 @@ def get_dashboard_project(project_id):
         File.project_id == project_id,
         func.lower(File.file_name_original).like('%.xlsx')
     ).order_by(File.upload_date.desc()).all()
+    
     reporting_people = [
         {"id": "person_1", "name": "Bryan Coblentz", "title": "Project Manager"},
         {"id": "person_2", "name": "Kevin Hare", "title": "Tech Lead"},
