@@ -106,7 +106,7 @@
                         </li>
                         {% for id, project_data in projects.items() %}
                             <li>
-                                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project', project_id=id)}}">
+                                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project_visualizations', project_id=id)}}">
                                     {{project_data['title']}}
                                 </a>
                             </li>
@@ -118,6 +118,15 @@
         {% else %}
             <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
                     <i class="bi bi-arrow-return-left"></i>                   Back
+            </a>
+            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project_visualizations', project_id=active_project_id)}}">
+                <i class="bi bi-bar-chart-line"></i> Visualizations
+            </a>
+            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project_timeline', project_id=active_project_id)}}">
+                <i class="bi bi-person"></i> People
+            </a>
+            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project_people', project_id=active_project_id)}}">
+                <i class="bi bi-hourglass"></i> Timeline
             </a>
         {% endif %}
     </nav>
@@ -162,11 +171,7 @@
             {% block dashboard_page_name %}{% endblock %}
             {% block dashboard_description %}{% endblock %}
             
-            {% block main_content %}{% endblock %}
-
-            <!-- This should only show if you're in a specific project view, not the "total project view,"
-                 unless there should be a general all project timeline too I dunno -->
-            {% block timeline %}{% endblock %}
+            {% block main_content %}{% endblock %}  
         </div>
     </div>
     

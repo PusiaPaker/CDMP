@@ -4,27 +4,6 @@
     CDMP | {{ project['title'] }}
 {% endblock %}
 
-{% block go_to_section %}
-    <li class="nav-item">
-        <!-- This timeline button could be cool if it just jumps to the timeline for whatever project you're looking at using #timeline in the link -->
-        <a class="nav-link fs-5" data-bs-toggle="collapse" data-bs-target="#goto-list" aria-expanded="false">
-            <i class="bi bi-arrow-return-right"></i> Go To:
-        </a>
-        <ul class="list-unstyled collapse" id="goto-list">
-            <li>
-                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="#visualization">
-                    <i class="bi bi-graph-up"></i> Visualization
-                </a>
-            </li>
-            <li>
-                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="#timeline">
-                    <i class="bi bi-stopwatch"></i> Timeline
-                </a>
-            </li>
-        </ul>
-    </li>
-{% endblock %}
-
 {% block dashboard_page_name %}
     <div class="d-flex justify-content-between align-items-center">
         <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
@@ -173,17 +152,5 @@
             }
         }
     });
-</script>
-{% endblock %}
-
-{% block timeline %}
-<div id="timeline" class="mt-5 section-header">
-    <h2 class="ps-2">Timeline</h2>
-    <div class="container-fluid dashboard-container m-0 p-5">
-        
-    </div>
-</div>
-<script>
-    const timelineChart = document.getElementById("timeline")
 </script>
 {% endblock %}
