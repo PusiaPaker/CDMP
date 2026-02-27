@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, abort
+from flask_session import Session
+
 from app.src.database import db
 from app.tables.projects import Project
-from app.src.util_functions import get_all_projects
+from app.src.util_functions import get_projects_for_user
 
 DashBP= Blueprint('dashboard', __name__)
 
@@ -14,7 +16,8 @@ def require_login():
 def get_dashboard_main():
     dashboard_title = 'Welcome, Username!'
 
-    projects = get_all_projects()
+    user_id = session["user_id"]
+    projects = get_projects_for_user(user_id)
 
     return render_template("dashboard/dashboard_overview.html", dashboard_title=dashboard_title, projects=projects), 200
 
