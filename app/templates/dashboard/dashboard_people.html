@@ -1,0 +1,161 @@
+{% extends './dashboard/dashboard_base.html' %} {% block title %} CDMP | {{
+project['title'] }} {% endblock %} {% block dashboard_page_name %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
+    <a
+        class="dashboard-add-data-button me-5"
+        href="{{url_for('projects.add_data_project', project_id=active_project_id)}}"
+    >
+        Add Data
+    </a>
+</div>
+{% endblock %} {% block dashboard_description %}
+<div class="container-fluid w-75 ms-0">
+    <h1 class="desc small text-start py-3">{{ project['description'] }}</h1>
+</div>
+{% endblock %} {% block main_content %}
+<h2 class="ps-2">People</h2>
+<div class="container-fluid dashboard-container m-0 p-5">
+    <div class="mt-4">
+        <h5 class="mb-2">Data Sources</h5>
+        <p class="small text-muted mb-3">
+            Select one spreadsheet to use for importing people, job titles and
+            hierarchy levels
+        </p>
+        {% if xlsx_files %}
+        <form
+            id="xlsx-source-form"
+            method="POST"
+            action="{{ url_for('data.import_people', project_id=active_project_id) }}"
+        >
+            <div id="xlsx-file-list" class="xlsx-file-list list-group">
+                {% for spreadsheet in xlsx_files %}
+                <button
+                    type="button"
+                    class="list-group-item list-group-item-action xlsx-file-row"
+                    data-file-id="{{ spreadsheet.id }}"
+                >
+                    <div
+                        class="d-flex justify-content-between align-items-center"
+                    >
+                        <span>{{ spreadsheet.file_name_original }}</span>
+                        <span class="small text-muted"
+                            >{{ spreadsheet.upload_date.date() }}</span
+                        >
+                    </div>
+                </button>
+                {% endfor %}
+            </div>
+
+            <br />
+
+            <button class="generic-green-button me-5" type="submit">
+                Load from Source
+            </button>
+            <input
+                type="hidden"
+                id="selected-xlsx-file-id"
+                name="selected_xlsx_file_id"
+                value=""
+            />
+        </form>
+        {% else %}
+        <div class="warning-box" role="alert">
+            <div class="warning-box-title">
+                <i class="bi bi-exclamation-triangle-fill"></i> Warning!
+            </div>
+            <div class="warning-box-text">
+                This project does not have any spreadsheet files. Click
+                <a
+                    href="{{url_for('projects.add_data_project', project_id=active_project_id)}}"
+                    >here</a
+                >
+                to add files.
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    <h2 class="mb-3 mt-5">Reporting Matrix</h2>
+    <p class="small text-muted mb-3"></p>
+    <div class="reporting-matrix-table-container table-responsive">
+        <table
+            class="table table-bordered align-middle text-center reporting-matrix-table"
+        >
+            <thead>
+                <tr>
+                    <th class="text-start">Person / Reports to</th>
+                    {% for manager in reporting_people %}
+                    <th>
+                        {{ manager.name }} <br />
+                        <p
+                            class="reporting-matrix-person-title-text text-muted"
+                        >
+                            {{ manager.title }}
+                        </p>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for person in reporting_people %}
+                <tr>
+                    <th scope="row" class="text-start">
+                        {{ person.name }} <br />
+                        <p
+                            class="reporting-matrix-person-title-text text-muted"
+                        >
+                            {{ person.title }}
+                        </p>
+                    </th>
+                    {% for manager in reporting_people %}
+                    <td>
+                        {% if person.id == manager.id %}
+                        <div class="reporting-matrix-self-report-squares"></div>
+                        {% else %}
+                        <input
+                            class="reporting-matrix-check-button"
+                            type="checkbox"
+                            id="reports-{{ person.id }}-{{ manager.id }}"
+                            value="{{ person.id }}:{{ manager.id }}"
+                        />
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    (() => {
+        const form = document.getElementById("xlsx-source-form");
+        const rows = document.querySelectorAll(".xlsx-file-row");
+        const hiddenSelectedId = document.getElementById(
+            "selected-xlsx-file-id",
+        );
+        rows.forEach((row) => {
+            row.addEventListener("click", () => {
+                rows.forEach((other) => {
+                    other.classList.remove("selected");
+                });
+                row.classList.add("selected");
+                if (hiddenSelectedId) {
+                    hiddenSelectedId.value = row.dataset.fileId || "";
+                }
+            });
+        });
+
+        // the form part thing will only exist if at least one xlsx file exists
+        if (form) {
+            form.addEventListener("submit", (event) => {
+                // TODO: add error message for when no file is selected
+                // for now it just doesnt do anything other than preventing form submission
+                if (!hiddenSelectedId.value) {
+                    event.preventDefault();
+                }
+            });
+        }
+    })();
+</script>
+{% endblock %}
