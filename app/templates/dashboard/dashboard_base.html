@@ -85,7 +85,7 @@
             <h5 class="text-white mb-0">CDMP</h5>
         </div>
         
-        {% if projects %}
+        {% if projects is mapping %}
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
