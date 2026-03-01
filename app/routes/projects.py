@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify
 from app.src.database import db
 from app.tables.projects import Project
+from app.tables.roles import Role
 from app.tables.files import File
-from app.src.util_functions import get_all_projects
+from app.src.util_functions import get_projects_for_user
 from werkzeug.utils import secure_filename
 import os
 from app.src.constants import ALLOWED_FILE_EXTENSIONS
@@ -25,17 +26,26 @@ dummy_data = {
 
 @ProjectsBP.route('/new', methods=['GET', 'POST'])
 def create_project():
+    user_id = session["user_id"]
+    projects = get_projects_for_user(user_id)
+    
     if request.method == 'GET':
-        return render_template("pages/project_create.html", projects=get_all_projects(), status=None), 200
+        return render_template("pages/project_create.html", projects=projects, status=None), 200
     elif request.method == 'POST':
         title = request.form['title']
         description = request.form['description']
 
-        project = Project(title=title, description=description)
+        proj_id = str(uuid.uuid4())
+        project = Project(id=proj_id, owner_id=user_id,title=title, description=description)
         db.session.add(project)
-        db.session.commit()
 
-        return render_template('dashboard/dashboard_overview.html', projects=get_all_projects(), status='success'), 200
+        r = Role(user_id = user_id, project_id = proj_id, role = 'owner')
+        db.session.add(r)
+
+        db.session.commit()
+        projects = get_projects_for_user(user_id)
+
+        return render_template('dashboard/dashboard_overview.html', projects=projects, status='success'), 200
 
 @ProjectsBP.route('/edit/<project_id>', methods=['GET', 'POST'])
 def add_data_project(project_id):
@@ -56,7 +66,7 @@ def add_data_project(project_id):
             db.session.commit()
 
             # for now just redirect to main page after update is applied
-            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_projects_for_user(user_id=session["user_id"])), 200
 
         elif which_form == 'upload_documents':
             f = request.files['uploaded_file']
@@ -91,7 +101,7 @@ def add_data_project(project_id):
             db.session.add(file_in_db)
             db.session.commit()
 
-            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_all_projects()), 200
+            return render_template("dashboard/dashboard_overview.html", dashboard_title='Hello, Username!', projects=get_projects_for_user(user_id=session["user_id"])), 200
 
         else:
             # error

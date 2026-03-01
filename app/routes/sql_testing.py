@@ -17,7 +17,6 @@ def getData():
             "username": user.username,
             "password": user.password,
             "email": user.email,
-            "group_id": user.group_id
         })
     
     return render_template("demo_sql_test/list_users.html", dict_list=res), 200
@@ -28,7 +27,6 @@ def registerUser(username: str, password: str):
         username = username,
         password = generate_password_hash(password),
         email = username + "@gmail.com",
-        group_id = None,
     )
 
     db.session.add(user)
@@ -39,7 +37,6 @@ def registerUser(username: str, password: str):
         "username": user.username,
         "password": user.password,
         "email": user.email,
-        "group_id": user.group_id,
     }), 201
 
 @DebugBP.route('/delete/<username>', methods=['GET'])

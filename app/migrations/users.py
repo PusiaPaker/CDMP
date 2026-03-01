@@ -15,7 +15,6 @@ def createUser(name, passwd) -> User | None:
                 username = name,
                 password = generate_password_hash(passwd),
                 email = name + "@gmail.com",
-                group_id = None,
                 )
     return None
 

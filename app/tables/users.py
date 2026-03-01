@@ -10,5 +10,4 @@ class User(Base):
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True)
-    group_id: Mapped[str | None]
     #group_id: Mapped[str | None] = mapped_column(ForeignKey("groups.id", onupdate="CASCADE", ondelete="SET NULL"), nullable=True)

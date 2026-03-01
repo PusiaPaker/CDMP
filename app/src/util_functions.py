@@ -1,9 +1,30 @@
 #
 # This is just a file for some reusable utility functions we might need
 #
+from sqlalchemy import select
+
 from app.src.database import db
 from app.tables.projects import Project
 import os
+from app.tables.roles import Role
+
+def get_projects_for_user(user_id: str) -> dict[str, dict[str, str]]:
+    projects = (
+        db.session.execute(
+            select(Project)
+            .join(Role, Role.project_id == Project.id)
+            .where(Role.user_id == user_id)
+            .distinct()
+        )
+        .scalars()
+        .all()
+    )
+
+    result = {}
+    for project in projects:
+        result[project.id] = {"description": project.description, "title": project.title}
+
+    return result
 
 def get_all_projects():
     '''
