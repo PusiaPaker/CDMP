@@ -2,6 +2,7 @@ import uuid
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey
 
 from app.src.database import Base
 
@@ -13,3 +14,5 @@ class Person(Base):
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     title: Mapped[str] = mapped_column(String(120), nullable=False)
     linkedin_url: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), nullable=False)
+

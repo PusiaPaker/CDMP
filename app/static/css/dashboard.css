@@ -95,6 +95,9 @@ might make this intoa separate css file
     table-layout: fixed;
     width: max-content;
     min-width: 100%;
+    font-size: 0.875rem;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 /* we need these two to make the table actually fixed width so it becomes horizontally scrollable
@@ -104,25 +107,44 @@ TODO: consider actually making the table smaller? if there are too many names it
 */
 .reporting-matrix-table th,
 .reporting-matrix-table td{
-    width: 6rem;
-    min-width: 6rem;
+    width: 4.5rem;
+    min-width: 4.5rem;
 }
 .reporting-matrix-table th:first-child,
 .reporting-matrix-table tbody th{
-    width: 14rem;
-    min-width: 14rem;
+    width: 11rem;
+    min-width: 11rem;
 }
 
 .reporting-matrix-table td{
-    height: 2.5rem;
+    height: 2rem;
 
     padding: 0;
 }
 
 .reporting-matrix-table-container{
-    padding: 1rem;
+    padding: 0.75rem;
+    position: relative;
     overflow-x: auto;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
+}
+
+.reporting-matrix-table thead th{
+    background-color: #ffffff;
+}
+
+.reporting-matrix-table th:first-child,
+.reporting-matrix-table tbody th{
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    box-shadow: 2px 0 0 rgba(0, 0, 0, 0.08);
+}
+
+.reporting-matrix-table thead th:first-child{
+    z-index: 3;
 }
 
 .reporting-matrix-self-report-squares{
@@ -132,7 +154,7 @@ TODO: consider actually making the table smaller? if there are too many names it
 }
 
 .reporting-matrix-person-title-text{
-    font-size: 0.75rem;
+    font-size: 0.675rem;
     font-weight: normal;
 
     margin-bottom: 0;

@@ -112,11 +112,13 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                         {% if person.id == manager.id %}
                         <div class="reporting-matrix-self-report-squares"></div>
                         {% else %}
+                        {% set reporting_link_key = person.id ~ ':' ~ manager.id %}
                         <input
                             class="reporting-matrix-check-button"
                             type="checkbox"
                             id="reports-{{ person.id }}-{{ manager.id }}"
-                            value="{{ person.id }}:{{ manager.id }}"
+                            value="{{ reporting_link_key }}"
+                            {% if reporting_link_key in reporting_links %}checked{% endif %}
                         />
                         {% endif %}
                     </td>
@@ -142,6 +144,41 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                 row.classList.add("selected");
                 if (hiddenSelectedId) {
                     hiddenSelectedId.value = row.dataset.fileId || "";
+                }
+            });
+        });
+        
+        const reportingUpdateUrl =
+            "{{ url_for('dashboard.update_reporting_matrix', project_id=active_project_id) }}";
+        const reportingMatrixChecks = document.querySelectorAll(
+            ".reporting-matrix-check-button",
+        );
+        reportingMatrixChecks.forEach((checkbox) => {
+            checkbox.addEventListener("change", async () => {
+                const [personId, managerId] = checkbox.value.split(":");
+
+                const checkedState = checkbox.checked;
+                checkbox.disabled = true;
+
+                try {
+                    const response = await fetch(reportingUpdateUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            person_id: personId,
+                            manager_id: managerId,
+                            checked: checkedState,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to update reporting matrix");
+                    }
+                } catch (error) {
+                    checkbox.checked = !checkedState;
+                    console.error(error);
+                } finally {
+                    checkbox.disabled = false;
                 }
             });
         });

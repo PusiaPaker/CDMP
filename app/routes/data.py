@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify
 from app.src.database import db
 from app.tables.projects import Project
+from app.tables.people import Person
 from app.tables.files import File
 from app.src.util_functions import path_to_file_from_disk
 import pandas as pd
@@ -16,6 +17,15 @@ def import_people(project_id):
 
     data = pd.read_excel(path_to_file_from_disk(file_name))
 
-    print(data)
+    columns = data.columns
+
+    new_people = []
+    for ind, row in data.iterrows():
+        new_people.append(
+            Person(name=row[columns[0]], title=row[columns[2]], project_id=project_id)
+        )
+
+    db.session.add_all(new_people)
+    db.session.commit()
 
     return file_id
