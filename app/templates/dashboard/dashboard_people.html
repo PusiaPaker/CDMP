@@ -26,7 +26,7 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
         <form
             id="xlsx-source-form"
             method="POST"
-            action="{{ url_for('data.import_people', project_id=active_project_id) }}"
+            action="{{ url_for('data.column_selector', project_id=active_project_id) }}"
         >
             <div id="xlsx-file-list" class="xlsx-file-list list-group">
                 {% for spreadsheet in xlsx_files %}
@@ -190,7 +190,12 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                 // for now it just doesnt do anything other than preventing form submission
                 if (!hiddenSelectedId.value) {
                     event.preventDefault();
+                    return;
                 }
+
+                const submitUrl = new URL(form.action, window.location.origin);
+                submitUrl.searchParams.set("file_id", hiddenSelectedId.value);
+                form.action = `${submitUrl.pathname}${submitUrl.search}`;
             });
         }
     })();
