@@ -152,17 +152,12 @@ def main() -> None:
     ensure_virtualenv()
     allow_scripts_for_current_user()
     activate_virtualenv_script()
-    print_splash_art()
     install_requirements()
     create_dotenv(download_file_path)
     flask_populate()
     open_browser_after_delay()
     run_flask()
 
-def print_splash_art() -> None:
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8")
-    print(SPLASH_ART)
     
 if __name__ == "__main__":
     try:
