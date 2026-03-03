@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, session, redirect, request, url_fo
 from sqlalchemy import func, insert
 from flask_session import Session
 from sqlalchemy import select
-from sqlalchemy.orm import aliased
 
 from app.tables.people import Person
 from app.tables.project_people import ProjectPerson
@@ -126,15 +125,14 @@ def get_dashboard_project_people(project_id):
     # ]
 
 
-    project_person_for_person = aliased(ProjectPerson)
-    project_person_for_manager = aliased(ProjectPerson)
+    project_member_ids = select(ProjectPerson.person_id).where(
+        ProjectPerson.project_id == project_id
+    )
 
     reporting_edges = (
         db.session.query(PersonReport.person_id, PersonReport.reports_to_id)
-        .join(project_person_for_person, project_person_for_person.person_id == PersonReport.person_id)
-        .join(project_person_for_manager, project_person_for_manager.person_id == PersonReport.reports_to_id)
-        .filter(project_person_for_person.project_id == project_id)
-        .filter(project_person_for_manager.project_id == project_id)
+        .filter(PersonReport.person_id.in_(project_member_ids))
+        .filter(PersonReport.reports_to_id.in_(project_member_ids))
         .all()
     )
     reporting_links = {f"{person_id}:{reports_to_id}" for person_id, reports_to_id in reporting_edges}
@@ -148,7 +146,7 @@ def get_dashboard_project_people(project_id):
                 )
             .all()
             )
-
+    
     return render_template(
         "dashboard/dashboard_people.html",
         project=project,
