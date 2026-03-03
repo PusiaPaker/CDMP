@@ -1,0 +1,37 @@
+{# app/templates/pages/project_upload.html #}
+{% extends './dashboard/dashboard_base.html' %}
+
+{% block title %}Upload files{% endblock %}
+
+{% block dashboard_page_name %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="ps-2 display-5 project-title mb-0">Upload to {{ active_project.title }}</h1>
+    </div>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid dashboard-container m-0 p-5">
+    <form method="POST" enctype="multipart/form-data" action="{{ url_for('projects.project_files_upload', project_id=active_project_id) }}">
+        <div class="mb-3">
+            <label for="upload-description" class="form-label">Description</label>
+            <input type="text" class="form-control" id="upload-description" name="upload-description" placeholder="What is in this file?" minlength="3" maxlength="256" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="file-category" class="form-label">File Category</label>
+            <select class="form-select" id="file-category" name="file_category">
+                <option value="unspecified" selected>Unspecified</option>
+                <option value="image">Image</option>
+                <option value="text">Text document</option>
+                <option value="spreadsheet">Spreadsheet</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <input name="uploaded_file" type="file" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary form-submit-button">Upload</button>
+    </form>
+</div>
+{% endblock %}

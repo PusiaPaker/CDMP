@@ -9,6 +9,8 @@ from app.routes.auth import AuthBP
 from app.config import Config
 from app.src.database import db
 from app.src.commands import CommandsBP
+from app.tables.people import Person
+from app.tables.project_people import ProjectPerson
 import os
 
 def create_app():
