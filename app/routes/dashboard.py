@@ -1,7 +1,13 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, abort, jsonify
 from sqlalchemy import func, insert
 from flask_session import Session
+from sqlalchemy import select
+from sqlalchemy.orm import aliased
 
+from app.tables.people import Person
+from app.tables.project_people import ProjectPerson
+from app.tables.users import User
+from app.tables.files import File
 from app.src.database import db
 from app.tables.files import File
 from app.tables.projects import Project
@@ -18,13 +24,57 @@ def require_login():
 
 @DashBP.route('/')
 def get_dashboard_main():
-    dashboard_title = 'Welcome, Username!'
-
     user_id = session["user_id"]
+
+    user = db.session.get(User, user_id)
+    username = user.username if user else "User"
+
     projects = get_projects_for_user(user_id)
 
-    return render_template("dashboard/dashboard_overview.html", dashboard_title=dashboard_title, projects=projects), 200
+    dashboard_title = f'Welcome, {username}'
+    description = "Here are your projects."
 
+    return render_template(
+        "dashboard/dashboard_overview.html",
+        dashboard_title=dashboard_title,
+        description=description,
+        projects=projects,
+    ), 200
+
+@DashBP.route('/<project_id>/')
+def get_dashboard_project_home(project_id):
+    project = db.session.get(Project, project_id)
+    if not project:
+        return abort(404)
+
+    people_rows = (
+        db.session.execute(
+            select(Person, ProjectPerson)
+            .join(ProjectPerson, ProjectPerson.person_id == Person.id)
+            .where(ProjectPerson.project_id == project_id)
+            .order_by(Person.name.asc())
+        )
+        .all()
+    )
+
+    recent_files = (
+        db.session.execute(
+            select(File)
+            .where(File.project_id == project_id)
+            .order_by(File.upload_date.desc())
+            .limit(6)
+        )
+        .scalars()
+        .all()
+    )
+
+    return render_template(
+        "dashboard/dashboard_project_home.html",
+        project=project,
+        active_project_id=project.id,
+        people_rows=people_rows,
+        recent_files=recent_files,
+    ), 200
 
 @DashBP.route('/<project_id>/visualizations/') 
 def get_dashboard_project_visualizations(project_id):
@@ -50,7 +100,7 @@ def get_dashboard_project_timeline(project_id):
     return render_template("dashboard/dashboard_timeline.html", project=project, active_project_id=project.id), 200
 
 
-@DashBP.route('/<project_id>/people/') 
+@DashBP.route('/<project_id>/people/')
 def get_dashboard_project_people(project_id):
     project = db.session.get(Project, project_id)
 
@@ -75,22 +125,37 @@ def get_dashboard_project_people(project_id):
     #     {"id": "person_10", "name": "Darrin Hess", "title": "Consulting"},
     # ]
 
-    people = db.session.query(Person).filter(Person.project_id == project_id).all()    
+
+    project_person_for_person = aliased(ProjectPerson)
+    project_person_for_manager = aliased(ProjectPerson)
 
     reporting_edges = (
         db.session.query(PersonReport.person_id, PersonReport.reports_to_id)
-        .join(Person, Person.id == PersonReport.person_id)
-        .filter(Person.project_id == project_id)
+        .join(project_person_for_person, project_person_for_person.person_id == PersonReport.person_id)
+        .join(project_person_for_manager, project_person_for_manager.person_id == PersonReport.reports_to_id)
+        .filter(project_person_for_person.project_id == project_id)
+        .filter(project_person_for_manager.project_id == project_id)
         .all()
     )
     reporting_links = {f"{person_id}:{reports_to_id}" for person_id, reports_to_id in reporting_edges}
 
-    return render_template("dashboard/dashboard_people.html", project=project,
-                            active_project_id=project.id,
-                            xlsx_files=xlsx_files,
-                            reporting_people=people,
-                            reporting_links=reporting_links), 200
+    people_rows = (
+            db.session.execute(
+                select(Person, ProjectPerson)
+                .join(ProjectPerson, ProjectPerson.person_id == Person.id)
+                .where(ProjectPerson.project_id == project_id)
+                .order_by(Person.name.asc())
+                )
+            .all()
+            )
 
+    return render_template(
+        "dashboard/dashboard_people.html",
+        project=project,
+        active_project_id=project.id,
+        people_rows=people_rows,
+        reporting_links=reporting_links
+        ), 200
 
 @DashBP.route('/<project_id>/people/updatematrix', methods=['POST'])
 def update_reporting_matrix(project_id):

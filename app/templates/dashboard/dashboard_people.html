@@ -2,12 +2,6 @@
 project['title'] }} {% endblock %} {% block dashboard_page_name %}
 <div class="d-flex justify-content-between align-items-center">
     <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
-    <a
-        class="dashboard-add-data-button me-5"
-        href="{{url_for('projects.add_data_project', project_id=active_project_id)}}"
-    >
-        Add Data
-    </a>
 </div>
 {% endblock %} {% block dashboard_description %}
 <div class="container-fluid w-75 ms-0">
@@ -16,65 +10,53 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
 {% endblock %} {% block main_content %}
 <h2 class="ps-2">People</h2>
 <div class="container-fluid dashboard-container m-0 p-5">
-    <div class="mt-4">
-        <h5 class="mb-2">Data Sources</h5>
-        <p class="small text-muted mb-3">
-            Select one spreadsheet to use for importing people, job titles and
-            hierarchy levels
-        </p>
-        {% if xlsx_files %}
-        <form
-            id="xlsx-source-form"
-            method="POST"
-            action="{{ url_for('data.column_selector', project_id=active_project_id) }}"
-        >
-            <div id="xlsx-file-list" class="xlsx-file-list list-group">
-                {% for spreadsheet in xlsx_files %}
-                <button
-                    type="button"
-                    class="list-group-item list-group-item-action xlsx-file-row"
-                    data-file-id="{{ spreadsheet.id }}"
-                >
-                    <div
-                        class="d-flex justify-content-between align-items-center"
-                    >
-                        <span>{{ spreadsheet.file_name_original }}</span>
-                        <span class="small text-muted"
-                            >{{ spreadsheet.upload_date.date() }}</span
-                        >
-                    </div>
-                </button>
-                {% endfor %}
-            </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Assigned People</h4>
 
-            <br />
-
-            <button class="generic-green-button me-5" type="submit">
-                Load from Source
-            </button>
-            <input
-                type="hidden"
-                id="selected-xlsx-file-id"
-                name="selected_xlsx_file_id"
-                value=""
-            />
-        </form>
-        {% else %}
-        <div class="warning-box" role="alert">
-            <div class="warning-box-title">
-                <i class="bi bi-exclamation-triangle-fill"></i> Warning!
-            </div>
-            <div class="warning-box-text">
-                This project does not have any spreadsheet files. Click
-                <a
-                    href="{{url_for('projects.add_data_project', project_id=active_project_id)}}"
-                    >here</a
-                >
-                to add files.
-            </div>
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary form-submit-button"
+                href="{{ url_for('projects.people_import', project_id=active_project_id) }}">
+                Import CSV/XLSX
+            </a> 
         </div>
-        {% endif %}
     </div>
+
+    {% if people_rows and people_rows|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Role Level</th>
+                        <th>Title</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Account</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p, pp in people_rows %}
+                        <tr>
+                            <td>{{ p.name }}</td>
+                            <td>{{ pp.role_level or "" }}</td>
+                            <td>{{ p.title or "" }}</td>
+                            <td>{{ p.email }}</td>
+                            <td>{{ p.phone or "" }}</td>
+                            <td>
+                                {% if p.user_id %}
+                                    Linked
+                                {% else %}
+                                    Not registered
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="mb-0">No people assigned to this project yet.</p>
+    {% endif %}
     <h2 class="mb-3 mt-5">Reporting Matrix</h2>
     <p class="small text-muted mb-3"></p>
     <div class="reporting-matrix-table-container table-responsive">
@@ -84,7 +66,7 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
             <thead>
                 <tr>
                     <th class="text-start">Person / Reports to</th>
-                    {% for manager in reporting_people %}
+                    {% for manager in people_rows %}
                     <th>
                         {{ manager.name }} <br />
                         <p
@@ -97,7 +79,7 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                 </tr>
             </thead>
             <tbody>
-                {% for person in reporting_people %}
+                {% for person in people_rows %}
                 <tr>
                     <th scope="row" class="text-start">
                         {{ person.name }} <br />
@@ -107,7 +89,7 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                             {{ person.title }}
                         </p>
                     </th>
-                    {% for manager in reporting_people %}
+                    {% for manager in people_rows %}
                     <td>
                         {% if person.id == manager.id %}
                         <div class="reporting-matrix-self-report-squares"></div>
