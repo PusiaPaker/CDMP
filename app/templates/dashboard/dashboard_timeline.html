@@ -1,7 +1,7 @@
 {% extends './dashboard/dashboard_base.html' %}
 
 {% block title %}
-    CDMP | {{ project['title'] }}
+    CDMP | {{ project.title }}
 {% endblock %}
 
 {% block dashboard_page_name %}
@@ -27,29 +27,50 @@
         <p class="text-success mb-3">{{ success }}</p>
     {% endif %}
 
-    <form method="POST" enctype="multipart/form-data"
-          action="{{ url_for('dashboard.get_dashboard_project_timeline', project_id=active_project_id) }}"
-          class="mb-4">
-        <div class="row g-3">
-            <div class="col-md-9">
-                <label class="form-label">Upload file (.csv, .xlsx, .xls)</label>
-                <input class="form-control" name="uploaded_file" type="file" accept=".csv,.xlsx,.xls" required>
+    {% if timeline_files and timeline_files|length > 0 %}
+        <form method="GET"
+              action="{{ url_for('dashboard.get_dashboard_project_timeline', project_id=active_project_id) }}"
+              class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">Source file (uploaded project files)</label>
+                    <select class="form-select" name="file_id">
+                        {% for f in timeline_files %}
+                            <option value="{{ f.id }}" {% if selected_file_id == f.id %}selected{% endif %}>
+                                {{ f.file_name_original }} ({{ f.upload_date.date() }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100 h-100 form-submit-button" type="submit">
+                        Load Timeline
+                    </button>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a class="btn btn-secondary w-100 h-100 d-flex align-items-center justify-content-center"
+                       href="{{ url_for('projects.project_files_upload', project_id=active_project_id) }}">
+                        Upload
+                    </a>
+                </div>
             </div>
-            <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-primary w-100 form-submit-button" type="submit">
-                    Upload & Build
-                </button>
-            </div>
-        </div>
-    </form>
+        </form>
+    {% else %}
+        <p class="text-muted mb-3">
+            No compatible files found for this project.
+            <a href="{{ url_for('projects.project_files_upload', project_id=active_project_id) }}">Upload a spreadsheet</a>
+            to build a timeline.
+        </p>
+    {% endif %}
 
     {% if timeline_meta %}
         <div class="small text-muted mb-3">
+            File: <strong>{{ timeline_meta.file_name_original }}</strong>.
             Parsed {{ timeline_meta.events_total }} events from {{ timeline_meta.rows_total }} rows.
             Detected columns: title=<strong>{{ timeline_meta.title_col }}</strong>,
             start=<strong>{{ timeline_meta.start_col }}</strong>,
             end=<strong>{{ timeline_meta.end_col }}</strong>.
-            Saved file: <code>{{ timeline_meta.file_path }}</code>
+            Stored file: <code>{{ timeline_meta.file_path }}</code>
         </div>
     {% endif %}
 
@@ -59,12 +80,13 @@
         <button id="fitBtn" class="btn btn-outline-secondary btn-sm" type="button">Fit All</button>
     </div>
 
-    <div id="timelineContainer" style="height: 520px; border: 1px solid #d9dde3; border-radius: 6px;"></div>
+    <div style="overflow-x: auto;">
+        <div id="timelineContainer" style="height: 520px; min-width: 1700px; border: 1px solid #d9dde3; border-radius: 6px;"></div>
+    </div>
 </div>
 
-<link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet">
-<script src="https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js"></script>
-<script src="https://unpkg.com/vis-timeline@latest/peer/umd/vis-timeline-graph2d.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/styles/vis-timeline-graph2d.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
 <script>
     (function () {
         const events = {{ timeline_events|default([], true)|tojson }};
@@ -78,7 +100,7 @@
             return;
         }
 
-        if (!window.vis) {
+        if (!window.vis || !window.vis.DataSet || !window.vis.Timeline) {
             const listHtml = events
                 .slice()
                 .sort((a, b) => String(a.start).localeCompare(String(b.start)))
@@ -95,8 +117,35 @@
             return;
         }
 
+        const escapeHtml = (value) => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const formatDateLabel = (value) => {
+            if (!value) return 'N/A';
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return String(value).slice(0, 10);
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        };
+
         const items = new vis.DataSet(events.map((e) => {
-            const out = { id: e.id, content: e.content, start: e.start };
+            const startLabel = formatDateLabel(e.start);
+            const endLabel = formatDateLabel(e.end || e.start);
+            const isMissingStart = Boolean(e.missing_start);
+            const isRange = Boolean(e.end);
+            const out = {
+                id: e.id,
+                content: e.content,
+                start: e.start,
+                group: (!isMissingStart && isRange) ? 'dated_range' : 'unspecified_start',
+                title:
+                    '<strong>' + escapeHtml(e.content) + '</strong><br>' +
+                    'Start: ' + escapeHtml(isMissingStart ? 'Unspecified (inferred)' : startLabel) + '<br>' +
+                    'End: ' + escapeHtml(endLabel)
+            };
             if (e.end) {
                 out.end = e.end;
             } else {
@@ -105,13 +154,20 @@
             return out;
         }));
 
-        const timeline = new vis.Timeline(container, items, {
+        const groups = new vis.DataSet([
+            { id: 'unspecified_start', content: 'Deadlines' , sortOrder: 1 },
+            { id: 'dated_range', content: 'Timeframes', sortOrder: 2 }
+        ]);
+
+        const timeline = new vis.Timeline(container, items, groups, {
             stack: true,
             zoomKey: 'ctrlKey',
             horizontalScroll: true,
             verticalScroll: true,
+            height: '520px',
             maxHeight: 520,
-            showCurrentTime: true
+            showCurrentTime: true,
+            groupOrder: (a, b) => a.sortOrder - b.sortOrder
         });
 
         const zoomInBtn = document.getElementById('zoomInBtn');
