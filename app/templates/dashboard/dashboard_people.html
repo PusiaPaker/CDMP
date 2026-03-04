@@ -14,48 +14,47 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
         <h4 class="mb-0">Assigned People</h4>
 
         <div class="d-flex gap-2">
-            <a class="btn btn-primary form-submit-button"
-                href="{{ url_for('projects.people_import', project_id=active_project_id) }}">
+            <a
+                class="btn btn-primary form-submit-button"
+                href="{{ url_for('projects.people_import', project_id=active_project_id) }}"
+            >
                 Import CSV/XLSX
-            </a> 
+            </a>
         </div>
     </div>
 
     {% if people_rows and people_rows|length > 0 %}
-        <div class="table-responsive">
-            <table class="table table-striped align-middle mb-0">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Role Level</th>
-                        <th>Title</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Account</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for p, pp in people_rows %}
-                        <tr>
-                            <td>{{ p.name }}</td>
-                            <td>{{ pp.role_level or "" }}</td>
-                            <td>{{ p.title or "" }}</td>
-                            <td>{{ p.email }}</td>
-                            <td>{{ p.phone or "" }}</td>
-                            <td>
-                                {% if p.user_id %}
-                                    Linked
-                                {% else %}
-                                    Not registered
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Role Level</th>
+                    <th>Title</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Account</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p, pp in people_rows %}
+                <tr>
+                    <td>{{ p.name }}</td>
+                    <td>{{ pp.role_level or "" }}</td>
+                    <td>{{ p.title or "" }}</td>
+                    <td>{{ p.email }}</td>
+                    <td>{{ p.phone or "" }}</td>
+                    <td>
+                        {% if p.user_id %} Linked {% else %} Not registered {%
+                        endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-        <p class="mb-0">No people assigned to this project yet.</p>
+    <p class="mb-0">No people assigned to this project yet.</p>
     {% endif %}
     <h2 class="mb-3 mt-5">Reporting Matrix</h2>
     <p class="small text-muted mb-3"></p>
@@ -93,14 +92,21 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                     <td>
                         {% if person.id == manager.id %}
                         <div class="reporting-matrix-self-report-squares"></div>
-                        {% else %}
-                        {% set reporting_link_key = person.id ~ ':' ~ manager.id %}
+                        {% else %} {% set reporting_link_key = person.id ~ ':' ~
+                        manager.id %}
                         <input
                             class="reporting-matrix-check-button"
                             type="checkbox"
                             id="reports-{{ person.id }}-{{ manager.id }}"
                             value="{{ reporting_link_key }}"
-                            {% if reporting_link_key in reporting_links %}checked{% endif %}
+                            {%
+                            if
+                            reporting_link_key
+                            in
+                            reporting_links
+                            %}checked{%
+                            endif
+                            %}
                         />
                         {% endif %}
                     </td>
@@ -110,9 +116,92 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
             </tbody>
         </table>
     </div>
+
+    <h2 class="mb-3 mt-5">Organizational Hierarchy</h2>
+
+    <div id="organization-chart-network"></div>
+    <script type="text/javascript">
+        const peopleNodesData = {{ people_nodes | tojson }};
+
+        // this builds the actual visjs nodes and adds the properties for what it will look like
+        const peopleNodes = [];
+        const peopleEdges = [];
+        const nodesByLevel = new Map();
+        for (const personNode of peopleNodesData) {
+            const nodeLevel = Number(personNode.level);
+
+            peopleNodes.push({
+                id: personNode.id,
+                label: `<b>${personNode.name}</b>\n${personNode.role}\n<i>${personNode.title}</i>`,
+                shape: 'box',
+                margin: 20,
+                font: {multi: 'html'},
+                level: nodeLevel
+            })
+
+            // add who is on what level to map
+            if (!nodesByLevel.has(nodeLevel)) {
+                nodesByLevel.set(nodeLevel, []);
+            }
+            nodesByLevel.get(nodeLevel).push(personNode.id);
+        }
+
+        // we create arrows fom current level to level below it,
+        // pointing from the lower to the upper level
+        const sortedLevels = Array.from(nodesByLevel.keys()).sort((a, b) => a - b);
+        for (let i = 0; i < sortedLevels.length - 1; i++) {
+            const currentLevelIds = nodesByLevel.get(sortedLevels[i]) || [];
+            const nextLevelIds = nodesByLevel.get(sortedLevels[i + 1]) || [];
+
+            for (const fromId of currentLevelIds) {
+                for (const toId of nextLevelIds) {
+                    peopleEdges.push({
+                        from: fromId,
+                        to: toId
+                    });
+                }
+            }
+        }
+
+        var nodes = new vis.DataSet(peopleNodes);
+        var edges = new vis.DataSet(peopleEdges);
+
+        var container = document.getElementById("organization-chart-network");
+        var data = {
+            nodes: nodes,
+            edges: edges,
+        };
+        var network = new vis.Network(container, data,{
+            width: '100%',
+            height: '500px',
+            edges: {
+                arrows: {
+                    from: {
+                        enabled: true
+                    }
+                }
+            },
+            layout: {
+                hierarchical: {
+                    enabled: true,
+                    direction: "UD",
+                    levelSeparation: 200, 
+                    nodeSpacing: 220, 
+                    treeSpacing: 260 
+                }
+            },
+            physics: {
+                hierarchicalRepulsion: {
+                    avoidOverlap: 1,
+                }
+            }
+        });
+    </script>
 </div>
 <script>
     (() => {
+        // ----------------------------------------------------
+        // this part here is no longer used (it's from the old people page)
         const form = document.getElementById("xlsx-source-form");
         const rows = document.querySelectorAll(".xlsx-file-row");
         const hiddenSelectedId = document.getElementById(
@@ -129,7 +218,8 @@ project['title'] }} {% endblock %} {% block dashboard_page_name %}
                 }
             });
         });
-        
+        // ------------------------------------------------
+
         const reportingUpdateUrl =
             "{{ url_for('dashboard.update_reporting_matrix', project_id=active_project_id) }}";
         const reportingMatrixChecks = document.querySelectorAll(

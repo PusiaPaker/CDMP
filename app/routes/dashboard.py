@@ -106,25 +106,6 @@ def get_dashboard_project_people(project_id):
     if not project:
         return abort(404)
 
-    xlsx_files = db.session.query(File).filter(
-        File.project_id == project_id,
-        func.lower(File.file_name_original).like('%.xlsx')
-    ).order_by(File.upload_date.desc()).all()
-    
-    # reporting_people = [
-    #     {"id": "person_1", "name": "Bryan Coblentz", "title": "Project Manager"},
-    #     {"id": "person_2", "name": "Kevin Hare", "title": "Tech Lead"},
-    #     {"id": "person_3", "name": "Matt Troyer", "title": "CEO"},
-    #     {"id": "person_4", "name": "Jamie Coblentz", "title": "Software Engineer"},
-    #     {"id": "person_5", "name": "Merl Coblentz", "title": "Software Engineer"},
-    #     {"id": "person_6", "name": "Traci Miller", "title": "Software Engineer"},
-    #     {"id": "person_7", "name": "Joel Coblentz", "title": "Product Designer"},
-    #     {"id": "person_8", "name": "Joe Yoder", "title": "UX Desiner"},
-    #     {"id": "person_9", "name": "Teresa Bonifant", "title": "Software Engineer"},
-    #     {"id": "person_10", "name": "Darrin Hess", "title": "Consulting"},
-    # ]
-
-
     project_member_ids = select(ProjectPerson.person_id).where(
         ProjectPerson.project_id == project_id
     )
@@ -135,6 +116,8 @@ def get_dashboard_project_people(project_id):
         .filter(PersonReport.reports_to_id.in_(project_member_ids))
         .all()
     )
+
+
     reporting_links = {f"{person_id}:{reports_to_id}" for person_id, reports_to_id in reporting_edges}
 
     people_rows = (
@@ -147,12 +130,43 @@ def get_dashboard_project_people(project_id):
             .all()
             )
     
+    # role to level map (TEMPORARY)
+    role_to_level = {
+        'Director': 1,
+        'Chief': 0,
+        'Senior Manager': 2,
+        'Senior': 3,
+        'Manager': 4,
+        'Frontline': 5
+    }
+
+    # nodes and edges for visjs stuff
+    # need to pass as pure dictionary object (not python object) because it needs to be converted to json to use in javascript
+    people_nodes = []
+    for p, pp in people_rows:
+        reports_to = []
+        for person_id, reports_to_id in reporting_edges:
+            if person_id == p.id:
+                reports_to.append(reports_to_id)
+        
+        people_nodes.append({
+            'id': p.id,
+            'name': p.name,
+            'title': p.title,
+            'role': pp.role_level,
+            'reports_to': reports_to,
+            'level': role_to_level[pp.role_level]
+        })
+
+    print(people_nodes)
+
     return render_template(
         "dashboard/dashboard_people.html",
         project=project,
         active_project_id=project.id,
         people_rows=people_rows,
-        reporting_links=reporting_links
+        reporting_links=reporting_links,
+        people_nodes=people_nodes
         ), 200
 
 @DashBP.route('/<project_id>/people/updatematrix', methods=['POST'])
