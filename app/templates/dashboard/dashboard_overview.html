@@ -6,35 +6,72 @@
 
 {% block dashboard_page_name %}
     <div class="d-flex justify-content-between align-items-center">
-        <h1 class="ps-2 display-5 project-title">{{ dashboard_title }}</h1>
+        <h1 class="ps-2 display-5 project-title mb-0">{{ dashboard_title }}</h1>
+
+        <a class="dashboard-add-data-button me-5" href="{{ url_for('projects.create_project') }}">
+            New Project
+        </a>
     </div>
 {% endblock %}
 
 {% block dashboard_description %}
-    <h1 class="small">{{ description }}</h1>
+    <div class="container-fluid w-75 ms-0">
+        <h1 class="desc small text-start py-3 mb-0">{{ description }}</h1>
+    </div>
+
+    <div class="container-fluid w-50 ms-0 mt-2">
+        <input id="project-search" class="form-control" placeholder="Search projects by title...">
+    </div>
 {% endblock %}
 
 {% block main_content %}
-<h2 class="ps-2 section-header">Current Projects:</h2>
-<div class="project-cards row">
-    {% for id, project_data in projects.items() %}
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h4 class="display-6 fs-3 card-title">{{ project_data['title'] }}</h4>
-                <hr>
-                <p class="card-text">{{ project_data['description'] }}</p>
-            </div>
-            <div class="project-links ps-3 pb-3">
-                <a href="{{url_for('dashboard.get_dashboard_project', project_id=id)}}" class="card-link">View Project</a>
-                <a href="{{url_for('projects.add_data_project', project_id=id)}}" class="card-link">Edit Project</a>
-            </div>
-            <div class="card-footer text-white">
-                Last Updated ... Days ago
-            </div>
-        </div>
-    </div>
-    {% endfor %}
-</div>
+    <h2 class="ps-2 section-header mt-4">Your Projects</h2>
 
+    {% if projects and projects|length > 0 %}
+        <div class="project-cards row mt-2" id="project-cards">
+            {% for id, project_data in projects.items() %}
+                <div class="col-md-6 mb-4 project-card"
+                     data-title="{{ project_data['title'] | lower }}">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="display-6 fs-3 card-title">{{ project_data['title'] }}</h4>
+                            <hr>
+                            <p class="card-text">
+                                {{ project_data['description'] }}
+                            </p>
+                        </div>
+
+                        <div class="project-links ps-3 pb-3 d-flex gap-3">
+                            <a href="{{ url_for('dashboard.get_dashboard_project_home', project_id=id) }}" class="card-link">Open</a>
+                            <a href="{{ url_for('dashboard.get_dashboard_project_people', project_id=id) }}" class="card-link">People</a>
+                            <a href="{{ url_for('projects.edit_project', project_id=id) }}" class="card-link">Edit</a>
+                            <a href="{{ url_for('projects.project_files_upload', project_id=id) }}" class="card-link">Upload</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <script>
+            const search = document.getElementById("project-search");
+            const cards = document.querySelectorAll(".project-card");
+
+            search.addEventListener("input", () => {
+                const q = search.value.trim().toLowerCase();
+                cards.forEach(c => {
+                    const title = c.getAttribute("data-title") || "";
+                    c.style.display = title.includes(q) ? "" : "none";
+                });
+            });
+        </script>
+    {% else %}
+        <div class="container-fluid dashboard-container m-0 p-5 mt-3">
+            <h4 class="mb-2">No projects yet</h4>
+            <p class="mb-4">You don’t have any projects assigned to you yet.</p>
+
+            <a class="dashboard-add-data-button" href="{{ url_for('projects.create_project') }}">
+                Create your first project
+            </a>
+        </div>
+    {% endif %}
 {% endblock %}

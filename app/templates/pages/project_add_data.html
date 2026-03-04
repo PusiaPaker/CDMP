@@ -14,8 +14,7 @@
 
 {% block main_content %}
 <div class="container-fluid dashboard-container m-0 p-5">
-    <form method="POST" action="{{ url_for('projects.add_data_project', project_id=active_project.id) }}">
-    
+   <form method="POST" action="{{ url_for('projects.edit_project', project_id=active_project.id) }}"> 
         <h1 class="mb-5">Update Fields</h1>
 
         <div class="mb-3">
@@ -53,42 +52,11 @@
 
   </form>
 
-  <h1 class="mt-5 mb-5">Upload Documents</h1>
-  <form method="POST" enctype="multipart/form-data" action="{{ url_for('projects.add_data_project', project_id=active_project.id) }}">
-
-        <div class="mb-3">
-            <label for="upload-description" class="form-label">Description</label>
-            <input
-                type="text"
-                class="form-control"
-                id="upload-description"
-                name="upload-description"
-                placeholder="What is in this file?"
-                minlength="3"
-                maxlength="256"
-                required
-            >
-        </div>
-
-        <div class="mb-3">
-        <label for="file-category" class="form-label">File Category</label>
-        <select class="form-select" id="file-category" name="file_category">
-            <option value="unspecified" selected>Unspecified</option>
-            <option value="image">Image</option>
-            <option value="text">Text document</option>
-            <option value="spreadsheet">Spreadsheet</option>
-        </select>
-        </div>
-
-        <input name='uploaded_file' type=file>
-
-        <input type="hidden" name="which_form" value="upload_documents">
-
-        <button type="submit" class="btn btn-primary form-submit-button">
-            Upload
-        </button>
-  </form>
-  
   <h1 class="mt-5 mb-5">More...</h1>
+
+  <p>
+    To upload files for this project, go to
+    <a href="{{ url_for('projects.project_files_upload', project_id=active_project.id) }}">Upload tab</a>.
+  </p>
 </div>
 {% endblock %}

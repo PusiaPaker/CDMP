@@ -64,3 +64,139 @@
 .card:hover {
     transform: scale(1.0125);
 }
+
+/*
+REPORTING MATRIX STUFF BELOW
+
+might make this intoa separate css file
+*/
+
+.reporting-matrix-check-button{
+    appearance: none;
+    width: 100%;
+    height: 100%;
+    border: 1px solid #9e1f1f;
+    background-color: #b54651;
+    margin: 0;
+    cursor: pointer;
+    transition: transform 0.12s ease, background-color 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.reporting-matrix-check-button:hover{
+    transform: scale(1.025);
+}
+
+.reporting-matrix-check-button:checked{
+    background-color: #25885a;
+    border-color: #146c43;
+}
+
+.reporting-matrix-table{
+    table-layout: fixed;
+    width: max-content;
+    min-width: 100%;
+    font-size: 0.875rem;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+/* we need these two to make the table actually fixed width so it becomes horizontally scrollable
+otherwise it compresses and looks awful
+
+TODO: consider actually making the table smaller? if there are too many names it becomes inconvenient to move horiontally to click squares
+*/
+.reporting-matrix-table th,
+.reporting-matrix-table td{
+    width: 4.5rem;
+    min-width: 4.5rem;
+}
+.reporting-matrix-table th:first-child,
+.reporting-matrix-table tbody th{
+    width: 11rem;
+    min-width: 11rem;
+}
+
+.reporting-matrix-table td{
+    height: 2rem;
+
+    padding: 0;
+}
+
+.reporting-matrix-table-container{
+    padding: 0.75rem;
+    position: relative;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+}
+
+.reporting-matrix-table thead th{
+    background-color: #ffffff;
+}
+
+.reporting-matrix-table th:first-child,
+.reporting-matrix-table tbody th{
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    box-shadow: 2px 0 0 rgba(0, 0, 0, 0.08);
+}
+
+.reporting-matrix-table thead th:first-child{
+    z-index: 3;
+}
+
+.reporting-matrix-self-report-squares{
+    background-color: black;
+    height: 100%;
+    width: 100%;
+}
+
+.reporting-matrix-person-title-text{
+    font-size: 0.675rem;
+    font-weight: normal;
+
+    margin-bottom: 0;
+}
+
+.xlsx-file-list{
+    max-width: 40rem;
+}
+
+.xlsx-file-row{
+    border: 1px solid #d7dbe0;
+}
+
+.xlsx-file-row:hover{
+    border-color: #9cb1d8;
+}
+
+.xlsx-file-row.selected{
+    background-color: #dbe7ff;
+    border-color: #6d8fcd;
+    color: #12376a;
+}
+
+.dashboard-add-data-button{
+    background-color: var(--cdmp-color-main);
+    border-color: var(--cdmp-color-main);
+
+    border-radius: 7px;
+    border: 2px solid var(--cdmp-color-main);
+    color: rgb(230, 223, 223);
+    font-size: 1.25rem;
+
+    transition: all 0.2s ease-in-out;
+
+    padding: 0.25rem 2rem;
+
+    text-decoration: none;
+}
+
+.dashboard-add-data-button:hover{
+    transform: scale(1.05);
+
+    background-color: var(--cdmp-color-main-hover);
+    border-color: var(--cdmp-color-main);
+}

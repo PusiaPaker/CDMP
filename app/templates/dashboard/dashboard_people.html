@@ -1,0 +1,185 @@
+{% extends './dashboard/dashboard_base.html' %} {% block title %} CDMP | {{
+project['title'] }} {% endblock %} {% block dashboard_page_name %}
+<div class="d-flex justify-content-between align-items-center">
+    <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
+</div>
+{% endblock %} {% block dashboard_description %}
+<div class="container-fluid w-75 ms-0">
+    <h1 class="desc small text-start py-3">{{ project['description'] }}</h1>
+</div>
+{% endblock %} {% block main_content %}
+<h2 class="ps-2">People</h2>
+<div class="container-fluid dashboard-container m-0 p-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Assigned People</h4>
+
+        <div class="d-flex gap-2">
+            <a class="btn btn-primary form-submit-button"
+                href="{{ url_for('projects.people_import', project_id=active_project_id) }}">
+                Import CSV/XLSX
+            </a> 
+        </div>
+    </div>
+
+    {% if people_rows and people_rows|length > 0 %}
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Role Level</th>
+                        <th>Title</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Account</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p, pp in people_rows %}
+                        <tr>
+                            <td>{{ p.name }}</td>
+                            <td>{{ pp.role_level or "" }}</td>
+                            <td>{{ p.title or "" }}</td>
+                            <td>{{ p.email }}</td>
+                            <td>{{ p.phone or "" }}</td>
+                            <td>
+                                {% if p.user_id %}
+                                    Linked
+                                {% else %}
+                                    Not registered
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="mb-0">No people assigned to this project yet.</p>
+    {% endif %}
+    <h2 class="mb-3 mt-5">Reporting Matrix</h2>
+    <p class="small text-muted mb-3"></p>
+    <div class="reporting-matrix-table-container table-responsive">
+        <table
+            class="table table-bordered align-middle text-center reporting-matrix-table"
+        >
+            <thead>
+                <tr>
+                    <th class="text-start">Person / Reports to</th>
+                    {% for manager, _ in people_rows %}
+                    <th>
+                        {{ manager.name }} <br />
+                        <p
+                            class="reporting-matrix-person-title-text text-muted"
+                        >
+                            {{ manager.title }}
+                        </p>
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for person, _ in people_rows %}
+                <tr>
+                    <th scope="row" class="text-start">
+                        {{ person.name }} <br />
+                        <p
+                            class="reporting-matrix-person-title-text text-muted"
+                        >
+                            {{ person.title }}
+                        </p>
+                    </th>
+                    {% for manager, _ in people_rows %}
+                    <td>
+                        {% if person.id == manager.id %}
+                        <div class="reporting-matrix-self-report-squares"></div>
+                        {% else %}
+                        {% set reporting_link_key = person.id ~ ':' ~ manager.id %}
+                        <input
+                            class="reporting-matrix-check-button"
+                            type="checkbox"
+                            id="reports-{{ person.id }}-{{ manager.id }}"
+                            value="{{ reporting_link_key }}"
+                            {% if reporting_link_key in reporting_links %}checked{% endif %}
+                        />
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    (() => {
+        const form = document.getElementById("xlsx-source-form");
+        const rows = document.querySelectorAll(".xlsx-file-row");
+        const hiddenSelectedId = document.getElementById(
+            "selected-xlsx-file-id",
+        );
+        rows.forEach((row) => {
+            row.addEventListener("click", () => {
+                rows.forEach((other) => {
+                    other.classList.remove("selected");
+                });
+                row.classList.add("selected");
+                if (hiddenSelectedId) {
+                    hiddenSelectedId.value = row.dataset.fileId || "";
+                }
+            });
+        });
+        
+        const reportingUpdateUrl =
+            "{{ url_for('dashboard.update_reporting_matrix', project_id=active_project_id) }}";
+        const reportingMatrixChecks = document.querySelectorAll(
+            ".reporting-matrix-check-button",
+        );
+        reportingMatrixChecks.forEach((checkbox) => {
+            checkbox.addEventListener("change", async () => {
+                const [personId, managerId] = checkbox.value.split(":");
+
+                const checkedState = checkbox.checked;
+                checkbox.disabled = true;
+
+                try {
+                    const response = await fetch(reportingUpdateUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            person_id: personId,
+                            manager_id: managerId,
+                            checked: checkedState,
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to update reporting matrix");
+                    }
+                } catch (error) {
+                    checkbox.checked = !checkedState;
+                    console.error(error);
+                } finally {
+                    checkbox.disabled = false;
+                }
+            });
+        });
+
+        // the form part thing will only exist if at least one xlsx file exists
+        if (form) {
+            form.addEventListener("submit", (event) => {
+                // TODO: add error message for when no file is selected
+                // for now it just doesnt do anything other than preventing form submission
+                if (!hiddenSelectedId.value) {
+                    event.preventDefault();
+                    return;
+                }
+
+                const submitUrl = new URL(form.action, window.location.origin);
+                submitUrl.searchParams.set("file_id", hiddenSelectedId.value);
+                form.action = `${submitUrl.pathname}${submitUrl.search}`;
+            });
+        }
+    })();
+</script>
+{% endblock %}

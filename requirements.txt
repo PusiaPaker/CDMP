@@ -5,3 +5,5 @@ pysqlite3
 sqlite-utils
 uuid
 python-dotenv
+pandas
+openpyxl

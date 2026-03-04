@@ -1,0 +1,79 @@
+/*
+This file is for reusable classes that may appear in different pages throughout our website.
+*/
+
+/* REUSABLE WARNING MESSAGE BOX
+
+here's a reusable html component taht you can copy/paste
+
+<div class="warning-box" role="alert">
+    <div class="warning-box-title">
+        <i class="bi bi-exclamation-triangle-fill"></i> Warning!
+    </div>
+    <div class="warning-box-text">
+        This project does not have any spreadsheet files.
+        Click <a href="{{url_for('projects.add_data_project', project_id=active_project_id)}}">here</a> to add files.
+    </div>
+</div>
+
+*/
+
+.warning-box{
+    max-width: 40rem;
+    background-color: #f2eb70;
+    border: 1px solid #faebcc;
+    border-radius: 0.25rem;
+    color: #191813;
+    padding: 0.65rem 0.85rem;
+}
+
+.warning-box-title{
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.15rem;
+}
+
+.warning-box-text{
+    font-size: 0.82rem;
+    line-height: 1.35;
+}
+
+.warning-box-text a{
+    color: #2716e3;
+    text-decoration: underline;
+}
+
+/* REUSABLE GREEN BUTTON FOR SUBMISSIONS AND STUFF
+
+e.g usage
+
+<a class="generic-green-button me-5" href="{{url_for('projects.add_data_project', project_id=active_project_id)}}">
+    Load from Source
+</a>
+*/
+
+.generic-green-button{
+    display: inline-block;
+    background-color: var(--cdmp-color-generic-button-green);
+    border: none;
+
+    border-radius: 7px;
+    color: rgb(230, 223, 223);
+    font-size: 1.25rem;
+
+    transition: all 0.2s ease-in-out;
+
+    padding: 0.2rem 2rem;
+
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.generic-green-button:hover{
+    transform: scale(1.05);
+
+    background-color: var(--cdmp-color-generic-button-green-hover);
+}
