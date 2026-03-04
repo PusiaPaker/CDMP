@@ -20,9 +20,107 @@
 {% block main_content %}
 <h2 class="ps-2 section-header" id="visualization">Timeline</h2>
 <div class="container-fluid dashboard-container m-0 p-5">
-    this is timeline    
+    {% if error %}
+        <p class="text-danger mb-3">{{ error }}</p>
+    {% endif %}
+    {% if success %}
+        <p class="text-success mb-3">{{ success }}</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data"
+          action="{{ url_for('dashboard.get_dashboard_project_timeline', project_id=active_project_id) }}"
+          class="mb-4">
+        <div class="row g-3">
+            <div class="col-md-9">
+                <label class="form-label">Upload file (.csv, .xlsx, .xls)</label>
+                <input class="form-control" name="uploaded_file" type="file" accept=".csv,.xlsx,.xls" required>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100 form-submit-button" type="submit">
+                    Upload & Build
+                </button>
+            </div>
+        </div>
+    </form>
+
+    {% if timeline_meta %}
+        <div class="small text-muted mb-3">
+            Parsed {{ timeline_meta.events_total }} events from {{ timeline_meta.rows_total }} rows.
+            Detected columns: title=<strong>{{ timeline_meta.title_col }}</strong>,
+            start=<strong>{{ timeline_meta.start_col }}</strong>,
+            end=<strong>{{ timeline_meta.end_col }}</strong>.
+            Saved file: <code>{{ timeline_meta.file_path }}</code>
+        </div>
+    {% endif %}
+
+    <div class="d-flex gap-2 mb-3">
+        <button id="zoomInBtn" class="btn btn-outline-secondary btn-sm" type="button">Zoom In</button>
+        <button id="zoomOutBtn" class="btn btn-outline-secondary btn-sm" type="button">Zoom Out</button>
+        <button id="fitBtn" class="btn btn-outline-secondary btn-sm" type="button">Fit All</button>
+    </div>
+
+    <div id="timelineContainer" style="height: 520px; border: 1px solid #d9dde3; border-radius: 6px;"></div>
 </div>
-</div>
+
+<link href="https://unpkg.com/vis-timeline@latest/styles/vis-timeline-graph2d.min.css" rel="stylesheet">
+<script src="https://unpkg.com/vis-data@latest/peer/umd/vis-data.min.js"></script>
+<script src="https://unpkg.com/vis-timeline@latest/peer/umd/vis-timeline-graph2d.min.js"></script>
 <script>
+    (function () {
+        const events = {{ timeline_events|default([], true)|tojson }};
+        const container = document.getElementById('timelineContainer');
+        if (!container || !Array.isArray(events)) {
+            return;
+        }
+
+        if (events.length === 0) {
+            container.innerHTML = '<div class="p-3 text-muted">Upload a file to generate the timeline.</div>';
+            return;
+        }
+
+        if (!window.vis) {
+            const listHtml = events
+                .slice()
+                .sort((a, b) => String(a.start).localeCompare(String(b.start)))
+                .map((e) => {
+                    const endText = e.end ? ' -> ' + e.end.slice(0, 10) : '';
+                    return '<li><strong>' + e.content + '</strong> (' + e.start.slice(0, 10) + endText + ')</li>';
+                })
+                .join('');
+            container.innerHTML =
+                '<div class="p-3">' +
+                '<p class="text-warning mb-2">Interactive timeline library did not load. Showing fallback list.</p>' +
+                '<ul class="mb-0">' + listHtml + '</ul>' +
+                '</div>';
+            return;
+        }
+
+        const items = new vis.DataSet(events.map((e) => {
+            const out = { id: e.id, content: e.content, start: e.start };
+            if (e.end) {
+                out.end = e.end;
+            } else {
+                out.type = 'box';
+            }
+            return out;
+        }));
+
+        const timeline = new vis.Timeline(container, items, {
+            stack: true,
+            zoomKey: 'ctrlKey',
+            horizontalScroll: true,
+            verticalScroll: true,
+            maxHeight: 520,
+            showCurrentTime: true
+        });
+
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const fitBtn = document.getElementById('fitBtn');
+        if (zoomInBtn) zoomInBtn.addEventListener('click', () => timeline.zoomIn(0.4));
+        if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => timeline.zoomOut(0.4));
+        if (fitBtn) fitBtn.addEventListener('click', () => timeline.fit());
+        timeline.fit();
+    })();
 </script>
 {% endblock %}
