@@ -1,27 +1,26 @@
-from flask import Blueprint, render_template, session, redirect, request, url_for, abort, jsonify
-from sqlalchemy import func, insert
-from flask_session import Session
-from sqlalchemy import select
+from flask import Blueprint, abort, jsonify, redirect, render_template, request, session, url_for
+from sqlalchemy import insert, select
 
-from app.tables.people import Person
-from app.tables.project_people import ProjectPerson
-from app.tables.users import User
-from app.tables.files import File
 from app.src.database import db
-from app.tables.files import File
-from app.tables.projects import Project
+from app.src.timeline_service import build_timeline_state
 from app.src.util_functions import get_projects_for_user
+from app.tables.files import File
 from app.tables.people import Person
 from app.tables.person_reports import PersonReport
+from app.tables.project_people import ProjectPerson
+from app.tables.projects import Project
+from app.tables.users import User
 
-DashBP= Blueprint('dashboard', __name__)
+DashBP = Blueprint("dashboard", __name__)
+
 
 @DashBP.before_request
 def require_login():
     if "user_id" not in session:
         return redirect(url_for("authentication.login", next=request.path))
 
-@DashBP.route('/')
+
+@DashBP.route("/")
 def get_dashboard_main():
     user_id = session["user_id"]
 
@@ -30,7 +29,7 @@ def get_dashboard_main():
 
     projects = get_projects_for_user(user_id)
 
-    dashboard_title = f'Welcome, {username}'
+    dashboard_title = f"Welcome, {username}"
     description = "Here are your projects."
 
     return render_template(
@@ -40,7 +39,8 @@ def get_dashboard_main():
         projects=projects,
     ), 200
 
-@DashBP.route('/<project_id>/')
+
+@DashBP.route("/<project_id>/")
 def get_dashboard_project_home(project_id):
     project = db.session.get(Project, project_id)
     if not project:
@@ -75,34 +75,39 @@ def get_dashboard_project_home(project_id):
         recent_files=recent_files,
     ), 200
 
-@DashBP.route('/<project_id>/visualizations/') 
+
+@DashBP.route("/<project_id>/visualizations/")
 def get_dashboard_project_visualizations(project_id):
     project = db.session.get(Project, project_id)
-
     if not project:
         return abort(404)
 
     return render_template(
         "dashboard/dashboard_visualizations.html",
         project=project,
-        active_project_id=project.id
+        active_project_id=project.id,
     ), 200
 
 
-@DashBP.route('/<project_id>/timeline/') 
+@DashBP.route("/<project_id>/timeline/", methods=["GET"])
 def get_dashboard_project_timeline(project_id):
     project = db.session.get(Project, project_id)
-
     if not project:
         return abort(404)
 
-    return render_template("dashboard/dashboard_timeline.html", project=project, active_project_id=project.id), 200
+    timeline_state = build_timeline_state(project_id, request.args.get("file_id", ""))
+
+    return render_template(
+        "dashboard/dashboard_timeline.html",
+        project=project,
+        active_project_id=project.id,
+        **timeline_state,
+    ), 200
 
 
-@DashBP.route('/<project_id>/people/')
+@DashBP.route("/<project_id>/people/")
 def get_dashboard_project_people(project_id):
     project = db.session.get(Project, project_id)
-
     if not project:
         return abort(404)
 
@@ -169,7 +174,8 @@ def get_dashboard_project_people(project_id):
         people_nodes=people_nodes
         ), 200
 
-@DashBP.route('/<project_id>/people/updatematrix', methods=['POST'])
+
+@DashBP.route("/<project_id>/people/updatematrix", methods=["POST"])
 def update_reporting_matrix(project_id):
     payload = request.get_json()
 
@@ -181,19 +187,20 @@ def update_reporting_matrix(project_id):
 
     if is_checked:
         db.session.execute(
-            insert(PersonReport)
-            .values(person_id=person_id, reports_to_id=manager_id)
+            insert(PersonReport).values(person_id=person_id, reports_to_id=manager_id)
         )
     else:
         db.session.query(PersonReport).filter(
             PersonReport.person_id == person_id,
-            PersonReport.reports_to_id == manager_id
+            PersonReport.reports_to_id == manager_id,
         ).delete()
 
     db.session.commit()
 
-    return jsonify({
-        "person_id": person_id,
-        "manager_id": manager_id,
-        "checked": is_checked
-    }), 200
+    return jsonify(
+        {
+            "person_id": person_id,
+            "manager_id": manager_id,
+            "checked": is_checked,
+        }
+    ), 200

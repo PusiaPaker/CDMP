@@ -1,7 +1,7 @@
 {% extends './dashboard/dashboard_base.html' %}
 
 {% block title %}
-    CDMP | {{ project['title'] }}
+    CDMP | {{ project.title }}
 {% endblock %}
 
 {% block dashboard_page_name %}
@@ -20,9 +20,168 @@
 {% block main_content %}
 <h2 class="ps-2 section-header" id="visualization">Timeline</h2>
 <div class="container-fluid dashboard-container m-0 p-5">
-    this is timeline    
+    {% if error %}
+        <p class="text-danger mb-3">{{ error }}</p>
+    {% endif %}
+    {% if success %}
+        <p class="text-success mb-3">{{ success }}</p>
+    {% endif %}
+
+    {% if timeline_files and timeline_files|length > 0 %}
+        <form method="GET"
+              action="{{ url_for('dashboard.get_dashboard_project_timeline', project_id=active_project_id) }}"
+              class="mb-4">
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label class="form-label">Source file (uploaded project files)</label>
+                    <select class="form-select" name="file_id">
+                        {% for f in timeline_files %}
+                            <option value="{{ f.id }}" {% if selected_file_id == f.id %}selected{% endif %}>
+                                {{ f.file_name_original }} ({{ f.upload_date.date() }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100 form-submit-button timeline-action-btn" type="submit">
+                        Load Timeline
+                    </button>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a class="btn btn-secondary w-100 d-flex align-items-center justify-content-center timeline-action-btn"
+                       href="{{ url_for('projects.project_files_upload', project_id=active_project_id) }}">
+                        Upload
+                    </a>
+                </div>
+            </div>
+        </form>
+    {% else %}
+        <p class="text-muted mb-3">
+            No compatible files found for this project.
+            <a href="{{ url_for('projects.project_files_upload', project_id=active_project_id) }}">Upload a spreadsheet</a>
+            to build a timeline.
+        </p>
+    {% endif %}
+
+    {% if timeline_meta %}
+        <div class="small text-muted mb-3">
+            File: <strong>{{ timeline_meta.file_name_original }}</strong>.
+            Parsed {{ timeline_meta.events_total }} events from {{ timeline_meta.rows_total }} rows.
+            Detected columns: title=<strong>{{ timeline_meta.title_col }}</strong>,
+            start=<strong>{{ timeline_meta.start_col }}</strong>,
+            end=<strong>{{ timeline_meta.end_col }}</strong>.
+            Stored file: <code>{{ timeline_meta.file_path }}</code>
+        </div>
+    {% endif %}
+
+    <div class="d-flex gap-2 mb-3">
+        <button id="zoomInBtn" class="btn btn-outline-secondary btn-sm" type="button">Zoom In</button>
+        <button id="zoomOutBtn" class="btn btn-outline-secondary btn-sm" type="button">Zoom Out</button>
+        <button id="fitBtn" class="btn btn-outline-secondary btn-sm" type="button">Fit All</button>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <div id="timelineContainer" style="height: 520px; min-width: 1700px; border: 1px solid #d9dde3; border-radius: 6px;"></div>
+    </div>
 </div>
-</div>
+
+<link href="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/styles/vis-timeline-graph2d.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
+<style>
+    .timeline-action-btn {
+        height: calc(1.5em + 0.75rem + 2px);
+    }
+</style>
 <script>
+    (function () {
+        const events = {{ timeline_events|default([], true)|tojson }};
+        const container = document.getElementById('timelineContainer');
+        if (!container || !Array.isArray(events)) {
+            return;
+        }
+
+        if (events.length === 0) {
+            container.innerHTML = '<div class="p-3 text-muted">Upload a file to generate the timeline.</div>';
+            return;
+        }
+
+        if (!window.vis || !window.vis.DataSet || !window.vis.Timeline) {
+            const listHtml = events
+                .slice()
+                .sort((a, b) => String(a.start).localeCompare(String(b.start)))
+                .map((e) => {
+                    const endText = e.end ? ' -> ' + e.end.slice(0, 10) : '';
+                    return '<li><strong>' + e.content + '</strong> (' + e.start.slice(0, 10) + endText + ')</li>';
+                })
+                .join('');
+            container.innerHTML =
+                '<div class="p-3">' +
+                '<p class="text-warning mb-2">Interactive timeline library did not load. Showing fallback list.</p>' +
+                '<ul class="mb-0">' + listHtml + '</ul>' +
+                '</div>';
+            return;
+        }
+
+        const escapeHtml = (value) => String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+
+        const formatDateLabel = (value) => {
+            if (!value) return 'N/A';
+            const d = new Date(value);
+            if (Number.isNaN(d.getTime())) return String(value).slice(0, 10);
+            return d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        };
+
+        const items = new vis.DataSet(events.map((e) => {
+            const startLabel = formatDateLabel(e.start);
+            const endLabel = formatDateLabel(e.end || e.start);
+            const isMissingStart = Boolean(e.missing_start);
+            const isRange = Boolean(e.end);
+            const out = {
+                id: e.id,
+                content: e.content,
+                start: e.start,
+                group: (!isMissingStart && isRange) ? 'dated_range' : 'unspecified_start',
+                title:
+                    '<strong>' + escapeHtml(e.content) + '</strong><br>' +
+                    'Start: ' + escapeHtml(isMissingStart ? 'Unspecified (inferred)' : startLabel) + '<br>' +
+                    'End: ' + escapeHtml(endLabel)
+            };
+            if (e.end) {
+                out.end = e.end;
+            } else {
+                out.type = 'box';
+            }
+            return out;
+        }));
+
+        const groups = new vis.DataSet([
+            { id: 'unspecified_start', content: 'Deadlines' , sortOrder: 1 },
+            { id: 'dated_range', content: 'Timeframes', sortOrder: 2 }
+        ]);
+
+        const timeline = new vis.Timeline(container, items, groups, {
+            stack: true,
+            zoomKey: 'ctrlKey',
+            horizontalScroll: true,
+            verticalScroll: true,
+            height: '520px',
+            maxHeight: 520,
+            showCurrentTime: true,
+            groupOrder: (a, b) => a.sortOrder - b.sortOrder
+        });
+
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const fitBtn = document.getElementById('fitBtn');
+        if (zoomInBtn) zoomInBtn.addEventListener('click', () => timeline.zoomIn(0.4));
+        if (zoomOutBtn) zoomOutBtn.addEventListener('click', () => timeline.zoomOut(0.4));
+        if (fitBtn) fitBtn.addEventListener('click', () => timeline.fit());
+        timeline.fit();
+    })();
 </script>
 {% endblock %}
