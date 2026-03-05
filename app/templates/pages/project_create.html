@@ -12,7 +12,11 @@
 <div class="container-fluid dashboard-container m-0 p-5">
 
     {% if status == 'success' %}
-        <p>Project Successfully created.</p>
+        <p class="alert alert-success">Project Successfully created.</p>
+    {% endif %}
+
+    {% if error %}
+        <p class="alert alert-danger">{{ error }}</p>
     {% endif %}
 
   <form method="POST" action="{{ url_for('projects.create_project') }}">
@@ -39,7 +43,6 @@
         name="description"
         rows="5"
         placeholder="Brief description"
-        minlength="25"
         maxlength="512"
       ></textarea>
     </div>

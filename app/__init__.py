@@ -40,4 +40,10 @@ def create_app():
     app.register_blueprint(DataBP, url_prefix='/data/')
     app.register_blueprint(CommandsBP)
 
+    @app.route('/')
+    def index():
+        if 'user_id' in session:
+            return redirect(url_for('dashboard.get_dashboard_main'))
+        return redirect(url_for('authentication.login'))
+
     return app
