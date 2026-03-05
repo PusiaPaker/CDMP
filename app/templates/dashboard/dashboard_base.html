@@ -17,100 +17,43 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reusable.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/table-col-selector.css') }}">
-    
-    <style>
-        :root {
-            --sidebar-width: 18%;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--cdmp-color-base-background);
-        }
-        
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: var(--sidebar-width);
-            background-color: var(--cdmp-color-main);
-            padding-top: 1rem;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-        }
-        
-        .sidebar .nav-link {
-            color: #ecf0f1;
-            padding: 0.75rem 1.5rem;
-            border-left: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .sidebar .nav-link:hover {
-            background-color: var(--cdmp-color-main-hover);
-            border-left-color: #000000;
-            color: #fff;
-        }
-
-        .sidebar .nav-project-link{
-            color: #ecf0f1;
-            padding: 0.75rem 1.5rem;
-            border-left: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .main-content {
-            margin-left: var(--sidebar-width);
-            min-height: 100vh;
-        }
-        
-        .navbar {
-            background-color: #fff;
-            border-bottom: 1px solid #e9ecef;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-        
-        .navbar-brand {
-            font-weight: 600;
-            font-size: 1.25rem;
-            color: #2c3e50 !important;
-        }
-        
-        .content-wrapper {
-            padding: 5rem;
-        }
-
-    </style>
 </head>
 <body>
     <nav class="sidebar">
+        <div class="d-flex justify-content-center align-items-center">
+            <!-- <a href="{{url_for('dashboard.get_dashboard_main')}}"> -->
+                <img class="sidebar-pandata-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}"> </div>
+            <!-- </a> -->
+        </div>
         <div class="ps-3 pe-3 mb-4">
-            <h5 class="text-white mb-0">CDMP</h5>
+            <h5 class="text-white mb-0 fs-2">
+                Pandata
+            </h5>
+            <p class="text-muted">A consulting data management system</p>
         </div>
         
         {% if projects is mapping %}
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
+                    <!-- <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
                         Dashboard
-                    </a>
+                    </a> -->
 
                     <!-- Collapsable project selection -->
-                    <a class="nav-link fs-5" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
+                    <a class="nav-link fs-5 ps-2" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
                         <i class="bi bi-folder"></i> Projects
                     </a>
 
                     <ul class="list-unstyled collapse show" id="project-list">
                         <li>
-                            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('projects.create_project')}}">
+                            <a class="nav-link nav-project-link ps-3 pointer-cursor-hover project-link-item" href="{{url_for('projects.create_project')}}">
                                 <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
                                 New Project
                             </a>
                         </li>
                         {% for id, project_data in projects.items() %}
                             <li>
-                                <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover" href="{{url_for('dashboard.get_dashboard_project_home', project_id=id)}}">
+                                <a class="nav-link nav-project-link ps-3 pointer-cursor-hover project-link-item" href="{{url_for('dashboard.get_dashboard_project_home', project_id=id)}}">
                                     {{project_data['title']}}
                                 </a> 
                             </li>

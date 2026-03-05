@@ -6,10 +6,10 @@ Some CSS classes that are shared across the project
     To use them: var(VARIABLE_NAME)
 */
 :root{
-    --cdmp-color-main: #7a649d;
-    --cdmp-color-main-hover: #72579e;
+    --cdmp-color-main: #97949d;
+    --cdmp-color-main-hover: #5f5c63;
 
-    --cdmp-color-main-active: #6d4ba3;
+    --cdmp-color-main-active: #bfb4cf;
 
     --cdmp-color-base-background: #f6f1f1;
 
@@ -17,4 +17,6 @@ Some CSS classes that are shared across the project
 
     --cdmp-color-generic-button-green: rgb(60, 191, 66);
     --cdmp-color-generic-button-green-hover: rgb(57, 143, 51);
+
+    --sidebar-width: 15%;
 }
