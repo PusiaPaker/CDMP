@@ -43,12 +43,12 @@
                     </select>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <button class="btn btn-primary w-100 h-100 form-submit-button" type="submit">
+                    <button class="btn btn-primary w-100 form-submit-button timeline-action-btn" type="submit">
                         Load Timeline
                     </button>
                 </div>
                 <div class="col-md-2 d-flex align-items-end">
-                    <a class="btn btn-secondary w-100 h-100 d-flex align-items-center justify-content-center"
+                    <a class="btn btn-secondary w-100 d-flex align-items-center justify-content-center timeline-action-btn"
                        href="{{ url_for('projects.project_files_upload', project_id=active_project_id) }}">
                         Upload
                     </a>
@@ -87,6 +87,11 @@
 
 <link href="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/styles/vis-timeline-graph2d.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
+<style>
+    .timeline-action-btn {
+        height: calc(1.5em + 0.75rem + 2px);
+    }
+</style>
 <script>
     (function () {
         const events = {{ timeline_events|default([], true)|tojson }};
