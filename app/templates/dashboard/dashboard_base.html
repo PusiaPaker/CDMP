@@ -21,24 +21,20 @@
 <body>
     <nav class="sidebar">
         <div class="d-flex justify-content-center align-items-center">
-            <!-- <a href="{{url_for('dashboard.get_dashboard_main')}}"> -->
+            <a class="d-flex justify-content-center align-items-center" href="{{url_for('dashboard.get_dashboard_main')}}">
                 <img class="sidebar-pandata-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}"> </div>
-            <!-- </a> -->
+            </a>
+            <div class="ps-3 pe-3 mb-4 d-flex justify-content-center align-items-center flex-column">
+                <h5 class="text-white mb-0 fs-2">
+                    Pandata
+                </h5>
+                <p class="text-muted text-center">A Consulting Data Management System</p>
+            </div>
         </div>
-        <div class="ps-3 pe-3 mb-4">
-            <h5 class="text-white mb-0 fs-2">
-                Pandata
-            </h5>
-            <p class="text-muted">A consulting data management system</p>
-        </div>
-        
+            
         {% if projects is mapping %}
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <!-- <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
-                        Dashboard
-                    </a> -->
-
                     <!-- Collapsable project selection -->
                     <a class="nav-link fs-5 ps-2" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
                         <i class="bi bi-folder"></i> Projects
@@ -46,14 +42,14 @@
 
                     <ul class="list-unstyled collapse show" id="project-list">
                         <li>
-                            <a class="nav-link nav-project-link ps-3 pointer-cursor-hover project-link-item" href="{{url_for('projects.create_project')}}">
+                            <a class="nav-link nav-project-link pointer-cursor-hover sidebar-link-item" href="{{url_for('projects.create_project')}}">
                                 <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
                                 New Project
                             </a>
                         </li>
                         {% for id, project_data in projects.items() %}
                             <li>
-                                <a class="nav-link nav-project-link ps-3 pointer-cursor-hover project-link-item" href="{{url_for('dashboard.get_dashboard_project_home', project_id=id)}}">
+                                <a class="nav-link nav-project-link ps-3 pointer-cursor-hover sidebar-link-item" href="{{url_for('dashboard.get_dashboard_project_home', project_id=id)}}">
                                     {{project_data['title']}}
                                 </a> 
                             </li>
@@ -67,32 +63,32 @@
                 <i class="bi bi-arrow-return-left"></i> Back
             </a>
 
-            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{url_for('dashboard.get_dashboard_project_home', project_id=active_project_id)}}">
                 <i class="bi bi-house"></i> Home
             </a>
 
-            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{ url_for('projects.project_files_list', project_id=active_project_id) }}">
                 <i class="bi bi-file-earmark-text"></i> Files
             </a>
 
-            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{url_for('dashboard.get_dashboard_project_visualizations', project_id=active_project_id)}}">
                 <i class="bi bi-bar-chart-line"></i> Visualizations
             </a>
 
-            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{url_for('dashboard.get_dashboard_project_timeline', project_id=active_project_id)}}">
                 <i class="bi bi-hourglass"></i> Timeline
             </a>
 
-            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{url_for('dashboard.get_dashboard_project_people', project_id=active_project_id)}}">
                 <i class="bi bi-person"></i> People
             </a>
 
-            <a class="nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{ url_for('projects.project_settings', project_id=active_project_id) }}">
                 <i class="bi bi-gear"></i> Settings
             </a>
@@ -141,6 +137,9 @@
             
             {% block main_content %}{% endblock %}  
         </div>
+        <footer class="text-center text-muted small py-2">
+            &copy; 2026 Pandata · Kent State University
+        </footer>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

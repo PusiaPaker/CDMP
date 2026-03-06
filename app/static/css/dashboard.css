@@ -47,8 +47,15 @@ body {
     transition: all 0.3s ease;
 }
 
-.project-link-item{
+.sidebar-link-item{
     font-size: 0.9rem;
+    padding-left: 15% !important;
+
+    /* border-top: solid 1px rgb(173, 171, 171); */
+}
+
+.sidebar-link-item:hover{
+    padding-left: 10% !important;
 }
 
 /*
@@ -62,7 +69,7 @@ body {
 }
 
 .navbar {
-    background-color: #fff;
+    background-color: var(--cdmp-color-top-navbar);
     border-bottom: 1px solid #e9ecef;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
