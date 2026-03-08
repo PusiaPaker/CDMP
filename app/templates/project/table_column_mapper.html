@@ -17,16 +17,17 @@
     <h4>Spreadsheet preview</h4>
     <p>
         Below is a preview of the spreadsheet you've uploaded, with the current column names.
-        Use the first row to select what the content of the column is.
+        Use the first row to select what the content of the column actually is.
     </p>
 
-    <form method="POST" action="{{ url_for('project.create') }}">
+    <form method="POST" action="{{ url_for('data.column_mapper_commit', project_id=active_project_id, table_type=table_type) }}">
+        <input type="hidden" name="temp_path" value="{{ temp_path }}">
     <table class="table table-bordered preview-table">
         <thead>
             <tr>
                 {% for column_name in preview_data.keys() %}
                     <th>
-                        <select name="mapped_columns[{{ column_name }}]" class="form-select form-select-sm">
+                        <select name="original_col_name={{ column_name }}" class="form-select form-select-sm">
                             <option value="">Select Column Mapping</option>
                             <optgroup label="Required">
                                 {% for req_col in required_columns %}
@@ -53,7 +54,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for i in range(5) %}
+            {% for i in range((preview_data.values()|first)|length) %}
                 <tr>
                     {% for column_name, values in preview_data.items() %}
                         <td>{{ values[i] if i < values|length else '' }}</td>
@@ -69,7 +70,7 @@
     </table>
 
     
-    <button type="submit" class="generic-green-button form-submit-button">
+    <button type="submit" class="btn btn-primary form-submit-button">
         Confirm Column Selection
     </button>
 

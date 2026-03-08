@@ -25,7 +25,7 @@
     {% endif %}
 
     <form method="POST" enctype="multipart/form-data"
-          action="{{ url_for('project.people_import', project_id=active_project_id) }}">
+          action="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}">
 
         <div class="mb-3">
             <label class="form-label">File (.csv or .xlsx)</label>

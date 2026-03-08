@@ -25,7 +25,7 @@
         <div class="d-flex gap-2">
             <a
                 class="btn btn-primary form-submit-button"
-                href="{{ url_for('project.people_import', project_id=active_project_id) }}"
+                href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}"
             >
                 Import CSV/XLSX
             </a>
