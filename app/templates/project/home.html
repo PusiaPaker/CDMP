@@ -1,0 +1,141 @@
+{% extends "base/dashboard.html" %}
+
+{% block title %}
+    CDMP | {{ project.title }}
+{% endblock %}
+
+{% block dashboard_page_name %}
+    <div class="d-flex justify-content-between align-items-center">
+        <h1 class="ps-2 display-5 project-title mb-0">{{ project.title }}</h1>
+    </div>
+{% endblock %}
+
+{% block dashboard_description %}
+    <div class="container-fluid w-75 ms-0">
+        <h1 class="desc small text-start py-3 mb-0">{{ project.description }}</h1>
+    </div>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Left column: people list -->
+        <div class="col-md-3">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">People</h5>
+                    </div>
+
+                    {% if people_rows and people_rows|length > 0 %}
+                        <ul class="list-unstyled">
+                            {% for person, pp in people_rows %}
+                                <li class="mb-3">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <div class="fw-bold">{{ person.name }}</div>
+                                            <div class="small text-muted">{{ pp.role_level or "" }}</div>
+                                        </div>
+                                        <div class="small">
+                                            {% if person.user_id %}
+                                                <span class="badge bg-success">registered</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">not registered</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted">No people assigned yet.</p>
+                    {% endif %}
+
+                    <div class="mt-3">
+                        <a class="btn btn-sm btn-primary w-100" href="{{ url_for('project.people_import', project_id=active_project_id) }}">
+                            Import people
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Files preview -->
+            <div class="card">
+                <div class="card-body">
+                    <h6>Recent files</h6>
+                    {% if recent_files and recent_files|length > 0 %}
+                        <ul class="list-unstyled small">
+                            {% for f in recent_files %}
+                                <li class="mb-2">
+                                    <div class="d-flex justify-content-between">
+                                        <div>
+                                            <div>{{ f.file_name_original }}</div>
+                                            <div class="text-muted small">{{ f.file_category }} · {{ f.upload_date.date() }}</div>
+                                        </div>
+                                        <div>
+                                            <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('project.get_project_files_debug', project_id=active_project_id) }}">view</a>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted small mb-0">No files yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Main column: tabs + content -->
+        <div class="col-md-9">
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <a class="nav-link active" href="{{ url_for('project.home', project_id=active_project_id) }}">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('project.file_list', project_id=active_project_id) }}">Files</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('project.file_upload', project_id=active_project_id) }}">Upload</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('project.people', project_id=active_project_id) }}">People</a>
+                </li>
+            </ul>
+
+            <div class="card dashboard-container p-4">
+                <h5 class="mb-3">Overview</h5>
+
+                <div class="mb-4">
+                    <h6>Summary</h6>
+                    <p class="text-muted small">{{ project.description }}</p>
+                </div>
+
+                <hr>
+
+                <h6>Files</h6>
+                {% if recent_files and recent_files|length > 0 %}
+                    <ul class="list-unstyled">
+                        {% for f in recent_files %}
+                            <li class="py-2 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="fw-bold">{{ f.file_name_original }}</div>
+                                        <div class="small text-muted">{{ f.file_category }} · {{ f.upload_date.date() }}</div>
+                                    </div>
+                                    <div>
+                                        <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('project.get_project_files_debug', project_id=active_project_id) }}">Open</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No files uploaded yet for this project.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,8 +1,7 @@
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.src.database import Base
-
+from app.core import Base
 
 class PersonReport(Base):
     __tablename__ = "person_reports"

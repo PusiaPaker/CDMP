@@ -1,9 +1,9 @@
-from app.src.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey, String
-from app.src.database import Base
+
 import uuid
 
+from app.core import Base
 
 class Person(Base):
     __tablename__ = "people"

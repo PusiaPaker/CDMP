@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify, abort
-from app.src.database import db
-from app.tables.projects import Project
-from app.tables.people import Person
-from app.tables.files import File
-from app.src.util_functions import path_to_file_from_disk
 import pandas as pd
+
+from app.core import db
+from app.tables import Project, Person, File
+
+from app.src.project.files import path_to_file_from_disk
 
 DataBP = Blueprint('data', __name__)
 
@@ -62,7 +62,7 @@ def column_selector():
     for colname in columns:
         preview_data[colname] = data[colname].tolist()[:5]
 
-    return render_template("pages/table_column_selector.html", 
+    return render_template("project/table_column_selector.html", 
                            active_project_id=project_id,
                            required_columns=required_columns,
                            optional_columns=optional_columns,

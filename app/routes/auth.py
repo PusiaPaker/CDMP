@@ -1,12 +1,8 @@
-# https://www.geeksforgeeks.org/python/how-to-use-flask-session-in-python-flask/
-
-from flask import Flask, Blueprint, render_template, redirect, request, session, make_response, url_for
-from flask_session import Session
+from flask import Blueprint, render_template, redirect, request, session, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
-
-from app.src.database import db
-from app.tables.users import User
+from app.core import db
+from app.tables import User
 
 AuthBP = Blueprint('authentication', __name__)
 

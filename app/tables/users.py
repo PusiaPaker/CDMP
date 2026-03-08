@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey
-from app.src.database import Base
+
 import uuid
+
+from app.core import Base
 
 class User(Base):
     __tablename__ = "users"
@@ -10,4 +12,3 @@ class User(Base):
     username: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(unique=True)
-    #group_id: Mapped[str | None] = mapped_column(ForeignKey("groups.id", onupdate="CASCADE", ondelete="SET NULL"), nullable=True)
