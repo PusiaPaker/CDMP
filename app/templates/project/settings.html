@@ -1,0 +1,27 @@
+{% extends "base/dashboard.html" %}
+
+{% block title %}
+    CDMP | {{ active_project.title }} - Settings
+{% endblock %}
+
+{% block dashboard_page_name %}
+    <h1 class="ps-2 mb-4 display-5 project-title">Settings</h1>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid dashboard-container m-0 p-5">
+    <h4 class="mb-2">{{ active_project.title }}</h4>
+    <p class="text-muted mb-4">Project settings live here.</p>
+
+    <a class="btn btn-outline-secondary"
+       href="{{ url_for('project.edit', project_id=active_project_id) }}">
+        Edit project fields
+    </a>
+
+    <a class="btn btn-outline-secondary ms-2"
+       href="{{ url_for('project.file_upload', project_id=active_project_id) }}">
+        Upload files
+    </a>
+</div>
+{% endblock %}
+

@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import ForeignKey, String, Text
-from app.src.database import Base
+
 import uuid
+
+from app.core import Base
 
 class Project(Base):
     __tablename__ = "projects"

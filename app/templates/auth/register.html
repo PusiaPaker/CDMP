@@ -1,4 +1,4 @@
-{% extends './base.html' %}
+{% extends './base/auth.html' %}
 
 {% block header %}
     <div class="container-fluid">
@@ -7,11 +7,9 @@
 {% endblock %}
 
 {% block css %} 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
-{% endblock %}
-
-{% block title %}Register{% endblock %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
+{% endblock %}{% block title %}Register{% endblock %}
 
 {% block content %}
 <div class="login-container container-fluid w-25 p-3">

@@ -1,0 +1,56 @@
+{% extends './base/dashboard.html' %}
+
+{% block title %}
+    New Project
+{% endblock %}
+
+{% block dashboard_page_name %}
+    <h1 class="ps-2 mb-5 display-5 project-title">New Project</h1>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid dashboard-container m-0 p-5">
+
+    {% if status == 'success' %}
+        <p class="alert alert-success">Project Successfully created.</p>
+    {% endif %}
+
+    {% if error %}
+        <p class="alert alert-danger">{{ error }}</p>
+    {% endif %}
+
+  <form method="POST" action="{{ url_for('project.create') }}">
+    
+    <div class="mb-3">
+      <label for="title" class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        id="title"
+        name="title"
+        placeholder="Enter project title"
+        minlength="3"
+        maxlength="100"
+        required
+      >
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Description</label>
+      <textarea
+        class="form-control"
+        id="description"
+        name="description"
+        rows="5"
+        placeholder="Brief description"
+        maxlength="512"
+      ></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary form-submit-button">
+      Create Project
+    </button>
+
+  </form>
+</div>
+{% endblock %}
