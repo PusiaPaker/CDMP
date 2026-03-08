@@ -6,3 +6,4 @@ from .project_people import ProjectPerson
 from .projects import Project
 from .roles import Role
 from .users import User
+from .timeline_event import TimelineEvent

@@ -5,12 +5,15 @@
 {% endblock %}
 
 {% block dashboard_page_name %}
-    <h1 class="ps-2 mb-5 display-5 project-title">Select and validate columns for this spreadsheet</h1>
+    <h1 class="ps-2 mb-5 display-5 project-title">Import Spreadsheet</h1>
 {% endblock %}
 
 {% block main_content %}
 <div class="container-fluid dashboard-container m-0 p-5">
-    <p>Currently selecting columns for importing: People</p>
+    <h3 class="mb-0">Select the column content for this spreadsheet</h3>
+
+    <br>
+
     <p><b>Required columns are:</b> {{ required_columns | join(', ')}}</p>
     <p><b>Optional columns are:</b> {{ optional_columns | join(', ')}}</p>
     
@@ -28,7 +31,7 @@
                 {% for column_name in preview_data.keys() %}
                     <th>
                         <select name="original_col_name={{ column_name }}" class="form-select form-select-sm">
-                            <option value="">Select Column Mapping</option>
+                            <option value="">Click to Select Column Mapping</option>
                             <optgroup label="Required">
                                 {% for req_col in required_columns %}
                                     <option value="{{ req_col }}" {% if req_col|lower == column_name|lower %}selected{% endif %}>
