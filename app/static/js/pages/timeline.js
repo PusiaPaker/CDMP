@@ -8,7 +8,7 @@
 
     if (events.length === 0) {
         container.innerHTML =
-            '<div class="p-3 text-muted">Upload a file to generate the timeline.</div>';
+            '<div class="p-3 text-muted">This project has no dates attached to it. Use the "Import CSV/XLSX" button on the top right to add data</div>';
         return;
     }
 
@@ -64,6 +64,10 @@
             const endLabel = formatDateLabel(e.end || e.start);
             const isMissingStart = Boolean(e.missing_start);
             const isRange = Boolean(e.end);
+            const description =
+                typeof e.description === "string" && e.description.trim()
+                    ? e.description.trim()
+                    : "No description for this even";
 
             const out = {
                 id: e.id,
@@ -81,13 +85,18 @@
                     escapeHtml(isMissingStart ? "Unspecified (inferred)" : startLabel) +
                     "<br>" +
                     "End: " +
-                    escapeHtml(endLabel),
+                    escapeHtml(endLabel) +
+                    "<br>" +
+                    "Description: " +
+                    escapeHtml(description),
             };
 
             if (e.end) {
                 out.end = e.end;
+                out.className = 'timeline-phase-object'
             } else {
                 out.type = "box";
+                out.className = "timeline-single-date-object";
             }
 
             return out;
@@ -95,8 +104,8 @@
     );
 
     const groups = new vis.DataSet([
-        { id: "unspecified_start", content: "Deadlines", sortOrder: 1 },
-        { id: "dated_range", content: "Timeframes", sortOrder: 2 },
+        { id: "dated_range", content: "Phases", sortOrder: 1 },
+        { id: "unspecified_start", content: "Deadlines", sortOrder: 2 },
     ]);
 
     const timeline = new vis.Timeline(container, items, groups, {
