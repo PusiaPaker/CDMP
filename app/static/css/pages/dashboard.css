@@ -54,6 +54,15 @@ body {
     /* border-top: solid 1px rgb(173, 171, 171); */
 }
 
+.sidebar .nav-link-category{
+    border-bottom: 1px rgb(51, 51, 54) solid;
+    margin-bottom: 1.5rem;
+
+}.sidebar .nav-link-category:hover{
+    border-bottom: none;
+    cursor: pointer;
+}
+
 .sidebar-link-item:hover{
     padding-left: 10% !important;
 }

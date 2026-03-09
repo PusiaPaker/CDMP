@@ -36,9 +36,17 @@
         {% if projects is mapping %}
             <ul class="nav flex-column">
                 <li class="nav-item">
+
+                    <li>
+                            <a class="nav-link nav-link-category fs-5 ps-2 d-flex align-items-center gap-2 p-2" aria-expanded="true"
+                                href="{{url_for('dashboard.get_dashboard_main_timeline')}}">
+                            <i class="bi bi-hourglass"></i> <h5 class="mb-0">Global Timeline</h5>
+                            </a>
+
+                    </li>
                     <!-- Collapsable project selection -->
-                    <a class="nav-link fs-5 ps-2" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
-                        <i class="bi bi-folder"></i> Projects
+                    <a class="nav-link nav-link-category fs-5 ps-2 d-flex align-items-center gap-2 p-2" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
+                        <i class="bi bi-folder"></i> <h5 class="mb-0">Projects</h5>
                     </a>
 
                     <ul class="list-unstyled collapse show" id="project-list">

@@ -21,12 +21,23 @@ def get_dashboard_main():
 
     projects = get_projects_for_user(user_id)
 
-    dashboard_title = f"Welcome, {username}"
-    description = "Here are your projects."
-
     return render_template(
         "dashboard/home.html",
-        dashboard_title=dashboard_title,
-        description=description,
+        dashboard_title=f"Welcome to Pandata, {username}.",
+        description="Here are your projects.",
+        projects=projects,
+    ), 200
+
+@DashBP.route("/timeline")
+def get_dashboard_main_timeline():
+    user_id = session["user_id"]
+    user = db.session.get(User, user_id)
+
+    projects = get_projects_for_user(user_id)
+
+    return render_template(
+        "dashboard/timeline.html",
+        dashboard_title=f"Global Timeline",
+        description="Visualize phases, events and deadlines across all your projects.",
         projects=projects,
     ), 200
