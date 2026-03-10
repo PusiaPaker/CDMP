@@ -5,7 +5,6 @@ from app.core import db
 from app.tables import Project, TimelineEvent
 
 from .project import ProjectBP
-from app.src.project.timeline import build_timeline_state
 
 @ProjectBP.route("/<project_id>/visualizations/")
 def visualizations(project_id):
