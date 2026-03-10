@@ -28,7 +28,6 @@ def people(project_id):
         .all()
     )
 
-
     reporting_links = {f"{person_id}:{reports_to_id}" for person_id, reports_to_id in reporting_edges}
 
     people_rows = (

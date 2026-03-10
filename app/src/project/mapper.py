@@ -32,7 +32,7 @@ def people_mapping_handler(project_id, rows, mapped_to_index):
     name_i = mapped_to_index["Name"]
     email_i = mapped_to_index["Email"]
     phone_i = mapped_to_index["Phone"]
-    title_i = mapped_to_index["Title"]
+    title_i = mapped_to_index["Job Title"]
     role_level_i = mapped_to_index["Role"]
 
     created_people = 0
