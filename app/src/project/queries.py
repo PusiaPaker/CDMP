@@ -15,6 +15,19 @@ def user_has_project_access(user_id: str, project_id: str) -> bool:
         )
     ).scalar()
 
+def user_is_project_owner(user_id: str, project_id: str) -> bool:
+    return db.session.execute(
+        select(
+            exists().where(
+                and_(
+                    Role.user_id == user_id,
+                    Role.project_id == project_id,
+                    Role.role == "owner"
+                )
+            )
+        )
+    ).scalar()
+
 def get_projects_for_user(user_id: str) -> dict[str, dict[str, str]]:
     projects = (
         db.session.execute(

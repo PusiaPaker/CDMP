@@ -3,7 +3,7 @@ from flask import render_template, redirect, url_for, jsonify, session, request
 import uuid
 
 from .project import ProjectBP
-from app.src.project.queries import get_projects_for_user
+from app.src.project.queries import get_projects_for_user, user_is_project_owner
 
 from app.core import db
 from app.tables import Project, Role
@@ -72,4 +72,18 @@ def get_projects():
         out[p.title] = {'description': p.description, 'id': p.id}
     
     return jsonify(out), 200
+
+@ProjectBP.route('/<project_id>/delete')
+def delete(project_id):
+    if user_is_project_owner(session["user_id"], project_id):
+        proj = db.session.query(Project).filter_by(id=project_id).first()
+        db.session.delete(proj)
+        db.session.commit()
+
+    # Redirect to dashboard either way since users should NOT be able
+    # to execute this function if they're not the project owner (the 
+    # button won't display for editors/viewers)
+    return redirect(url_for("dashboard.get_dashboard_main"))
+    
+
 
