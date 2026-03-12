@@ -1,7 +1,7 @@
 from sqlalchemy import select, exists, and_
 
 from app.core import db
-from app.tables import Role, Project
+from app.tables import Role, Project, User
 
 def user_has_project_access(user_id: str, project_id: str) -> bool:
     return db.session.execute(
