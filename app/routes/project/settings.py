@@ -14,10 +14,13 @@ def settings(project_id):
     if not project:
         return render_template("error/404.html"), 404
 
+    is_owner = user_is_project_owner(session["user_id"], project_id)
+
     return render_template(
         "project/settings.html",
         active_project=project,
         active_project_id=project.id,
+        is_owner=is_owner
     ), 200
 
 @ProjectBP.route('/edit/<project_id>', methods=['GET', 'POST'])

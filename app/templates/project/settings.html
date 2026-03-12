@@ -24,11 +24,31 @@
     </a>
 
     <br>
-
-    <a class="btn btn-outline-danger mt-5"
-       href="{{ url_for('project.delete', project_id=active_project_id) }}">
+    {% if is_owner %}
+    <a class="btn btn-outline-danger mt-5" data-bs-toggle="modal" data-bs-target="#deleteWarning">
         Delete Project
     </a>
+
+    <div class="modal fade" id="deleteWarning" tabindex="-1" aria-labelledby="Warning!" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">WARNING!</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Deleting a project will also delete <strong>all</strong> of its related data. 
+                        <strong>Are you sure about this?</strong>
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-outline-danger"
+                        href="{{ url_for('project.delete', project_id=active_project_id) }}">Yes im sure, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
