@@ -1,12 +1,16 @@
-from flask import Blueprint, jsonify, render_template
+from flask import Blueprint, jsonify, render_template, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.core import db
 from app.tables import User
+from app.populate.users import populateUsers
+from app.populate.projects import populateProjects
+from app.populate.roles import populateRoles
+
 DebugBP = Blueprint('debug', __name__)
 
-@DebugBP.route('/get')
-def getData():
+@DebugBP.route('/get/users')
+def getUsers():
     users = db.session.query(User).all()
 
     res = []
@@ -18,7 +22,17 @@ def getData():
             "email": user.email,
         })
     
-    return render_template("demo_sql_test/list_users.html", dict_list=res), 200
+    return render_template("debug/list_users.html", dict_list=res), 200
+
+@DebugBP.route('/populate')
+def populateDatabase():
+    populateUsers()
+    populateProjects()
+    populateRoles()
+
+    return redirect(url_for('debug.getUsers'))
+
+
 
 @DebugBP.route('/register/<username>/<password>', methods=['GET'])
 def registerUser(username: str, password: str):
