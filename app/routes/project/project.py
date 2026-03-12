@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort, session, redirect, url_for,
 from sqlalchemy import select
 
 from app.tables import Project, Person, ProjectPerson, File
+from app.src.project.queries import user_has_project_access
 from app.core import db
 
 
@@ -17,7 +18,10 @@ def require_login():
 def home(project_id):
     project = db.session.get(Project, project_id)
     if not project:
-        return abort(404)
+        return render_template("error/404.html"), 404
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return redirect(url_for('dashboard.get_dashboard_main'))
 
     people_rows = (
         db.session.execute(
