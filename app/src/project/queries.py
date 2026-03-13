@@ -46,6 +46,23 @@ def get_projects_for_user(user_id: str) -> dict[str, dict[str, str]]:
 
     return result
 
+def get_users_from_project(project_id: str) -> list[str, dict[str]]:
+    roles = (
+        db.session.execute(
+            select(Role)
+            .where(Role.project_id == project_id)
+        )
+        .scalars()
+        .all()
+    )
+    users = []
+    for role in roles:
+        users.append([db.session.execute(
+            select(User)
+            .where(User.id == role.user_id)
+        ).scalars().first(), role.role])
+    return users
+
 def get_all_projects():
     '''
     Retrieve all projects from db

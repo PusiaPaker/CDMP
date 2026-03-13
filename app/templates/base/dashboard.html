@@ -98,6 +98,11 @@
             </a>
 
             <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
+                href="{{ url_for('project.share', project_id=active_project_id) }}">
+                <i class="bi bi-share"></i> Share
+            </a>
+
+            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
                 href="{{ url_for('project.settings', project_id=active_project_id) }}">
                 <i class="bi bi-gear"></i> Settings
             </a>
