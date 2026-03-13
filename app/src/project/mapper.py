@@ -27,6 +27,9 @@ All handlers take parameters:
 - mapped_to_index: a collections.defaultdict that maps each expected column value
         to the index in the "rows", the defaultdict should be created with
         "lambda: None" as the default value.
+
+All handlers return:
+- A dictionary of shape: {'created': X, 'skipped': Y}
 '''
 def people_mapping_handler(project_id, rows, mapped_to_index):
     name_i = mapped_to_index["Name"]
@@ -91,12 +94,20 @@ def people_mapping_handler(project_id, rows, mapped_to_index):
 
     db.session.commit()
 
+    return {
+        'created': created_people,
+        'skipped': skipped 
+    }
+
 
 def events_mapping_handler(project_id, rows, mapped_to_index):
     title_i = mapped_to_index["Title"]
     start_date_i = mapped_to_index["Start Date"]
     end_date_i = mapped_to_index["End Date"]
     description_i = mapped_to_index["Description"]
+
+    created = 0
+    skipped = 0
 
     for row in rows:
         title = _get(row, title_i)
@@ -105,9 +116,11 @@ def events_mapping_handler(project_id, rows, mapped_to_index):
         description = _get(row, description_i)
 
         if (not start_date) and (not end_date):
+            skipped += 1
             continue
         
         if not title:
+            skipped += 1
             continue
 
         # some events are "single date" (i.e don't have start and end dates)
@@ -133,3 +146,9 @@ def events_mapping_handler(project_id, rows, mapped_to_index):
 
         db.session.add(timeline_event)
         db.session.commit()
+        created += 1
+    
+    return {
+        'created': created,
+        'skipped': skipped
+    }

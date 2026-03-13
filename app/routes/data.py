@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify, abort
+from flask import Blueprint, render_template, session, redirect, request, url_for, jsonify, abort, flash
 from sqlalchemy import select, exists, and_, insert
 import pandas as pd
 import os
@@ -98,9 +98,7 @@ def column_mapper(project_id, table_type):
 
 @DataBP.route('/<project_id>/<table_type>/columnmapper/commit', methods=['POST'])
 def column_mapper_commit(project_id, table_type):
-    print(project_id)
-    print(session)
-    print(request.form.get("temp_path", ""))
+    error = None
     if not user_has_project_access(session["user_id"], project_id):
         return render_template("error/404.html"), 404
 
@@ -111,6 +109,10 @@ def column_mapper_commit(project_id, table_type):
     temp_path = request.form.get("temp_path", "")
     if not temp_path or not os.path.exists(temp_path):
         return render_template("error/404.html"), 404
+    
+    map_targets = [v for k, v in request.form.items() if (k.startswith('original_col_name') and (v != ''))]
+    if len(map_targets) != len(set(map_targets)):
+        error = 'Two or more columns cannot map to the same value.'
 
     ext = temp_path.split(".")[-1].lower()
     if ext == "csv":
@@ -118,7 +120,23 @@ def column_mapper_commit(project_id, table_type):
     else:
         headers, rows = read_all_xlsx_rows(temp_path)
 
-    header_to_idx = {h: i for i, h in enumerate(headers)}
+    if error is not None:
+        required_columns, optional_columns = (table_type_columns[table_type]['required'],
+                                           table_type_columns[table_type]['optional'])
+        
+        preview_data = {}
+        for index, column in enumerate(headers):
+            preview_data[column] = [row[index] for row in rows[:6]]
+
+        return render_template("project/table_column_mapper.html", 
+                           active_project_id=project_id,
+                           table_type=table_type,
+                           required_columns=required_columns,
+                           optional_columns=optional_columns,
+                           preview_data=preview_data,
+                           temp_path=temp_path,
+                           error_message=error), 200
+
 
     # request form data from table_column_mapper will have entries
     # where key is "original_col_name=ORIGINAL_COLUMN_NAME" and the value is
@@ -132,6 +150,7 @@ def column_mapper_commit(project_id, table_type):
             original_to_mapped[k.replace('original_col_name=', '')] = v
     mapped_to_original = {v: k for k, v in original_to_mapped.items()}
 
+    header_to_idx = {h: i for i, h in enumerate(headers)}
     mapped_to_index = {}
     for k, v in mapped_to_original.items():
         mapped_to_index[k] = header_to_idx[v]
@@ -145,9 +164,11 @@ def column_mapper_commit(project_id, table_type):
 
     # redirect to mapping handlers for each table type to save data in DB
     if table_type == 'people':
-        people_mapping_handler(project_id, rows, mapped_to_index)
+        commit_status = people_mapping_handler(project_id, rows, mapped_to_index)
+        flash(f'Successfully added {commit_status["created"]} inidividuals. Skipped {commit_status["skipped"]}')
         return redirect(url_for("project.people", project_id=project_id))
 
     elif table_type == 'timeline':
-        events_mapping_handler(project_id, rows, mapped_to_index)
+        commit_status = events_mapping_handler(project_id, rows, mapped_to_index)
+        flash(f'Successfully added {commit_status["created"]} events. Skipped {commit_status["skipped"]}')
         return redirect(url_for("project.timeline", project_id=project_id))
