@@ -110,9 +110,24 @@ def column_mapper_commit(project_id, table_type):
     if not temp_path or not os.path.exists(temp_path):
         return render_template("error/404.html"), 404
     
+    required_columns, optional_columns = (table_type_columns[table_type]['required'],
+                                           table_type_columns[table_type]['optional'])
+
+
+    # check if two or more columns map to same value
     map_targets = [v for k, v in request.form.items() if (k.startswith('original_col_name') and (v != ''))]
     if len(map_targets) != len(set(map_targets)):
         error = 'Two or more columns cannot map to the same value.'
+
+    # check if any of the required columns are missing 
+    required_col_present = {colname:False for colname in required_columns}
+    for _, map_target in request.form.items():
+        if map_target in required_columns:
+            required_col_present[map_target] = True
+    if False in required_col_present.values():
+        missing = [c for c in required_col_present if not required_col_present[c]]
+        error = f'One or more required columns are missing: {missing}'
+        
 
     ext = temp_path.split(".")[-1].lower()
     if ext == "csv":
@@ -121,9 +136,6 @@ def column_mapper_commit(project_id, table_type):
         headers, rows = read_all_xlsx_rows(temp_path)
 
     if error is not None:
-        required_columns, optional_columns = (table_type_columns[table_type]['required'],
-                                           table_type_columns[table_type]['optional'])
-        
         preview_data = {}
         for index, column in enumerate(headers):
             preview_data[column] = [row[index] for row in rows[:6]]
