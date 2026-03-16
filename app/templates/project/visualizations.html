@@ -22,15 +22,17 @@
 <div class="container-fluid dashboard-container m-0 p-5">
     <div class="row justify-content-center py-2">
         <div class="col-5 d-flex justify-content-center align-items-center dash-chart">
-            <canvas id="dummychart"></canvas>
+            <canvas id="event-distribution-chart"></canvas>
         </div>
         <div class="col-5 d-flex justify-content-center align-items-center ps-4">
             <div>
                 <h3>
-                    Project Issue Summary
+                    Event Distribution
                 </h3>
-                <p>
-                    In the wild, pineapples are pollinated primarily by hummingbirds.[2][9] Certain wild pineapples are foraged and pollinated at night by bats.[10] Under cultivation, because seed development diminishes fruit quality, pollination is performed by hand, and seeds are retained only for breeding.[2] In Hawaii, where pineapples were cultivated and canned industrially throughout the 20th century,[11] importation of hummingbirds was prohibited.
+                <p class="text-muted">
+                    This bar chart displays the event (deadlines, start of a phase) activity across all the time it spans. Use the
+                    <a href="{{url_for('project.timeline', project_id=active_project_id)}}"> Timeline </a> 
+                 page to add new date related information to the project.
                 </p>
             </div>
         </div>
@@ -40,18 +42,16 @@
         <div class="col-5 d-flex justify-content-center align-items-center pe-4">
             <div class="text-end">
                 <h3>
-                    Issues Completed Per Month
+                    Role Distribution
                 </h3>
-                <p>
-                    A pine cone, which was called a pineapple at least two centuries before use of the name for the tropical fruit
-                    
-                    Pineapple fruit, whole and in cross section
-                    The words, pine apple, first referred to the cone (fruit) of the pine tree in the 14th century.[7] This name convention occurred because medieval botanists called any unfamiliar tree fruit an apple if it had a firm, round shape.
+                <p class="text-muted">
+                    Your team has <b>{{ role_distribution_data.total_people }}</b> individuals, 
+                    across a total of <b>{{ role_distribution_data.total_roles }}</b> different roles.
                 </p>
             </div>
         </div>
         <div class="col-3 d-flex justify-content-center align-items-center dash-chart">
-            <canvas id="dummychart2"></canvas>
+            <canvas id="role-distribution-chart"></canvas>
         </div>
     </div>
     <hr>
@@ -64,7 +64,7 @@
                 <h3>
                     Recent Burndown Graph
                 </h3>
-                <p>
+                <p class="text-muted">
                     A pine cone, which was called a pineapple at least two centuries before use of the name for the tropical fruit
                     
                     Pineapple fruit, whole and in cross section
@@ -74,6 +74,12 @@
         </div>
     </div>
 </div>
+
+<script>
+    // pass the visualization information to visualizations.js
+    window.event_distribution_data = {{ event_distribution_data | tojson }};
+    window.role_distribution_data = {{ role_distribution_data | tojson }};
+</script>
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/pages/visualizations.js') }}"></script>

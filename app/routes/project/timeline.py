@@ -5,19 +5,6 @@ from app.core import db
 from app.tables import Project, TimelineEvent
 
 from .project import ProjectBP
-from app.src.project.timeline import build_timeline_state
-
-@ProjectBP.route("/<project_id>/visualizations/")
-def visualizations(project_id):
-    project = db.session.get(Project, project_id)
-    if not project:
-        return abort(404)
-
-    return render_template(
-        "project/visualizations.html",
-        project=project,
-        active_project_id=project.id,
-    ), 200
 
 @ProjectBP.route("/<project_id>/timeline/", methods=["GET"])
 def timeline(project_id):

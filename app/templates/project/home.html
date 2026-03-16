@@ -52,7 +52,7 @@
                     {% endif %}
 
                     <div class="mt-3">
-                        <a class="btn btn-sm btn-primary w-100" href="{{ url_for('project.people_import', project_id=active_project_id) }}">
+                        <a class="btn btn-sm btn-primary w-100" href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}">
                             Import people
                         </a>
                     </div>

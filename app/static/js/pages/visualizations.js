@@ -1,12 +1,17 @@
-const ctx = document.getElementById('dummychart').getContext('2d');
+/**
+ * EVENT DISTRIBTUION CHART
+ */
+const event_distribution_data = window.event_distribution_data || {};
+
+const ctx = document.getElementById('event-distribution-chart').getContext('2d');
 const myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: event_distribution_data.labels,
         datasets: [{
-            label: 'First Half - # of Whatevers/Month',
-            data: [34, 51, 12, 11, 11, 1],
-            backgroundColor: 'rgba(122, 100, 157, 0.3)',
+            label: '# of events',
+            data: event_distribution_data.data,
+            backgroundColor: 'rgba(109, 27, 241, 0.3)',
             borderColor: 'rgba(122, 100, 157, .75)',
             borderWidth: 1
         }]
@@ -15,21 +20,27 @@ const myChart = new Chart(ctx, {
         responsive: true,
         scales: {
             y: {
-                beginAtZero: true
+                beginAtZero: true,
+                max: Math.ceil(Math.max(...event_distribution_data.data)*1.5)
             }
         }
     }
 });
 
-const ctx2= document.getElementById('dummychart2').getContext('2d');
+/**
+ * PEOPLE ROLES DISTRIBTUION CHART
+ */
+const role_distribution_data = window.role_distribution_data || {}
+
+const ctx2= document.getElementById('role-distribution-chart').getContext('2d');
 const myChart2 = new Chart(ctx2, {
     type: 'doughnut',
     data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        labels: role_distribution_data.labels,
         datasets: [{
-            data: [99, 51, 20, 23, 10, 7],
+            data: role_distribution_data.data,
             backgroundColor: [
-                "rgba(122, 100, 157, 0.75)",
+                "rgba(195, 122, 100, 0.75)",
                 "rgba(90, 120, 160, 0.75)",   
                 "rgba(110, 150, 130, 0.75)",  
                 "rgba(200, 200, 125, 0.75)",  
@@ -45,6 +56,9 @@ const myChart2 = new Chart(ctx2, {
     }
 });
 
+/**
+ * DUMMY CHART 3
+ */
 const ctx3 = document.getElementById('dummychart3').getContext('2d');
 const MyChart3 = new Chart(ctx3, {
     type: 'line',

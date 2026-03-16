@@ -4,4 +4,5 @@ from . import people
 from . import project
 from . import settings
 from . import timeline
+from . import visualizations
 from . import share

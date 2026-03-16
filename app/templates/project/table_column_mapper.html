@@ -23,6 +23,12 @@
         Use the first row to select what the content of the column actually is.
     </p>
 
+    {% if error_message %}
+    <div class="alert alert-danger" role="alert">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
     <form method="POST" action="{{ url_for('data.column_mapper_commit', project_id=active_project_id, table_type=table_type) }}">
         <input type="hidden" name="temp_path" value="{{ temp_path }}">
     <table class="table table-bordered preview-table">
