@@ -1,0 +1,70 @@
+{% extends "base/dashboard.html" %}
+
+{% block title %}
+    CDMP | {{ active_project.title }} - Share
+{% endblock %}
+
+{% block dashboard_page_name %}
+    <h1 class="ps-2 mb-0 display-5 project-title">Share</h1>
+{% endblock %}
+
+{% block dashboard_description %}
+    <div class="container-fluid w-75 ms-0 mb-4">
+        <h1 class="desc small text-start py-3 mb-0">Only project <strong>Owners</strong> can invite new users.</h1>
+    </div>
+{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid dashboard-container m-0 p-5">
+    <h3>Users with Access:</h3>
+    <table class="w-75 table-bordered table table-striped mt-3">
+        <thead>
+            <tr>
+                <th scope="col">Access Level</th>
+                <th scope="col">Username</th>
+                <th scope="col">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in authorized_users %}
+            <tr>
+                <td scope="row">{{ user[1].capitalize() }}</th>
+                <td>{{ user[0].username }}</th>
+                <td>{{ user[0].email }}</th>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if is_owner %}
+    <h3 class="mt-5">Grant or Change Access:</h3>
+    <form method="POST" class="mt-3 w-50" action="{{ url_for('project.share', project_id=active_project_id) }}">
+        <div class="mb-2 input-group">
+            <input class="form-control"
+                   type="text" 
+                   id="username" 
+                   name="username" 
+                   minlength="3" 
+                   maxlength="25" 
+                   autocomplete="off"
+                   placeholder="Username..."
+                   required>
+        </div>
+        <div class="input-group">
+            <select class="form-select" aria-label="Level of Access" name="role" required>
+                <option value="viewer" title="Viewers can not edit projects.">Viewer</option>
+                <option value="editor" title="Editors can edit project data.">Editor</option>
+                <option value="remove" title="Editors can edit project data.">Remove</option>
+            </select>
+        </div>
+        {% if error %}
+        <div class="mt-2 alert alert-danger w-auto mb-0" role="alert">
+            {{ error }}
+        </div>
+        {% endif %}
+        <div class="mt-2">
+            <button type="submit" class="btn btn-outline-secondary text-light form-submit-button">Submit</button>
+        </div>
+    </form>
+    {% endif %}
+</div>
+{% endblock %}
