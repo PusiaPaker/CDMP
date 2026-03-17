@@ -1,0 +1,22 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Layout Test{% endblock %}
+
+{% block page_header %}
+    <h1>Dashboard Layout Test</h1>
+    <p>Testing the new page header structure.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="#" class="button">Primary Action</a>
+    <a href="#" class="button-secondary">Secondary</a>
+{% endblock %}
+
+{% block main_content %}
+
+<div style="background: white; padding: 20px; border-radius: 8px;">
+    <p>This is a test content area.</p>
+    <p>The sidebar, topbar, and layout should already work.</p>
+</div>
+
+{% endblock %}

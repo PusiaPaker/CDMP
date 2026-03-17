@@ -1,0 +1,25 @@
+:root {
+    --sidebar-width: 260px;
+    --topbar-height: 60px;
+
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+
+    --color-bg: #f8f9fb;
+    --color-surface: #ffffff;
+
+    --color-sidebar-bg: #1f2933;
+    --color-sidebar-text: #e5e7eb;
+
+    --color-border: #e5e7eb;
+
+    --color-text-primary: #111827;
+    --color-text-secondary: #6b7280;
+
+    --color-accent: #6366f1;
+
+    --color-danger: #b42318;
+    --color-danger-border: #f3b3ad;
+    --color-danger-bg-soft: #fef3f2;
+}

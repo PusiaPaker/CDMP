@@ -21,7 +21,7 @@ def home(project_id):
         return render_template("error/404.html"), 404
 
     if not user_has_project_access(session["user_id"], project_id):
-        return redirect(url_for('dashboard.get_dashboard_main'))
+        return redirect(url_for('dashboard.main'))
 
     people_rows = (
         db.session.execute(
@@ -45,9 +45,8 @@ def home(project_id):
     )
 
     return render_template(
-        "project/home.html",
-        project=project,
-        active_project_id=project.id,
-        people_rows=people_rows,
-        recent_files=recent_files,
+            "project/home.html.j2",
+            project=project,
+            recent_files = recent_files,
+            people_rows = people_rows,
     ), 200

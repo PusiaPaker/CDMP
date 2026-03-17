@@ -1,0 +1,44 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_header %}
+    <h1>Your Projects</h1>
+    <p>Browse and manage your active projects</p>
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard/home.css') }}">
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.create') }}" class="button">New Project</a>
+{% endblock %}
+
+{% block main_content %}
+    <section class="project-list-section">
+        {% if projects %}
+            <div class="project-list">
+                {% for id, project_data in projects.items() %}
+                    <a href="{{ url_for('project.home', project_id=id) }}" class="project-card">
+                        <div class="project-card-body">
+                            <h2 class="project-card-title">
+                                {{ project_data['title'] }}
+                            </h2>
+
+                            <p class="project-card-description">
+                                {{ project_data['description'] }}
+                            </p>
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>No projects yet</h2>
+                <p>Create your first project to get started.</p>
+                <a href="{{ url_for('project.create') }}" class="button">Create Project</a>
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}/

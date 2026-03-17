@@ -1,0 +1,54 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Files{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/files.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Files</h1>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">← Back</a>
+    <a href="{{ url_for('project.file_upload', project_id=project['id'])}}" class="button">Upload Files</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="files-page-grid">
+
+        <section class="project-section">
+            <div class="section-header">
+                <h2>Project Files</h2>
+            </div>
+
+            {% if files %}
+                <table class="files-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Uploaded</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for file in files %}
+                            <tr>
+                                <td>{{ file.file_name_original }}</td>
+                                <td>{{ file.file_category }}</td>
+                                <td>{{ file.description or "" }}</td>
+                                <td>{{ file.upload_date }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="section-empty-text">No files uploaded yet.</p>
+            {% endif %} 
+
+        </section>
+    </div>
+{% endblock %}

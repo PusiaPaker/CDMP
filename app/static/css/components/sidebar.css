@@ -1,0 +1,64 @@
+.sidebar {
+    width: var(--sidebar-width);
+    background: var(--color-sidebar-bg);
+    color: var(--color-sidebar-text);
+    border-right: 1px solid var(--color-border);
+}
+
+.sidebar-inner {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-md);
+    gap: var(--space-lg);
+    overflow-y: auto;
+}
+
+.sidebar-logo {
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo-link {
+    color: var(--color-sidebar-text);
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.sidebar-nav, .sidebar-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.sidebar-section-title {
+    margin: 0 0 var(--space-sm) 0;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-secondary);
+}
+
+.sidebar-link {
+    color: var(--color-sidebar-text);
+    text-decoration: none;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.sidebar-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-link.active {
+    background: rgba(255, 255, 255, 0.12);
+    font-weight: 600;
+}
+
+.sidebar-project-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}

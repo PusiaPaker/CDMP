@@ -1,0 +1,69 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}People{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/people.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>People</h1>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="people-page-grid">
+
+        <section class="project-section">
+            <div class="section-header">
+                <h2>Assigned People</h2>
+
+                <div class="people-page-actions">
+                    <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}" class="button">
+                        Import CSV/XLSX
+                    </a>
+                </div>
+            </div>
+
+            {% if people_rows and people_rows|length > 0 %}
+                <div class="people-table-wrapper">
+                    <table class="people-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Role Level</th>
+                                <th>Title</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Account</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for p, pp in people_rows %}
+                                <tr>
+                                    <td class="people-name-cell">{{ p.name }}</td>
+                                    <td>{{ pp.role_level or "" }}</td>
+                                    <td>{{ p.title or "" }}</td>
+                                    <td>{{ p.email or "" }}</td>
+                                    <td>{{ p.phone or "" }}</td>
+                                    <td>
+                                        <span class="people-account-badge{% if p.user_id %} linked{% endif %}">
+                                            {% if p.user_id %}Linked{% else %}Not registered{% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="section-empty-text">No people assigned yet.</p>
+            {% endif %}
+        </section>
+
+    </div>
+{% endblock %}

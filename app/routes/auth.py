@@ -27,7 +27,7 @@ def login():
         session["user_id"] = user.id
 
         next_url = request.args.get("next")
-        return redirect(url_for("dashboard.get_dashboard_main"))
+        return redirect(url_for("dashboard.main"))
 
     return render_template("auth/login.html")
 

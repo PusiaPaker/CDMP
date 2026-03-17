@@ -1,0 +1,92 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Column Mapper{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/column-mapper.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Map Columns</h1>
+    <p>Match spreadsheet columns to the fields used for importing {{ table_type|replace('_', ' ') }}.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type=table_type) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="column-mapper-layout">
+
+        <section class="project-section">
+            <div class="section-header">
+                <h2>Import Mapping</h2>
+            </div>
+
+            {% if error_message %}
+                <div class="mapper-error">
+                    {{ error_message }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('data.column_mapper_commit', project_id=active_project_id, table_type=table_type) }}" class="mapper-form">
+                <input type="hidden" name="temp_path" value="{{ temp_path }}">
+
+                <div class="mapper-table-wrapper">
+                    <table class="mapper-table">
+                        <thead>
+                            <tr>
+                                <th>Spreadsheet Column</th>
+                                <th>Map To</th>
+                                <th>Preview</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for original_column, values in preview_data.items() %}
+                                <tr>
+                                    <td class="mapper-original-column">
+                                        {{ original_column }}
+                                    </td>
+
+                                    <td class="mapper-select-cell">
+                                        <select name="original_col_name={{ original_column }}" class="mapper-select">
+                                            <option value="">-- Ignore --</option>
+
+                                            {% if required_columns %}
+                                                <optgroup label="Required">
+                                                    {% for column in required_columns %}
+                                                        <option value="{{ column }}">{{ column }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endif %}
+
+                                            {% if optional_columns %}
+                                                <optgroup label="Optional">
+                                                    {% for column in optional_columns %}
+                                                        <option value="{{ column }}">{{ column }}</option>
+                                                    {% endfor %}
+                                                </optgroup>
+                                            {% endif %}
+                                        </select>
+                                    </td>
+
+                                    <td class="mapper-preview-cell">
+                                        <div class="mapper-preview-inline">
+                                            {{ values | join(', ') }}
+                                        </div> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mapper-actions">
+                    <button type="submit" class="button">Import Data</button>
+                </div>
+            </form>
+        </section>
+
+    </div>
+{% endblock %}

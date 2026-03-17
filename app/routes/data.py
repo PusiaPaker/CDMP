@@ -33,16 +33,16 @@ def column_mapper(project_id, table_type):
 
     if request.method == "GET":
         return render_template(
-            "project/generic_import_upload.html",
+            "project/upload.html.j2",
             active_project_id=project_id,
             project=project,
             table_type=table_type
         ), 200
 
-    f = request.files.get("uploaded_file")
+    f = request.files.get("file")
     if not f or not f.filename:
         return render_template(
-            "project/people_import_upload.html",
+            "project/upload.html.j2",
             active_project_id=project_id,
             project=project,
             error="Please choose a file.",
@@ -51,7 +51,7 @@ def column_mapper(project_id, table_type):
     ext = f.filename.split(".")[-1].lower()
     if ext not in ["csv", "xlsx"]:
         return render_template(
-            "project/people_import_upload.html",
+            "project/upload.html.j2",
             active_project_id=project_id,
             project=project,
             error="Only .csv or .xlsx is supported.",
@@ -74,7 +74,7 @@ def column_mapper(project_id, table_type):
 
     if not headers:
         return render_template(
-            "project/people_import_upload.html",
+            "project/upload.html.j2",
             active_project_id=project_id,
             project=project,
             error="Could not read headers from file.",
@@ -87,7 +87,7 @@ def column_mapper(project_id, table_type):
     for index, column in enumerate(headers):
         preview_data[column] = [row[index] for row in preview]
 
-    return render_template("project/table_column_mapper.html", 
+    return render_template("project/column_mapper.html.j2", 
                            active_project_id=project_id,
                            table_type=table_type,
                            required_columns=required_columns,
@@ -140,7 +140,7 @@ def column_mapper_commit(project_id, table_type):
         for index, column in enumerate(headers):
             preview_data[column] = [row[index] for row in rows[:6]]
 
-        return render_template("project/table_column_mapper.html", 
+        return render_template("project/column_mapper.html.j2", 
                            active_project_id=project_id,
                            table_type=table_type,
                            required_columns=required_columns,

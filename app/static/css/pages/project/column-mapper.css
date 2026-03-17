@@ -1,0 +1,93 @@
+.column-mapper-layout {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.mapper-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.mapper-table-wrapper {
+    overflow-x: auto;
+}
+
+.mapper-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.mapper-table th,
+.mapper-table td {
+    text-align: left;
+    vertical-align: top;
+    padding: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.mapper-table th {
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.mapper-original-column {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    min-width: 180px;
+}
+
+.mapper-select-cell {
+    min-width: 220px;
+}
+
+.mapper-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+}
+
+.mapper-preview-cell {
+    min-width: 260px;
+}
+
+.mapper-preview-list {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.mapper-preview-inline {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+.mapper-preview-item {
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    word-break: break-word;
+}
+
+.mapper-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-sm);
+}
+
+.mapper-error {
+    padding: 12px 14px;
+    border: 1px solid var(--color-danger-border);
+    background: var(--color-danger-bg-soft);
+    color: var(--color-danger);
+    border-radius: 10px;
+}
+
+@media (max-width: 900px) {
+    .mapper-table th,
+    .mapper-table td {
+        padding: var(--space-sm);
+    }
+}

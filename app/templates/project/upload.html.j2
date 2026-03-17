@@ -1,0 +1,64 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/people-import.css') }}">
+{% endblock %}
+
+{% block title %}Import {{ table_type|replace('_', ' ')|title }}{% endblock %}
+
+{% block page_header %}
+    <h1>Import {{ table_type|replace('_', ' ')|title }}</h1>
+    <p>Upload a file to import {{ table_type|replace('_', ' ') }} into this project.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.people', project_id=active_project_id) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+<section class="project-section">
+    <div class="section-header">
+        <h2>Upload File</h2>
+    </div>
+
+    {% if error %}
+        <p class="section-empty-text">{{ error }}</p>
+    {% endif %}
+
+    <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <input type="hidden" name="table_type" value="{{ table_type }}">
+
+        <div class="form-row">
+            <label class="form-label" for="file">Choose file</label>
+
+            <div class="file-picker-row">
+                <label for="file" class="button-secondary file-picker-button">Choose File</label>
+                <span id="selected-file-name" class="selected-file-name">No file selected</span>
+            </div>
+
+            <input type="file" id="file" name="file" required class="hidden-file-input">
+        </div> 
+
+        <div class="form-actions">
+            <button type="submit" class="button">Continue</button>
+        </div>
+    </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const fileInput = document.getElementById("file");
+    const selectedFileName = document.getElementById("selected-file-name");
+
+    if (fileInput && selectedFileName) {
+        fileInput.addEventListener("change", () => {
+            if (fileInput.files.length > 0) {
+                selectedFileName.textContent = fileInput.files[0].name;
+            } else {
+                selectedFileName.textContent = "No file selected";
+            }
+        });
+    }
+</script>
+{% endblock %}

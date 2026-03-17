@@ -57,7 +57,7 @@ def people(project_id):
         })
 
     return render_template(
-        "project/people.html",
+        "project/people.html.j2",
         project=project,
         active_project_id=project.id,
         people_rows=people_rows,

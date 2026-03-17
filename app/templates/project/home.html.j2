@@ -1,0 +1,99 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}{{ project['title'] }}{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/home.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>{{ project['title'] }}</h1>
+    <p>{{ project['description'] or 'No description provided.' }}</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.file_list', project_id=project['id']) }}" class="button-secondary">Files</a>
+    <a href="{{ url_for('project.people', project_id=project['id']) }}" class="button-secondary">People</a>
+    <a href="{{ url_for('project.timeline', project_id=project['id']) }}" class="button">Timeline</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="project-home-grid">
+        
+        <section class="project-section">
+
+            <div class="section-header">
+                <h2>Recent Files</h2>
+
+                <a href="{{ url_for('project.file_list', project_id=project['id']) }}" class="button-secondary">
+                    View all
+                </a>
+            </div>
+
+            <div class="file-preview-list">
+                {% if recent_files %}
+                    {% for file in recent_files %}
+                        <div class="file-preview-item">
+                           <div class="file-preview-name">
+                                {{ file.file_name_original }}
+                            </div>
+
+                            <div class="file-preview-meta">
+                                {{ file.file_category }} · {{ file.upload_date }}
+                            </div> 
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="section-empty-text">No files uploaded yet.</p>
+                {% endif %}
+            </div>
+
+        </section>
+        <section class="project-section">
+            <div class="section-header">
+                <h2>People</h2>
+                <a href="{{ url_for('project.people', project_id=project['id']) }}" class="button-secondary">
+                    View all
+                </a>
+            </div>
+
+            <div class="people-preview-list">
+               {% if people_rows %}
+                    {% for p, pp in people_rows %}
+                        <div class="people-preview-item">
+                            <div class="people-preview-name">
+                                {{ p.name }}
+                            </div>
+
+                            {% if pp.role_level %}
+                                <div class="people-preview-meta">
+                                    {{ pp.role_level }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="section-empty-text">No people assigned yet.</p>
+                {% endif %} 
+            </div>
+        </section>
+        <section class="summary-grid">
+            <article class="summary-card">
+                <h2 class="summary-card-title">Overview</h2>
+                <p class="summary-card-text">
+                    This project workspace contains files, people, and timeline activity.
+                </p>
+            </article>
+
+            <article class="summary-card">
+                <h2 class="summary-card-title">Project ID</h2>
+                <p class="summary-card-text">{{ project['id'] }}</p>
+            </article>
+
+            <article class="summary-card">
+                <h2 class="summary-card-title">Status</h2>
+                <p class="summary-card-text">Active</p>
+            </article>
+        </section>
+    </div>
+{% endblock %}

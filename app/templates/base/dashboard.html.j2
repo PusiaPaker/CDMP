@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}Dashboard{% endblock %}</title>
+        
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/dashboard.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/sidebar.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/topbar.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/page-header.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buttons.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/footer.css') }}">
+
+        {% block extra_css %}{% endblock %}
+    </head>
+
+    <body>
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="alert alert-warning" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <div class="dashboard-layout">
+           <aside class="sidebar">
+                <div class="sidebar-inner">
+                    <div class="sidebar-logo">
+                        <a href="{{ url_for('dashboard.main') }}" class="logo-link">Pandata</a>
+                    </div>
+
+                    <nav class="sidebar-nav">
+                        <a href="{{ url_for('dashboard.main') }}"
+                           class="sidebar-link{% if request.endpoint == 'dashboard.main' %} active{% endif %}">
+                            Dashboard
+                        </a>
+
+                        <a href="{{ url_for('dashboard.timeline') }}"
+                           class="sidebar-link{% if request.endpoint == 'dashboard.timeline' %} active{% endif %}">
+                            Timeline
+                        </a>
+
+                        <a href="{{ url_for('project.create') }}"
+                           class="sidebar-link{% if request.endpoint == 'project.create' %} active{% endif %}">
+                            New Project
+                        </a>
+                    </nav>
+
+                    {% if request.view_args and request.view_args.get('project_id') %}
+                        {% set current_project_id = request.view_args.get('project_id') %}
+
+                        <div class="sidebar-section">
+                            <p class="sidebar-section-title">Current Project</p>
+
+                            <div class="sidebar-project-list">
+                                <a href="{{ url_for('project.home', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.home' %} active{% endif %}">Home</a>
+                                <a href="{{ url_for('project.file_list', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.file_list' %} active{% endif %}">Files</a>
+                                <a href="{{ url_for('project.people', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.people' %} active{% endif %}">People</a>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="sidebar-section">
+                        <p class="sidebar-section-title">Projects</p>
+
+                        <div class="sidebar-project-list">
+                            {% for id, project_data in sidebar_projects.items() %}
+                                <a href="{{ url_for('project.home', project_id=id) }}"
+                                   class="sidebar-link{% if request.view_args and request.view_args.get('project_id')|string == id|string %} active{% endif %}">
+                                    {{ project_data['title'] }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </aside> 
+
+            <div class="main-area">
+                <header class="topbar">
+                    <div class="topbar-inner">
+                        <div class="topbar-left">
+                            {% block topbar_left %}
+                                <!-- Just Empty for now, if we need to put something on the left side we can -->
+                            {% endblock %}
+                        </div>
+                        
+                        <div class="topbar-right">
+                            {% block topbar_right %}
+                                <a href="{{ url_for('authentication.logout') }}" class="topbar-link">Logout</a>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </header>
+
+                <main class="content">
+                    <div class="content-container">
+                        <div class="page-header">
+                            <div class="page-header-main">
+                                <div class="page-header-text">
+                                    {% block page_header %}{% endblock %}
+                                </div>
+                                
+                                <div class="page-header-actions">
+                                    {% block page_header_actions %}{% endblock %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="page-content">
+                            {% block main_content %}{% endblock %}  
+                        </div>
+                    </div>
+
+                    <footer>
+                        &copy; 2026 Pandata · Kent State University
+                    </footer>
+                </main>
+
+                
+            </div>
+        </div>
+
+        {% block extra_js %}{% endblock %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

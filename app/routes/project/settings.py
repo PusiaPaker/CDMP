@@ -15,7 +15,7 @@ def settings(project_id):
         return render_template("error/404.html"), 404
 
     if not user_has_project_access(session["user_id"], project_id):
-        return redirect(url_for('dashboard.get_dashboard_main'))
+        return redirect(url_for('dashboard.main'))
 
     is_owner = user_is_project_owner(session["user_id"], project_id)
 
@@ -34,7 +34,7 @@ def edit(project_id):
             return render_template("error/404.html"), 404
         
         if not user_has_project_access(session["user_id"], project_id):
-            return redirect(url_for('dashboard.get_dashboard_main'))
+            return redirect(url_for('dashboard.main'))
 
         return render_template("project/project_add_data.html", active_project_id=project.id, active_project=project, status=None), 200
 
@@ -114,7 +114,7 @@ def delete(project_id):
     # Redirect to dashboard either way since users should NOT be able
     # to execute this function if they're not the project owner (the 
     # button won't display for editors/viewers)
-    return redirect(url_for("dashboard.get_dashboard_main"))
+    return redirect(url_for("dashboard.main"))
     
 
 

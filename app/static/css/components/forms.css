@@ -1,9 +1,0 @@
-.form-submit-button{
-    background-color: var(--cdmp-color-main);
-    border-color: var(--cdmp-color-main);
-}
-
-.form-submit-button:hover{
-    background-color: var(--cdmp-color-main-hover);
-    border-color: var(--cdmp-color-main)
-}

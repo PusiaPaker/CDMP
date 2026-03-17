@@ -15,7 +15,7 @@ def require_login():
         return redirect(url_for("authentication.login", next=request.path))
 
 @DashBP.route("/")
-def get_dashboard_main():
+def main():
     user_id = session["user_id"]
 
     user = db.session.get(User, user_id)
@@ -24,14 +24,12 @@ def get_dashboard_main():
     projects = get_projects_for_user(user_id)
 
     return render_template(
-        "dashboard/home.html",
-        dashboard_title=f"Welcome to Pandata, {username}.",
-        description="Here are your projects.",
+        "dashboard/home.html.j2",
         projects=projects,
     ), 200
 
 @DashBP.route("/timeline")
-def get_dashboard_main_timeline():
+def timeline():
     user_id = session["user_id"]
 
     projects = get_projects_for_user(user_id)

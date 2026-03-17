@@ -14,7 +14,10 @@ from app.src.constants import ALLOWED_FILE_EXTENSIONS
 def file_list(project_id):
     files = db.session.query(File).filter(File.project_id == project_id).order_by(File.upload_date.desc()).all()
     project = db.session.get(Project, project_id)
-    return render_template("project/files.html", project=project, active_project_id=project.id, files=files), 200
+    return render_template( "project/files.html.j2", 
+                           project=project, 
+                           active_project_id=project.id, 
+                           files=files), 200
 
 
 @ProjectBP.route('/<project_id>/files/upload', methods=['GET', 'POST'])
@@ -22,22 +25,25 @@ def file_upload(project_id):
     project = db.session.get(Project, project_id)
 
     if request.method == 'GET':
-        return render_template("project/upload.html", active_project=project, active_project_id=project.id, status=None), 200
+        return render_template("project/file_upload.html.j2", active_project=project, active_project_id=project.id, status=None), 200
 
-    f = request.files.get('uploaded_file')
+    f = request.files.get('file')
     if not f or f.filename == '':
         return render_template("error/404.html"), 404
 
     ext = f.filename.split('.')[-1].lower()
     if ext not in ALLOWED_FILE_EXTENSIONS:
-        return render_template("project/upload.html", active_project=project, active_project_id=project.id, error="Invalid extension"), 400
+        return render_template("project/file_upload.html.j2", active_project=project, active_project_id=project.id, error="Invalid extension"), 400
 
     file_name = secure_filename(f.filename)
 
     temp_id = str(uuid.uuid4())
-    disk_file_name = f'{temp_id}.{ext}'
+    disk_file_name = f"{temp_id}.{ext}"
 
-    f.save(os.path.join(os.getenv('FILE_UPLOAD_STORAGE_PATH'), disk_file_name))
+    storage_dir = os.getenv("FILE_UPLOAD_STORAGE_PATH")
+    os.makedirs(storage_dir, exist_ok=True)
+
+    f.save(os.path.join(storage_dir, disk_file_name)) 
 
     file_in_db = File(
         id=temp_id,

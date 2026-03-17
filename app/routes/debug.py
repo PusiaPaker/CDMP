@@ -9,6 +9,10 @@ from app.populate.roles import populateRoles
 
 DebugBP = Blueprint('debug', __name__)
 
+@DebugBP.route("/layout/")
+def layout():
+    return render_template("debug/layout.html.j2")
+
 @DebugBP.route('/get/users')
 def getUsers():
     users = db.session.query(User).all()

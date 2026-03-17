@@ -1,0 +1,71 @@
+.people-page-grid {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.people-table-wrapper {
+    margin-top: 3rem;
+    overflow-x: auto;
+}
+
+.people-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-surface);
+}
+
+.people-table th,
+.people-table td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+}
+
+.people-table th {
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+}
+
+.people-table td {
+    color: var(--color-text-primary);
+}
+
+.people-table tbody tr:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.people-name-cell {
+    font-weight: 600;
+}
+
+.people-account-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+}
+
+.people-account-badge.linked {
+    color: var(--color-text-primary);
+}
+
+.people-page-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+    .people-table th,
+    .people-table td {
+        padding: 10px 12px;
+    }
+}

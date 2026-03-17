@@ -1,0 +1,33 @@
+.page-header {
+    margin-bottom: var(--space-lg);
+}
+
+.page-header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.page-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+/* sets margin 0 for common text styles */
+.page-header-text h1, .page-header-text h2, .page-header-text h3, .page-header-text p {
+    margin: 0;
+}
+
+.page-header-text p {
+    color: var(--color-text-secondary);
+}
+
+.page-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
