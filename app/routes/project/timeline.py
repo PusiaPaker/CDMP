@@ -35,6 +35,7 @@ def timeline(project_id):
         "project/timeline.html",
         project=project,
         active_project_id=project.id,
+        project_tab="timeline",
         timeline_events=timeline_events,
     ), 200
 

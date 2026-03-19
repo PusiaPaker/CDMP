@@ -26,8 +26,9 @@ def share(project_id):
                 authorized_users=authorized_users, 
                 is_owner=is_owner,
                 error=error,
-                active_project=project, 
-                active_project_id=project.id)
+                project=project,
+                active_project_id=project.id,
+                project_tab="share")
 
 
     if request.method == 'GET':

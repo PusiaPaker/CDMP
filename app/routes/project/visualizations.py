@@ -20,6 +20,7 @@ def visualizations(project_id):
         "project/visualizations.html",
         project=project,
         active_project_id=project.id,
+        project_tab="visualizations",
         event_distribution_data=event_distribution_data,
         role_distribution_data=role_distribution_data
     ), 200

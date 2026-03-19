@@ -2,7 +2,7 @@ from flask import render_template, session, request, redirect, url_for, jsonify,
 from sqlalchemy import select, exists, and_, insert
 
 from .project import ProjectBP
-from app.src.project.queries import user_has_project_access
+from app.src.project.queries import get_project_recent_files, user_has_project_access
 from app.src.project.files import parse_csv_headers_preview, parse_xlsx_headers_preview, read_all_csv_rows, read_all_xlsx_rows
 
 from app.tables import Project, ProjectPerson, PersonReport, Person
@@ -60,7 +60,9 @@ def people(project_id):
         "project/people.html",
         project=project,
         active_project_id=project.id,
+        project_tab="people",
         people_rows=people_rows,
+        recent_files=get_project_recent_files(project_id),
         reporting_links=reporting_links,
         people_nodes=people_nodes,
         ), 200

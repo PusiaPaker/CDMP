@@ -1,38 +1,31 @@
-{% extends "base/dashboard.html" %}
+{% extends "project/workspace.html" %}
 
-{% block title %}
-    CDMP | {{ project['title'] }}
+{% block project_title_suffix %}
+    - Visualizations
 {% endblock %}
 
-{% block dashboard_page_name %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
-
-    </div>
+{% block project_panel_title %}
+    Visualizations
 {% endblock %}
 
-{% block dashboard_description %}
-    <div class="container-fluid w-75 ms-0">
-        <h1 class="desc small text-start py-3">{{ project['description'] }}</h1>
-    </div>
+{% block project_panel_subtitle %}
+    <p class="project-workspace-subtitle mb-0">
+        Review charts and visual summaries for {{ project.title }} in one place.
+    </p>
 {% endblock %}
 
-{% block main_content %}
-<h2 class="ps-2 section-header" id="visualization">Visualization</h2>
-<div class="container-fluid dashboard-container m-0 p-5">
+{% block project_workspace_content %}
     <div class="row justify-content-center py-2">
         <div class="col-5 d-flex justify-content-center align-items-center dash-chart">
             <canvas id="event-distribution-chart"></canvas>
         </div>
         <div class="col-5 d-flex justify-content-center align-items-center ps-4">
             <div>
-                <h3>
-                    Event Distribution
-                </h3>
+                <h3>Event Distribution</h3>
                 <p class="text-muted">
-                    This bar chart displays the event (deadlines, start of a phase) activity across all the time it spans. Use the
-                    <a href="{{url_for('project.timeline', project_id=active_project_id)}}"> Timeline </a> 
-                 page to add new date related information to the project.
+                    This bar chart displays event activity across the full project timeline. Use the
+                    <a href="{{ url_for('project.timeline', project_id=active_project_id) }}">Timeline</a>
+                    page to add new date-related information.
                 </p>
             </div>
         </div>
@@ -41,12 +34,10 @@
     <div class="row justify-content-center py-2">
         <div class="col-5 d-flex justify-content-center align-items-center pe-4">
             <div class="text-end">
-                <h3>
-                    Role Distribution
-                </h3>
+                <h3>Role Distribution</h3>
                 <p class="text-muted">
-                    Your team has <b>{{ role_distribution_data.total_people }}</b> individuals, 
-                    across a total of <b>{{ role_distribution_data.total_roles }}</b> different roles.
+                    Your team has <b>{{ role_distribution_data.total_people }}</b> individuals across
+                    <b>{{ role_distribution_data.total_roles }}</b> different roles.
                 </p>
             </div>
         </div>
@@ -61,29 +52,20 @@
         </div>
         <div class="col-5 d-flex justify-content-center align-items-center pe-4">
             <div class="text-start">
-                <h3>
-                    Recent Burndown Graph
-                </h3>
+                <h3>Recent Burndown Graph</h3>
                 <p class="text-muted">
-                    A pine cone, which was called a pineapple at least two centuries before use of the name for the tropical fruit
-                    
-                    Pineapple fruit, whole and in cross section
-                    The words, pine apple, first referred to the cone (fruit) of the pine tree in the 14th century.[7] This name convention occurred because medieval botanists called any unfamiliar tree fruit an apple if it had a firm, round shape.
+                    A burndown-style view can help highlight overall momentum and recent changes in project activity.
                 </p>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    // pass the visualization information to visualizations.js
-    window.event_distribution_data = {{ event_distribution_data | tojson }};
-    window.role_distribution_data = {{ role_distribution_data | tojson }};
-</script>
+    <script>
+        window.event_distribution_data = {{ event_distribution_data | tojson }};
+        window.role_distribution_data = {{ role_distribution_data | tojson }};
+    </script>
+{% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/pages/visualizations.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pages/visualizations.js') }}"></script>
 {% endblock %}
-
-{% endblock %}
-

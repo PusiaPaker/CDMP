@@ -1,51 +1,56 @@
-{% extends "base/dashboard.html" %}
+{% extends "project/workspace.html" %}
 
-{% block title %}
-    CDMP | {{ project.title }} - Files
+{% block project_title_suffix %}
+    - Files
 {% endblock %}
 
-{% block dashboard_page_name %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="ps-2 display-5 project-title mb-0">{{ project.title }}</h1>
-
-        <div class="d-flex gap-2 me-5">
-            <a class="dashboard-add-data-button" href="{{ url_for('project.file_upload', project_id=active_project_id) }}">
-                Upload
-            </a>
-        </div>
-    </div>
+{% block project_panel_title %}
+    Files
 {% endblock %}
 
-{% block main_content %}
-<div class="card dashboard-container p-4">
-    <h5 class="mb-3">Files</h5>
+{% block project_panel_subtitle %}
+    <p class="project-workspace-subtitle mb-0">
+        Browse the project file library, including categories, descriptions, and upload dates.
+    </p>
+{% endblock %}
 
+{% block project_panel_actions %}
+    <a class="dashboard-add-data-button" href="{{ url_for('project.file_upload', project_id=active_project_id) }}">
+        Upload
+    </a>
+{% endblock %}
+
+{% block project_workspace_content %}
     {% if files and files|length > 0 %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Filename</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Uploaded</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for f in files %}
+        <div class="table-responsive">
+            <table class="table project-data-table align-middle mb-0">
+                <thead>
                     <tr>
-                        <td>{{ f.file_name_original }}</td>
-                        <td>{{ f.file_category }}</td>
-                        <td>{{ f.description or "" }}</td>
-                        <td>{{ f.upload_date.date() }}</td>
-                        <td><a class="btn btn-sm btn-outline-secondary" href="{{ url_for('project.get_project_files_debug', project_id=active_project_id) }}">Open</a></td>
+                        <th>Filename</th>
+                        <th>Category</th>
+                        <th>Description</th>
+                        <th>Uploaded</th>
+                        <th></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for file in files %}
+                        <tr>
+                            <td>{{ file.file_name_original }}</td>
+                            <td>{{ file.file_category or "Unspecified" }}</td>
+                            <td>{{ file.description or "" }}</td>
+                            <td>{{ file.upload_date.date() }}</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-secondary" href="{{ url_for('project.get_project_files_debug', project_id=active_project_id) }}">
+                                    Open
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-        <p class="text-muted">No files for this project yet.</p>
+        <p class="text-muted mb-0">No files for this project yet.</p>
     {% endif %}
-</div>
 {% endblock %}
-

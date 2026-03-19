@@ -1,7 +1,7 @@
 from sqlalchemy import select, exists, and_
 
 from app.core import db
-from app.tables import Role, Project, User
+from app.tables import Role, Project, User, Person, ProjectPerson, File
 
 def user_has_project_access(user_id: str, project_id: str) -> bool:
     return db.session.execute(
@@ -76,4 +76,36 @@ def get_all_projects():
         result[project.id] = {'description': project.description, 'title': project.title}
 
     return result
+
+
+def get_project_people_rows(project_id: str):
+    return (
+        db.session.execute(
+            select(Person, ProjectPerson)
+            .join(ProjectPerson, ProjectPerson.person_id == Person.id)
+            .where(ProjectPerson.project_id == project_id)
+            .order_by(Person.name.asc())
+        )
+        .all()
+    )
+
+
+def get_project_recent_files(project_id: str, limit: int = 6):
+    return (
+        db.session.execute(
+            select(File)
+            .where(File.project_id == project_id)
+            .order_by(File.upload_date.desc())
+            .limit(limit)
+        )
+        .scalars()
+        .all()
+    )
+
+
+def get_project_workspace_context(project_id: str) -> dict:
+    return {
+        "people_rows": get_project_people_rows(project_id),
+        "recent_files": get_project_recent_files(project_id),
+    }
 

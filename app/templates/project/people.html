@@ -1,144 +1,116 @@
-{% extends './base/dashboard.html' %} 
+{% extends "project/workspace.html" %}
 
-{% block title %} 
-    CDMP | {{ project['title'] }} 
-{% endblock %} 
+{% block project_title_suffix %}
+    - People
+{% endblock %}
 
-{% block dashboard_page_name %}
-    <div class="d-flex justify-content-between align-items-center">
-        <h1 class="ps-2 display-5 project-title mb-0">{{ project['title'] }}</h1>
-    </div>
-{% endblock %} 
+{% block project_panel_title %}
+    People
+{% endblock %}
 
-{% block dashboard_description %}
-    <div class="container-fluid w-75 ms-0">
-        <h1 class="desc small text-start py-3">{{ project['description'] }}</h1>
-    </div>
-{% endblock %} 
+{% block project_panel_subtitle %}
+    <p class="project-workspace-subtitle mb-0">
+        Manage the team assigned to {{ project.title }}, including reporting relationships and linked accounts.
+    </p>
+{% endblock %}
 
-{% block main_content %}
-<h2 class="ps-2">People</h2>
-<div class="container-fluid dashboard-container m-0 p-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="mb-0">Assigned People</h4>
+{% block project_panel_actions %}
+    <a
+        class="btn btn-primary form-submit-button"
+        href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}"
+    >
+        Import CSV/XLSX
+    </a>
+{% endblock %}
 
-        <div class="d-flex gap-2">
-            <a
-                class="btn btn-primary form-submit-button"
-                href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}"
-            >
-                Import CSV/XLSX
-            </a>
-        </div>
-    </div>
-
+{% block project_workspace_content %}
     {% if people_rows and people_rows|length > 0 %}
-    <div class="table-responsive">
-        <table class="table table-striped align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Role Level</th>
-                    <th>Title</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Account</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p, pp in people_rows %}
-                <tr>
-                    <td>{{ p.name }}</td>
-                    <td>{{ pp.role_level or "" }}</td>
-                    <td>{{ p.title or "" }}</td>
-                    <td>{{ p.email }}</td>
-                    <td>{{ p.phone or "" }}</td>
-                    <td>
-                        {% if p.user_id %} Linked {% else %} Not registered {%
-                        endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <div class="table-responsive">
+            <table class="table table-striped align-middle mb-0 project-data-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Role Level</th>
+                        <th>Title</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Account</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for person, project_person in people_rows %}
+                        <tr>
+                            <td>{{ person.name }}</td>
+                            <td>{{ project_person.role_level or "" }}</td>
+                            <td>{{ person.title or "" }}</td>
+                            <td>{{ person.email }}</td>
+                            <td>{{ person.phone or "" }}</td>
+                            <td>{% if person.user_id %}Linked{% else %}Not registered{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     {% else %}
-    <p class="mb-0">No people assigned to this project yet.</p>
+        <p class="mb-0">No people assigned to this project yet.</p>
     {% endif %}
-    <h2 class="mb-3 mt-5">Reporting Matrix</h2>
-    <p class="small text-muted mb-3"></p>
+
+    <h3 class="mb-3 mt-5">Reporting Matrix</h3>
     <div class="reporting-matrix-table-container table-responsive">
-        <table
-            class="table table-bordered align-middle text-center reporting-matrix-table"
-        >
+        <table class="table table-bordered align-middle text-center reporting-matrix-table">
             <thead>
                 <tr>
                     <th class="text-start">Person / Reports to</th>
                     {% for manager, _ in people_rows %}
-                    <th>
-                        {{ manager.name }} <br />
-                        <p
-                            class="reporting-matrix-person-title-text text-muted"
-                        >
-                            {{ manager.title }}
-                        </p>
-                    </th>
+                        <th>
+                            {{ manager.name }} <br />
+                            <p class="reporting-matrix-person-title-text text-muted">
+                                {{ manager.title }}
+                            </p>
+                        </th>
                     {% endfor %}
                 </tr>
             </thead>
             <tbody>
                 {% for person, _ in people_rows %}
-                <tr>
-                    <th scope="row" class="text-start">
-                        {{ person.name }} <br />
-                        <p
-                            class="reporting-matrix-person-title-text text-muted"
-                        >
-                            {{ person.title }}
-                        </p>
-                    </th>
-                    {% for manager, _ in people_rows %}
-                    <td>
-                        {% if person.id == manager.id %}
-                        <div class="reporting-matrix-self-report-squares"></div>
-                        {% else %} {% set reporting_link_key = person.id ~ ':' ~
-                        manager.id %}
-                        <input
-                            class="reporting-matrix-check-button"
-                            type="checkbox"
-                            id="reports-{{ person.id }}-{{ manager.id }}"
-                            value="{{ reporting_link_key }}"
-                            {%
-                            if
-                            reporting_link_key
-                            in
-                            reporting_links
-                            %}checked{%
-                            endif
-                            %}
-                        />
-                        {% endif %}
-                    </td>
-                    {% endfor %}
-                </tr>
+                    <tr>
+                        <th scope="row" class="text-start">
+                            {{ person.name }} <br />
+                            <p class="reporting-matrix-person-title-text text-muted">
+                                {{ person.title }}
+                            </p>
+                        </th>
+                        {% for manager, _ in people_rows %}
+                            <td>
+                                {% if person.id == manager.id %}
+                                    <div class="reporting-matrix-self-report-squares"></div>
+                                {% else %}
+                                    {% set reporting_link_key = person.id ~ ':' ~ manager.id %}
+                                    <input
+                                        class="reporting-matrix-check-button"
+                                        type="checkbox"
+                                        id="reports-{{ person.id }}-{{ manager.id }}"
+                                        value="{{ reporting_link_key }}"
+                                        {% if reporting_link_key in reporting_links %}checked{% endif %}
+                                    />
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <h2 class="mb-3 mt-5">Organizational Hierarchy</h2>
-
+    <h3 class="mb-3 mt-5">Organizational Hierarchy</h3>
     <div id="organization-chart-network"></div>
-</div>
 
-<script>
-const peopleNodesData = {{ people_nodes | tojson }};
-const reportingUpdateUrl = "{{ url_for('project.update_reporting_matrix', project_id=active_project_id) }}";
-</script>
+    <script>
+    const peopleNodesData = {{ people_nodes | tojson }};
+    const reportingUpdateUrl = "{{ url_for('project.update_reporting_matrix', project_id=active_project_id) }}";
+    </script>
+{% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/pages/project-people.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pages/project-people.js') }}"></script>
 {% endblock %}
-
-{% endblock %}
-

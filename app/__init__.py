@@ -4,6 +4,7 @@ import os
 
 from app.config import Config
 from app.src.commands import CommandsBP
+from app.src.project.queries import get_projects_for_user
 
 from app.routes import DashBP, DebugBP, ProjectBP, DataBP, AuthBP
 from app.core import db
@@ -40,5 +41,14 @@ def create_app():
         if 'user_id' in session:
             return redirect(url_for('dashboard.get_dashboard_main'))
         return redirect(url_for('authentication.login'))
+
+    @app.context_processor
+    def inject_sidebar_projects():
+        user_id = session.get("user_id")
+
+        if not user_id:
+            return {"projects": {}}
+
+        return {"projects": get_projects_for_user(user_id)}
 
     return app

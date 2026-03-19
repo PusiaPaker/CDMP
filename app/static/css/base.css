@@ -20,5 +20,9 @@ Some CSS classes that are shared across the project
     --cdmp-color-generic-button-green: rgb(60, 191, 66);
     --cdmp-color-generic-button-green-hover: rgb(57, 143, 51);
 
-    --sidebar-width: 15%;
+    --sidebar-width: clamp(14rem, 15vw, 18rem);
+    --sidebar-collapsed-width: 0rem;
+    --sidebar-toggle-collapsed-left: 1rem;
+    --sidebar-toggle-expanded-left-gap: 0.5rem;
+    --top-navbar-height: 3.5rem;
 }

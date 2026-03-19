@@ -4,6 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Dashboard{% endblock %}</title>
+
+    <script>
+        (function () {
+            try {
+                if (window.localStorage.getItem("cdmp.sidebarCollapsed") === "true") {
+                    document.documentElement.classList.add("sidebar-collapsed");
+                }
+            } catch (error) {
+                // Ignore storage access issues and fall back to the default expanded layout.
+            }
+        })();
+    </script>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
@@ -20,10 +32,23 @@
     <link href="{{ url_for('static', filename='css/pages/data.css') }}" rel='stylesheet'>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="d-flex justify-content-center align-items-center">
+    <button
+        class="sidebar-toggle"
+        type="button"
+        data-sidebar-toggle
+        aria-controls="dashboard-sidebar"
+        aria-expanded="true"
+        aria-label="Collapse sidebar"
+        title="Collapse menu"
+    >
+        <i class="bi bi-x-lg" aria-hidden="true"></i>
+        <span class="visually-hidden">Toggle sidebar</span>
+    </button>
+
+    <nav class="sidebar" id="dashboard-sidebar">
+        <div class="d-flex justify-content-center align-items-center flex-column">
             <a class="d-flex justify-content-center align-items-center" href="{{url_for('dashboard.get_dashboard_main')}}">
-                <img class="sidebar-pandata-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}"> </div>
+                <img class="sidebar-pandata-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}">
             </a>
             <div class="ps-3 pe-3 mb-4 d-flex justify-content-center align-items-center flex-column">
                 <h5 class="text-white mb-0 fs-2">
@@ -33,81 +58,35 @@
             </div>
         </div>
             
-        {% if projects is mapping %}
-            <ul class="nav flex-column">
-                <li class="nav-item">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link nav-link-category fs-5 ps-2 d-flex align-items-center gap-2 p-2" aria-expanded="true"
+                    href="{{url_for('dashboard.get_dashboard_main_timeline')}}">
+                    <i class="bi bi-hourglass"></i> <h5 class="mb-0">Global Timeline</h5>
+                </a>
 
+                <a class="nav-link nav-link-category fs-5 ps-2 d-flex align-items-center gap-2 p-2" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
+                    <i class="bi bi-folder"></i> <h5 class="mb-0">Projects</h5>
+                </a>
+
+                <ul class="list-unstyled collapse show" id="project-list">
                     <li>
-                            <a class="nav-link nav-link-category fs-5 ps-2 d-flex align-items-center gap-2 p-2" aria-expanded="true"
-                                href="{{url_for('dashboard.get_dashboard_main_timeline')}}">
-                            <i class="bi bi-hourglass"></i> <h5 class="mb-0">Global Timeline</h5>
-                            </a>
-
+                        <a class="nav-link nav-project-link pointer-cursor-hover sidebar-link-item" href="{{url_for('project.create')}}">
+                            <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
+                            New Project
+                        </a>
                     </li>
-                    <!-- Collapsable project selection -->
-                    <a class="nav-link nav-link-category fs-5 ps-2 d-flex align-items-center gap-2 p-2" data-bs-toggle="collapse" data-bs-target="#project-list" aria-expanded="true">
-                        <i class="bi bi-folder"></i> <h5 class="mb-0">Projects</h5>
-                    </a>
-
-                    <ul class="list-unstyled collapse show" id="project-list">
+                    {% for id, project_data in projects.items() %}
                         <li>
-                            <a class="nav-link nav-project-link pointer-cursor-hover sidebar-link-item" href="{{url_for('project.create')}}">
-                                <i class="bi bi-plus-lg" style="color: rgb(82, 223, 94)"></i>
-                                New Project
-                            </a>
+                            <a class="nav-link nav-project-link ps-3 pointer-cursor-hover sidebar-link-item" href="{{url_for('project.home', project_id=id)}}">
+                                {{project_data['title']}}
+                            </a> 
                         </li>
-                        {% for id, project_data in projects.items() %}
-                            <li>
-                                <a class="nav-link nav-project-link ps-3 pointer-cursor-hover sidebar-link-item" href="{{url_for('project.home', project_id=id)}}">
-                                    {{project_data['title']}}
-                                </a> 
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                {% block go_to_section %}{% endblock %}
-            </ul>
-            {% else %}
-            <a class="nav-link fs-5" href="{{url_for('dashboard.get_dashboard_main')}}">
-                <i class="bi bi-arrow-return-left"></i> Back
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{url_for('project.home', project_id=active_project_id)}}">
-                <i class="bi bi-house"></i> Home
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{ url_for('project.file_list', project_id=active_project_id) }}">
-                <i class="bi bi-file-earmark-text"></i> Files
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{url_for('project.visualizations', project_id=active_project_id)}}">
-                <i class="bi bi-bar-chart-line"></i> Visualizations
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{url_for('project.timeline', project_id=active_project_id)}}">
-                <i class="bi bi-hourglass"></i> Timeline
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{url_for('project.people', project_id=active_project_id)}}">
-                <i class="bi bi-person"></i> People
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{ url_for('project.share', project_id=active_project_id) }}">
-                <i class="bi bi-share"></i> Share
-            </a>
-
-            <a class="sidebar-link-item nav-link nav-project-link ps-5 fs-6 pointer-cursor-hover"
-                href="{{ url_for('project.settings', project_id=active_project_id) }}">
-                <i class="bi bi-gear"></i> Settings
-            </a>
-
-            {% endif %} 
+                    {% endfor %}
+                </ul>
+            </li>
+            {% block go_to_section %}{% endblock %}
+        </ul>
     </nav>
     
     <div class="main-content">
@@ -165,5 +144,6 @@
 
     {% block extra_js %}{% endblock %}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/sidebar-toggle.js') }}"></script>
 </body>
 </html>
