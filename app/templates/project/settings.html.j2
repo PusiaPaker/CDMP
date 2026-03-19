@@ -1,0 +1,107 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Project Settings{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/settings.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Project Settings</h1>
+    <p class="page-subtitle">Manage project details and important actions.</p>
+{% endblock %}
+
+{% block main_content %}
+    <section class="settings-layout">
+        <article class="settings-card">
+            <div class="settings-card-header">
+                <h2>Project Information</h2>
+                <p>Basic details for this project workspace.</p>
+            </div>
+
+            <div class="settings-info-grid">
+                <div class="settings-info-item">
+                    <span class="settings-label">Project Name</span>
+                    <p class="settings-value">{{ project.title }}</p>
+                </div>
+
+                <div class="settings-info-item">
+                    <span class="settings-label">Description</span>
+                    <p class="settings-value settings-description">
+                        {{ project.description if project.description else "No description provided yet." }}
+                    </p>
+                </div>
+
+                <div class="settings-info-item">
+                    <span class="settings-label">Project ID</span>
+                    <p class="settings-value settings-mono">{{ project.id }}</p>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <a href="{{ url_for('project.edit', project_id=project.id) }}" class="button">
+                    Edit Project
+                </a>
+            </div>
+        </article>
+
+        <article class="settings-card">
+            <div class="settings-card-header">
+                <h2>Workspace Actions</h2>
+                <p>Quick links for project-related management tasks.</p>
+            </div>
+
+            <div class="settings-action-list">
+                <a href="{{ url_for('project.file_upload', project_id=project.id) }}" class="settings-action-row">
+                    <div>
+                        <h3>Upload Files</h3>
+                        <p>Add files and map project data.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a href="{{ url_for('project.visualizations', project_id=project.id) }}" class="settings-action-row">
+                    <div>
+                        <h3>Open Visualizations</h3>
+                        <p>Review reporting structure and analytics.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+
+                <a href="{{ url_for('project.people', project_id=project.id) }}" class="settings-action-row">
+                    <div>
+                        <h3>Manage People</h3>
+                        <p>View assigned people and project roles.</p>
+                    </div>
+                    <span>→</span>
+                </a>
+            </div>
+        </article>
+
+        {% if is_owner %}
+            <article class="settings-card danger-card">
+                <div class="settings-card-header">
+                    <h2>Pernament Changes</h2>
+                    <p>These actions affect the whole project and cannot be easily undone.</p>
+                </div>
+
+                <div class="danger-zone-content">
+                    <div class="danger-copy">
+                        <h3>Delete Project</h3>
+                        <p>
+                            This removes the project, files, roles, people links, and timeline events tied to it.
+                        </p>
+                    </div>
+
+                    <a
+                        href="{{ url_for('project.delete', project_id=project.id) }}"
+                        class="danger-button"
+                        onclick="return confirm('Are you sure you want to delete this project? This cannot be undone.');"
+                    >
+                        Delete Project
+                    </a>
+                </div>
+            </article>
+        {% endif %}
+    </section>
+{% endblock %}

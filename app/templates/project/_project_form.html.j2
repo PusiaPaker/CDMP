@@ -1,0 +1,41 @@
+<form method="POST" action="{{ form_action }}" class="project-form">
+    {% if status == 'success' %}
+        <div class="form-alert success">Saved successfully.</div>
+    {% endif %}
+
+    {% if error %}
+        <div class="form-alert error">{{ error }}</div>
+    {% endif %}
+
+    <div class="form-section">
+        <label for="title" class="form-label">Project Name</label>
+        <input
+            type="text"
+            id="title"
+            name="title"
+            class="form-input"
+            placeholder="Enter project name"
+            value="{{ project.title if project else '' }}"
+            minlength="3"
+            maxlength="100"
+            required
+        >
+    </div>
+
+    <div class="form-section">
+        <label for="description" class="form-label">Description</label>
+        <textarea
+            id="description"
+            name="description"
+            class="form-textarea"
+            placeholder="Brief description of the project"
+            rows="6"
+            maxlength="512"
+        >{{ project.description if project and project.description else '' }}</textarea>
+    </div>
+
+    <div class="form-actions">
+        <a href="{{ cancel_url }}" class="button-secondary">Cancel</a>
+        <button type="submit" class="button">{{ submit_label }}</button>
+    </div>
+</form>

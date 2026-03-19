@@ -20,60 +20,80 @@ def settings(project_id):
     is_owner = user_is_project_owner(session["user_id"], project_id)
 
     return render_template(
-        "project/settings.html",
-        active_project=project,
+        "project/settings.html.j2",
+        project=project,
         active_project_id=project.id,
         is_owner=is_owner
     ), 200
 
 @ProjectBP.route('/edit/<project_id>', methods=['GET', 'POST'])
 def edit(project_id):
+    project = db.session.get(Project, project_id)
+    if not project:
+        return render_template("error/404.html"), 404
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return redirect(url_for('dashboard.main'))
+
     if request.method == 'GET':
-        project = db.session.get(Project, project_id)
-        if not project:
-            return render_template("error/404.html"), 404
-        
-        if not user_has_project_access(session["user_id"], project_id):
-            return redirect(url_for('dashboard.main'))
+        return render_template(
+            "project/project_add_data.html.j2",
+            project=project,
+            active_project_id=project.id,
+            form_title=f'Edit "{project.title}"',
+            form_subtitle="Update the project name and description.",
+            submit_label="Save Changes",
+            form_action=url_for('project.edit', project_id=project.id),
+            cancel_url=url_for('project.home', project_id=project.id),
+            status=None,
+            error=None
+        ), 200
 
-        return render_template("project/project_add_data.html", active_project_id=project.id, active_project=project, status=None), 200
+    project.title = request.form['title']
+    project.description = request.form['description']
+    db.session.commit()
 
-    elif request.method == 'POST':
-        which_form = request.form.get('which_form', 'update_fields')
-
-        if which_form == 'update_fields':
-            project = db.session.get(Project, project_id)
-            project.title = request.form['title']
-            project.description = request.form['description']
-            db.session.commit()
-    
-            # This should probably so that it redirect you to the just edited project
-            return render_template("dashboard/home.html", dashboard_title='Hello, Username!', projects=get_projects_for_user(user_id=session["user_id"])), 200
-
-        return redirect(url_for('project.edit', project_id=project_id))
+    return redirect(url_for('project.home', project_id=project.id))
 
 @ProjectBP.route('/new', methods=['GET', 'POST'])
 def create():
     user_id = session["user_id"]
-    projects = get_projects_for_user(user_id)
-    
+
     if request.method == 'GET':
-        return render_template("project/create.html", projects=projects, status=None), 200
-    elif request.method == 'POST':
-        title = request.form['title']
-        description = request.form['description']
+        return render_template(
+            "project/create.html.j2",
+            project=None,
+            form_title="Create Project",
+            form_subtitle="Start a new project workspace.",
+            submit_label="Create Project",
+            form_action=url_for('project.create'),
+            cancel_url=url_for('dashboard.main'),
+            status=None,
+            error=None
+        ), 200
 
-        proj_id = str(uuid.uuid4())
-        project = Project(id=proj_id, owner_id=user_id,title=title, description=description)
-        db.session.add(project)
+    title = request.form['title']
+    description = request.form['description']
 
-        r = Role(user_id = user_id, project_id = proj_id, role = 'owner')
-        db.session.add(r)
+    proj_id = str(uuid.uuid4())
+    project = Project(
+        id=proj_id,
+        owner_id=user_id,
+        title=title,
+        description=description
+    )
+    db.session.add(project)
 
-        db.session.commit()
-        projects = get_projects_for_user(user_id)
+    owner_role = Role(
+        user_id=user_id,
+        project_id=proj_id,
+        role='owner'
+    )
+    db.session.add(owner_role)
 
-        return render_template('dashboard/home.html', projects=projects, status='success'), 200
+    db.session.commit()
+
+    return redirect(url_for('project.home', project_id=proj_id))
 
 @ProjectBP.route('/get')
 def get_projects():

@@ -1,0 +1,36 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Edit Project{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>{{ form_title }}</h1>
+    <p class="page-subtitle">{{ form_subtitle }}</p>
+{% endblock %}
+
+{% block main_content %}
+    <section class="project-form-layout">
+        <article class="project-form-card">
+            <div class="project-form-card-header">
+                <h2>Project Details</h2>
+                <p>Update the current project information.</p>
+            </div>
+
+            {% include "project/_project_form.html.j2" %}
+        </article>
+
+        <article class="project-form-help-card">
+            <h3>More Actions</h3>
+            <p>
+                To upload files for this project, go to the
+                <a href="{{ url_for('project.file_upload', project_id=project.id) }}">Upload page</a>.
+            </p>
+            <p>
+                To manage project data and analytics, use the Files, People, and Visualizations sections in the sidebar.
+            </p>
+        </article>
+    </section>
+{% endblock %}

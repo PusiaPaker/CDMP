@@ -9,12 +9,12 @@ def checkUserInDatabase(username) -> bool:
         exists().where(User.username == username)
     )).scalar()
 
-def createUser(name, passwd) -> User | None:
+def createUser(name, passwd, email=None) -> User | None:
     if not checkUserInDatabase(name):
         return User(
                 username = name,
                 password = generate_password_hash(passwd),
-                email = name + "@gmail.com",
+                email = email if email else name + "@gmail.com",
                 )
     return None
 
@@ -23,6 +23,8 @@ def populateUsers():
     users.append(createUser("admin", "password"))
     users.append(createUser("user", "123"))
     users.append(createUser("chud", "chud"))
+
+    users.append(createUser("demo", "demo", "demo@pandata.work"))
 
     for user in users:
         if user is not None:

@@ -36,6 +36,7 @@ def populateRoles():
     admin = u.get("admin")
     user = u.get("user")
     chud = u.get("chud")
+    demo = u.get("demo")
 
     projects = db.session.execute(select(Project)).scalars().all()
     if not projects:
@@ -63,6 +64,14 @@ def populateRoles():
             r = createRole(chud.id, p.id, "viewer")
             if r:
                 roles.append(r)
+
+    if demo:
+        demoProjects = db.session.query(Project).filter_by(owner_id=demo.id).all()
+
+        for p in demoProjects:
+            role = createRole(demo.id, p.id, "owner")
+            if role is not None:
+                roles.append(role)
 
     if roles:
         db.session.add_all(roles)

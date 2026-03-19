@@ -20,6 +20,7 @@ def populateProjects():
     adminUser = db.session.query(User).filter_by(username="admin").first()
     userUser = db.session.query(User).filter_by(username="user").first()
     chudUser = db.session.query(User).filter_by(username="chud").first()
+    demoUser = db.session.query(User).filter_by(username="demo").first()
 
     projects = []
 
@@ -28,6 +29,32 @@ def populateProjects():
     projects.append(createProject(userUser.id, "Looksmaxing", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam condimentum, est sit amet sollicitudin mattis, ex neque volutpat arcu, vestibulum."))
     projects.append(createProject(userUser.id, "Meow?", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam condimentum, est sit amet sollicitudin mattis, ex neque volutpat arcu, vestibulum."))
     projects.append(createProject(chudUser.id, "Chuding101", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam condimentum, est sit amet sollicitudin mattis, ex neque volutpat arcu, vestibulum."))
+
+    projects.append(createProject(
+        demoUser.id,
+        "Northwind CRM Modernization",
+        "Modernizing customer account workflows, lead handoff, and support visibility across sales operations."
+    ))
+    projects.append(createProject(
+        demoUser.id,
+        "Harbor Health Referral Operations",
+        "Improving referral intake, routing, and follow-up workflows for a regional healthcare organization."
+    ))
+    projects.append(createProject(
+        demoUser.id,
+        "Meridian Claims Automation",
+        "Reducing manual claims handling through triage automation, dashboarding, and exception review."
+    ))
+    projects.append(createProject(
+        demoUser.id,
+        "Atlas Vendor Risk Portal",
+        "Building a centralized vendor onboarding and risk review portal for procurement and compliance teams."
+    ))
+    projects.append(createProject(
+        demoUser.id,
+        "Bluepeak Workforce Planning",
+        "Launching staffing, capacity, and forecasting workflows for workforce planning leadership."
+    ))
 
     for project in projects:
         if project is not None:

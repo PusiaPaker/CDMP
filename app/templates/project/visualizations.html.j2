@@ -1,0 +1,185 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Visualizations{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/visualizations.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Visualizations</h1>
+    <p class="page-subtitle">Project analytics, team structure, and reporting relationships.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project.id) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="visualizations-page-grid">
+
+        <section class="stats-grid">
+            <article class="project-section stat-card">
+                <p class="stat-label">People</p>
+                <h2 class="stat-value">{{ people_rows|length }}</h2>
+            </article>
+
+            <article class="project-section stat-card">
+                <p class="stat-label">Role Types</p>
+                <h2 class="stat-value">{{ role_distribution_data.total_roles or 0 }}</h2>
+            </article>
+
+            <article class="project-section stat-card">
+                <p class="stat-label">Timeline Events</p>
+                <h2 class="stat-value">{{ (event_distribution_data.data | sum) if event_distribution_data.data else 0 }}</h2>
+            </article>
+        </section>
+
+        <section class="charts-grid">
+            <article class="project-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Event Distribution</h2>
+                        <p class="section-subtext">
+                            Timeline activity across the project.
+                        </p>
+                    </div>
+                </div>
+
+                {% if event_distribution_data.data and (event_distribution_data.data | sum) > 0 %}
+                    <div class="chart-shell">
+                        <canvas id="event-distribution-chart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="chart-empty-state">
+                        <h3>No timeline activity yet</h3>
+                        <p>
+                            This project does not have enough event data to visualize yet.
+                        </p>
+                        <a href="{{ url_for('project.timeline', project_id=project.id) }}" class="button-secondary">
+                            Open Timeline
+                        </a>
+                    </div>
+                {% endif %}
+            </article>
+
+            <article class="project-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Role Distribution</h2>
+                        <p class="section-subtext">
+                            Team makeup by assigned role level.
+                        </p>
+                    </div>
+                </div>
+
+                {% if role_distribution_data.data and (role_distribution_data.data | sum) > 0 %}
+                    <div class="chart-shell role-chart-shell">
+                        <canvas id="role-distribution-chart"></canvas>
+                    </div>
+                {% else %}
+                    <div class="chart-empty-state">
+                        <h3>No role data available</h3>
+                        <p>
+                            Assigned project roles will appear here once people are mapped to the project.
+                        </p>
+                    </div>
+                {% endif %}
+            </article>
+        </section>
+
+        <section class="project-section">
+            <div class="section-header">
+                <div>
+                    <h2>Reporting Matrix</h2>
+                    <p class="section-subtext">
+                        Define who reports to whom inside this project.
+                    </p>
+                </div>
+            </div>
+
+            {% if people_rows and people_rows|length > 0 %}
+                <div class="matrix-wrapper">
+                    <table class="matrix-table">
+                        <thead>
+                            <tr>
+                                <th>Person / Reports To</th>
+                                {% for manager, _ in people_rows %}
+                                    <th>
+                                        <div class="matrix-person-name">{{ manager.name }}</div>
+                                        <div class="matrix-person-title">{{ manager.title or "" }}</div>
+                                    </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for person, _ in people_rows %}
+                                <tr>
+                                    <th class="matrix-column-header">
+                                        <div class="matrix-person-name">{{ person.name }}</div>
+                                        <div class="matrix-person-title">{{ person.title or "" }}</div>
+                                    </th>
+
+                                    {% for manager, _ in people_rows %}
+                                        <td class="matrix-state-cell{% if person.id == manager.id %} is-self{% endif %}">
+                                            {% if person.id == manager.id %}
+                                                <div class="matrix-self-cell"></div>
+                                            {% else %}
+                                                {% set reporting_link_key = person.id ~ ':' ~ manager.id %}
+                                                <input
+                                                    class="reporting-matrix-check-button"
+                                                    type="checkbox"
+                                                    value="{{ reporting_link_key }}"
+                                                    data-person-id="{{ person.id }}"
+                                                    data-manager-id="{{ manager.id }}"
+                                                    aria-label="{{ person.name }} reports to {{ manager.name }}"
+                                                    title="{{ person.name }} → {{ manager.name }}"
+                                                    {% if reporting_link_key in reporting_links %}checked{% endif %}
+                                                />
+                                            {% endif %}
+                                        </td> 
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="section-empty-text">No people available for matrix visualization yet.</p>
+            {% endif %}
+        </section>
+
+        <section class="project-section">
+            <div class="section-header">
+                <div>
+                    <h2>Organizational Hierarchy</h2>
+                    <p class="section-subtext">
+                        Visual layout of project reporting relationships.
+                    </p>
+                </div>
+            </div>
+
+            {% if people_nodes and people_nodes|length > 0 %}
+                <div id="organization-chart-network"></div>
+            {% else %}
+                <p class="section-empty-text">No people available for hierarchy visualization yet.</p>
+            {% endif %}
+        </section>
+
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+    <script>
+        window.event_distribution_data = {{ event_distribution_data | tojson }};
+        window.role_distribution_data = {{ role_distribution_data | tojson }};
+        window.people_nodes_data = {{ people_nodes | tojson }};
+        window.reporting_update_url = "{{ url_for('project.update_reporting_matrix', project_id=active_project_id) }}";
+    </script>
+
+    <script src="{{ url_for('static', filename='js/pages/visualizations.js') }}"></script>
+{% endblock %}

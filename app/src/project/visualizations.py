@@ -1,4 +1,5 @@
 from sqlalchemy import select
+from collections import Counter
 
 from app.core import db
 from app.tables import ProjectPerson, TimelineEvent
@@ -10,36 +11,34 @@ from datetime import datetime
 # Functions that will build the data that Chart.js needs to render a chart
 #
 
-def build_role_distribution(project_id):
-    project_people = (
-        db.session.execute(
-            select(ProjectPerson)
-            .where(ProjectPerson.project_id == project_id)
-            )
-        .scalars().all()
-        )
-    
-    role_counts = {}
-    for rl in [p.role_level for p in project_people]:
-        if rl in role_counts:
-            role_counts[rl] += 1
-        else:
-            role_counts[rl] = 0
 
-    if len(role_counts.keys()) > 0:
-        return {
-            'labels': list(role_counts.keys()),
-            'data': list(role_counts.values()),
-            'total_people': sum(role_counts.values()),
-            'total_roles': len(role_counts.keys())
-        }
-    else:
-        return {
-            'labels': ['No people'],
-            'data': [1],
-            'total_people': 0,
-            'total_roles': 0
-        }
+def build_role_distribution(project_id):
+    rows = db.session.execute(
+        select(ProjectPerson.role_level).where(ProjectPerson.project_id == project_id)
+    ).all()
+
+    roles = []
+    for (role_level,) in rows:
+        if role_level is None:
+            continue
+
+        role_text = str(role_level).strip()
+        if not role_text:
+            continue
+
+        roles.append(role_text)
+
+    counts = Counter(roles)
+
+    labels = list(counts.keys())
+    data = list(counts.values())
+
+    return {
+        "labels": labels,
+        "data": data,
+        "total_roles": len(labels),
+        "total_people": sum(data),
+    }
 
 
 def build_event_distribution(project_id):

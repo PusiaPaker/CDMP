@@ -1,0 +1,108 @@
+.project-form-layout {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 880px;
+}
+
+.project-form-card,
+.project-form-help-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: var(--space-lg);
+}
+
+.project-form-card-header {
+    margin-bottom: var(--space-lg);
+}
+
+.project-form-card-header h2,
+.project-form-help-card h3 {
+    margin: 0 0 8px 0;
+    color: var(--color-text-primary);
+}
+
+.project-form-card-header p,
+.project-form-help-card p,
+.page-subtitle {
+    margin: 0;
+    color: var(--color-text-secondary);
+}
+
+.project-form {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.form-section {
+    display: grid;
+    gap: 8px;
+}
+
+.form-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.form-input,
+.form-textarea {
+    width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: #fff;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--color-text-primary);
+    outline: none;
+    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+    box-sizing: border-box;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+    border-color: rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.form-alert {
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+}
+
+.form-alert.success {
+    background: rgba(34, 197, 94, 0.12);
+    color: #166534;
+    border: 1px solid rgba(34, 197, 94, 0.18);
+}
+
+.form-alert.error {
+    background: rgba(239, 68, 68, 0.12);
+    color: #991b1b;
+    border: 1px solid rgba(239, 68, 68, 0.18);
+}
+
+@media (max-width: 700px) {
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .button-secondary,
+    .form-actions .button-primary {
+        width: 100%;
+        text-align: center;
+    }
+}

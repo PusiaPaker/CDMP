@@ -1,0 +1,25 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Create Project{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>{{ form_title }}</h1>
+    <p class="page-subtitle">{{ form_subtitle }}</p>
+{% endblock %}
+
+{% block main_content %}
+    <section class="project-form-layout">
+        <article class="project-form-card">
+            <div class="project-form-card-header">
+                <h2>Project Details</h2>
+                <p>Fill out the basic information for this new project.</p>
+            </div>
+
+            {% include "project/_project_form.html.j2" %}
+        </article>
+    </section>
+{% endblock %}
