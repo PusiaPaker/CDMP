@@ -1,0 +1,24 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Report Generation{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block page_header %}
+    <h1>Report Generation</h1>
+    <p class="page-subtitle">Generate and download project summaries for stakeholders.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project.id) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <form action="{{ url_for('project.download_report', project_id=project.id) }}">
+        <button type="submit">Download report</button>
+    </form>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}
