@@ -1,7 +1,7 @@
-from flask import render_template, abort, send_file
+from flask import render_template, abort, send_file, session
 
 from app.core import db
-from app.tables import Project
+from app.tables import Project, User
 
 from .project import ProjectBP
 from app.src.project.reports import *
@@ -23,9 +23,11 @@ def download_report(project_id):
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
+
+    user = db.session.get(User, session.get("user_id"))
     
     return send_file(
-        generate_report_pdf(project),
+        generate_report_pdf(project, user.username if user else "Unknown"),
         mimetype="application/pdf",
         as_attachment=True,
         download_name=get_report_file_name(project.title),
