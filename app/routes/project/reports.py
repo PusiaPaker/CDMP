@@ -1,7 +1,11 @@
-from flask import render_template, abort, send_file, session
+import os
+import uuid
+
+from flask import render_template, abort, send_file, session, redirect, url_for
+from werkzeug.utils import secure_filename
 
 from app.core import db
-from app.tables import Project, User
+from app.tables import Project, User, File
 
 from .project import ProjectBP
 from app.src.project.reports import *
@@ -32,3 +36,37 @@ def download_report(project_id):
         as_attachment=True,
         download_name=get_report_file_name(project.title),
     )
+
+
+@ProjectBP.route("/<project_id>/reports/save/")
+def save_report_to_files(project_id):
+    project = db.session.get(Project, project_id)
+    if not project:
+        return abort(404)
+
+    user = db.session.get(User, session.get("user_id"))
+
+    report_pdf = generate_report_pdf(project, user.username if user else "Unknown")
+    original_file_name = secure_filename(get_report_file_name(project.title))
+
+    temp_id = str(uuid.uuid4())
+    disk_file_name = f"{temp_id}.pdf"
+
+    storage_dir = os.getenv("FILE_UPLOAD_STORAGE_PATH")
+    os.makedirs(storage_dir, exist_ok=True)
+
+    with open(os.path.join(storage_dir, disk_file_name), "wb") as f:
+        f.write(report_pdf.getvalue())
+
+    file_in_db = File(
+        id=temp_id,
+        project_id=project_id,
+        file_name_original=original_file_name,
+        file_name_disk=disk_file_name,
+        file_category="unspecified",
+        description="Auto-generated project report",
+    )
+    db.session.add(file_in_db)
+    db.session.commit()
+
+    return redirect(url_for("project.file_list", project_id=project_id))

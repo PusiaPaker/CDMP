@@ -1,0 +1,58 @@
+.reports-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+    min-width: 0;
+}
+
+.reports-page-container{
+    display: grid;
+    gap: 18px;
+    min-width: 0;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    padding: var(--space-lg);
+    box-shadow: 0 10px 26px rgba(17, 24, 39, 0.05);
+}
+
+.reports-page-container > * {
+    min-width: 0;
+}
+
+.reports-card-copy {
+    display: grid;
+    gap: 10px;
+}
+
+.reports-card-label {
+    margin: 0;
+    color: var(--color-accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.reports-page-container h2 {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.reports-card-text {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+}
+
+.reports-action-form {
+    margin-top: 6px;
+}
+
+.reports-download-button {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    padding-inline: 18px;
+}
