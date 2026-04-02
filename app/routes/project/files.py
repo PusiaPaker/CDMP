@@ -27,33 +27,49 @@ def file_upload(project_id):
     if request.method == 'GET':
         return render_template("project/file_upload.html.j2", active_project=project, active_project_id=project.id, status=None), 200
 
-    f = request.files.get('file')
-    if not f or f.filename == '':
+    uploaded_files = [f for f in request.files.getlist('file') if f and f.filename]
+    if not uploaded_files:
         return render_template("error/404.html"), 404
 
-    ext = f.filename.split('.')[-1].lower()
-    if ext not in ALLOWED_FILE_EXTENSIONS:
-        return render_template("project/file_upload.html.j2", active_project=project, active_project_id=project.id, error="Invalid extension"), 400
+    invalid_files = []
+    for f in uploaded_files:
+        ext = f.filename.rsplit('.', 1)[-1].lower() if '.' in f.filename else ''
+        if ext not in ALLOWED_FILE_EXTENSIONS:
+            invalid_files.append(f.filename)
 
-    file_name = secure_filename(f.filename)
-
-    temp_id = str(uuid.uuid4())
-    disk_file_name = f"{temp_id}.{ext}"
+    if invalid_files:
+        invalid_file_list = ", ".join(invalid_files)
+        return render_template(
+            "project/file_upload.html.j2",
+            active_project=project,
+            active_project_id=project.id,
+            error=f"Invalid extension for: {invalid_file_list}",
+        ), 400
 
     storage_dir = os.getenv("FILE_UPLOAD_STORAGE_PATH")
     os.makedirs(storage_dir, exist_ok=True)
 
-    f.save(os.path.join(storage_dir, disk_file_name)) 
+    file_category = request.form.get('file_category', 'unspecified')
+    description = request.form.get('upload-description', '')
 
-    file_in_db = File(
-        id=temp_id,
-        project_id=project_id,
-        file_name_original=file_name,
-        file_name_disk=disk_file_name,
-        file_category=request.form.get('file_category', 'unspecified'),
-        description=request.form.get('upload-description', ''),
-    )
-    db.session.add(file_in_db)
+    for f in uploaded_files:
+        ext = f.filename.rsplit('.', 1)[-1].lower()
+        file_name = secure_filename(f.filename)
+
+        temp_id = str(uuid.uuid4())
+        disk_file_name = f"{temp_id}.{ext}"
+        f.save(os.path.join(storage_dir, disk_file_name))
+
+        file_in_db = File(
+            id=temp_id,
+            project_id=project_id,
+            file_name_original=file_name,
+            file_name_disk=disk_file_name,
+            file_category=file_category,
+            description=description,
+        )
+        db.session.add(file_in_db)
+
     db.session.commit()
 
     return redirect(url_for('project.file_list', project_id=project_id))

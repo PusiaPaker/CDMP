@@ -18,7 +18,7 @@
 {% block main_content %}
     <section class="project-section">
         <div class="section-header">
-            <h2>Upload File</h2>
+            <h2>Upload Files</h2>
         </div>
 
         {% if error %}
@@ -32,11 +32,11 @@
                 <label class="form-label" for="file">Choose file</label>
 
                 <div class="file-picker-row">
-                    <label for="file" class="button-secondary file-picker-button">Choose File</label>
-                    <span id="selected-file-name" class="selected-file-name">No file selected</span>
+                    <label for="file" class="button-secondary file-picker-button">Choose Files</label>
+                    <span id="selected-file-name" class="selected-file-name">No files selected</span>
                 </div>
 
-                <input type="file" id="file" name="file" required class="hidden-file-input">
+                <input type="file" id="file" name="file" required multiple class="hidden-file-input">
             </div> 
 
             <div class="form-actions">
@@ -54,9 +54,21 @@
         if (fileInput && selectedFileName) {
             fileInput.addEventListener("change", () => {
                 if (fileInput.files.length > 0) {
-                    selectedFileName.textContent = fileInput.files[0].name;
+                    if (fileInput.files.length === 1) {
+                        selectedFileName.textContent = fileInput.files[0].name;
+                        return;
+                    }
+
+                    const firstThreeNames = Array.from(fileInput.files)
+                        .slice(0, 3)
+                        .map((file) => file.name)
+                        .join(", ");
+                    const remainingCount = fileInput.files.length - 3;
+                    selectedFileName.textContent = remainingCount > 0
+                        ? `${firstThreeNames} + ${remainingCount} more`
+                        : firstThreeNames;
                 } else {
-                    selectedFileName.textContent = "No file selected";
+                    selectedFileName.textContent = "No files selected";
                 }
             });
         }
