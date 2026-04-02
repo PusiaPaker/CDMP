@@ -7,3 +7,4 @@ uuid
 python-dotenv
 pandas
 openpyxl
+pytest
