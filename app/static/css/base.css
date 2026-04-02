@@ -1,0 +1,17 @@
+html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    color: #111827;
+}
+
+a {
+    color: #3730a3;
+}
+
+a:hover {
+    color: #312e81;
+}

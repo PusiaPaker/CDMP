@@ -14,7 +14,7 @@
 {% block page_header_actions %}
     <a href="{{ url_for('project.file_list', project_id=project['id']) }}" class="button-secondary">Files</a>
     <a href="{{ url_for('project.people', project_id=project['id']) }}" class="button-secondary">People</a>
-    <a href="{{ url_for('project.timeline', project_id=project['id']) }}" class="button">Timeline</a>
+    <a href="{{ url_for('project.timeline', project_id=project['id']) }}" class="button">Calendar</a>
 {% endblock %}
 
 {% block main_content %}
@@ -81,7 +81,7 @@
             <article class="summary-card">
                 <h2 class="summary-card-title">Overview</h2>
                 <p class="summary-card-text">
-                    This project workspace contains files, people, and timeline activity.
+                    This project workspace contains files, people, and calendar activity.
                 </p>
             </article>
 

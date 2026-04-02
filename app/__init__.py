@@ -7,14 +7,31 @@ from app.src.commands import CommandsBP
 from app.src.project.queries import get_projects_for_user
 
 from app.routes import DashBP, DebugBP, ProjectBP, DataBP, AuthBP
-from app.core import db
+from app.core import db, oauth
 import app.tables
 
 def create_app():
     app = Flask(__name__, template_folder='./templates/')
     app.config.from_object(Config)
     app.config['UPLOAD_FOLDER'] = os.getenv('FILE_UPLOAD_STORAGE_PATH')
+
+    if app.config.get("GOOGLE_OAUTH_ENABLED") and app.config.get("SECRET_KEY") == "dev-insecure-change-me":
+        raise RuntimeError("Set a strong SECRET_KEY before enabling Google Sign-In.")
+
     Session(app)
+    oauth.init_app(app)
+
+    #Google Oauth info below
+    #Can be changed in .env file i think
+
+    if app.config.get("GOOGLE_OAUTH_ENABLED"):
+        oauth.register(
+            "google",
+            client_id=app.config["GOOGLE_CLIENT_ID"],
+            client_secret=app.config["GOOGLE_CLIENT_SECRET"],
+            server_metadata_url=app.config["GOOGLE_DISCOVERY_URL"],
+            client_kwargs={"scope": "openid email profile https://www.googleapis.com/auth/calendar.readonly"},
+        )
 
     db.init_app(app)
 

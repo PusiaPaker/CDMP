@@ -109,14 +109,19 @@ def install_requirements() -> None:
     
 def create_dotenv(download_file_path: str) -> str:
     selected_path = download_file_path.strip().strip('"')
+    env_map: dict[str, str] = {}
 
-    if not selected_path and ENV_FILE.exists():
+    if ENV_FILE.exists():
         for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-            if line.startswith("FILE_UPLOAD_STORAGE_PATH="):
-                selected_path = line.split("=", 1)[1].strip().strip('"')
-                if selected_path:
-                    print("Using FILE_UPLOAD_STORAGE_PATH from existing .env.")
-                break
+            if "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            env_map[key.strip()] = value.strip()
+
+    if not selected_path and "FILE_UPLOAD_STORAGE_PATH" in env_map:
+        selected_path = env_map["FILE_UPLOAD_STORAGE_PATH"].strip().strip('"')
+        if selected_path:
+            print("Using FILE_UPLOAD_STORAGE_PATH from existing .env.")
 
     while not selected_path:
         selected_path = input(
@@ -125,8 +130,10 @@ def create_dotenv(download_file_path: str) -> str:
         if not selected_path:
             print("Path cannot be blank.")
 
-    ENV_FILE.write_text(f"FILE_UPLOAD_STORAGE_PATH={selected_path}\n", encoding="utf-8")
-    print(f"Created {ENV_FILE.name} with FILE_UPLOAD_STORAGE_PATH.")
+    env_map["FILE_UPLOAD_STORAGE_PATH"] = selected_path
+    lines = [f"{key}={value}" for key, value in env_map.items()]
+    ENV_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Updated {ENV_FILE.name} with FILE_UPLOAD_STORAGE_PATH.")
     return selected_path
 
 def flask_populate() -> None:

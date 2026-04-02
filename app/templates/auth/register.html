@@ -34,6 +34,15 @@
             <button type="submit" class="btn btn-purp">Create Account</button>
         </div>
     </form>
+    {% if google_sign_in_enabled %}
+    <div class="oauth-divider">or</div>
+    <div class="oauth-action">
+        <a class="google-signin google-signin-button" href="{{ url_for('authentication.login_google') }}">
+            <span class="google-mark" aria-hidden="true"></span>
+            Sign up with Google
+        </a>
+    </div>
+    {% endif %}
     <p class="mb-0">
         Have an Account?
         <a href="{{ url_for('authentication.login') }}">Login</a>

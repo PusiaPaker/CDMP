@@ -1,6 +1,8 @@
 flask
 Flask-SQLAlchemy
 flask-session
+Authlib
+requests
 pysqlite3
 sqlite-utils
 uuid
