@@ -7,6 +7,7 @@ import os
 from .project import ProjectBP
 from app.tables import File, Project
 from app.core import db
+from app.src.project.queries import user_is_project_owner
 
 from app.src.constants import ALLOWED_FILE_EXTENSIONS
 
@@ -58,6 +59,19 @@ def file_upload(project_id):
 
     return redirect(url_for('project.file_list', project_id=project_id))
 
+@ProjectBP.route('/<project_id>/files/delete/<file_id>') 
+def delete_file(project_id, file_id):
+    to_be_deleted = db.session.query(File).filter(File.id == file_id).first()
+
+    storage_dir = os.getenv("FILE_UPLOAD_STORAGE_PATH")
+    file_name_disk = to_be_deleted.file_name_disk
+
+    os.remove(os.path.join(storage_dir, file_name_disk))
+
+    db.session.delete(to_be_deleted)
+    db.session.commit()
+
+    return redirect(url_for('project.file_list', project_id=project_id))
 
 # debug endpoint
 @ProjectBP.route('/getfiles/<project_id>')
