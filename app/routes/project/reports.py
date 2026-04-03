@@ -33,7 +33,7 @@ def download_report(project_id):
     return send_file(
         generate_report_pdf(project, user.username if user else "Unknown"),
         mimetype="application/pdf",
-        as_attachment=True,
+        as_attachment=False,
         download_name=get_report_file_name(project.title),
     )
 

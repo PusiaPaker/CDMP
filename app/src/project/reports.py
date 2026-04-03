@@ -3,15 +3,20 @@ import datetime
 from pathlib import Path
 
 from sqlalchemy import select
+from dateutil.relativedelta import relativedelta
 
 from app.core import db
 from app.tables import TimelineEvent
+from app.src.project.visualizations import build_event_distribution
 
 from reportlab.lib import colors
 from reportlab.lib.units import inch
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
-from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.graphics.charts.barcharts import VerticalBarChart
+from reportlab.graphics.charts.textlabels import Label
+from reportlab.graphics.shapes import Drawing, String
+from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 PANDATA_LOGO_PATH = Path(__file__).resolve().parents[2] / "static" / "assets" / "logo" / "pandata-logo.png"
 PANDATA_BG = colors.HexColor("#f8f9fb")
@@ -21,9 +26,9 @@ PANDATA_TEXT_PRIMARY = colors.HexColor("#111827")
 PANDATA_TEXT_SECONDARY = colors.HexColor("#6b7280")
 PANDATA_ACCENT = colors.HexColor("#1f2933")
 
-#
-# Database utility functions
-#
+##############################
+# Database utility functions #
+#############################
 def _get_next_events(project_id):
     '''
     gets up to 5 events that happen after curent date
@@ -36,9 +41,30 @@ def _get_next_events(project_id):
     ).all()
     return [event for event in events if event.start_date.date() >= today][:5]
 
-#
-# Reportlab/papyrus style utilities
-#
+
+def _get_timeline_bounds(project_id):
+    events = db.session.scalars(
+        select(TimelineEvent)
+        .where(TimelineEvent.project_id == project_id)
+        .order_by(TimelineEvent.start_date.asc())
+    ).all()
+
+    if not events:
+        return None, None
+
+    earliest_start = min(event.start_date for event in events)
+    latest_timeline_date = max(
+        event.end_date or event.start_date
+        for event in events
+    )
+    return earliest_start, latest_timeline_date
+
+#####################################
+# Reportlab/papyrus style utilities #
+#####################################
+# These are a mess, the reportlab library uses inches as units and weird placements
+# techniques to be able to center/position things. 
+
 def _get_report_styles():
     base_styles = getSampleStyleSheet()
 
@@ -114,6 +140,70 @@ def _build_next_events_table(project, styles):
     return table
 
 
+def _build_event_distribution_chart(project, styles):
+    chart_data = build_event_distribution(project.id)
+    if not chart_data["data"]:
+        return Paragraph("No timeline activity yet.", styles["body"])
+
+    drawing = Drawing(460, 260)
+    drawing.hAlign = "CENTER"
+
+    past_data = chart_data.get("past_data", chart_data["data"])
+    future_data = chart_data.get("future_data", [0] * len(chart_data["data"]))
+    max_value = max(past_data + future_data)
+    chart = VerticalBarChart()
+    chart.x = 78
+    chart.y = 56
+    chart.width = 304
+    chart.height = 150
+    chart.data = [past_data, future_data]
+    chart.categoryAxis.categoryNames = chart_data["labels"]
+    chart.categoryAxis.labels.angle = 25
+    chart.categoryAxis.labels.boxAnchor = "ne"
+    chart.categoryAxis.labels.fontName = "Helvetica"
+    chart.categoryAxis.labels.fontSize = 8
+    chart.valueAxis.valueMin = 0
+    chart.valueAxis.valueMax = max_value + 2
+    chart.valueAxis.forceZero = 1
+    chart.bars[0].fillColor = colors.HexColor("#16a34a")
+    chart.bars[0].strokeColor = colors.HexColor("#16a34a")
+    chart.bars[1].fillColor = colors.HexColor("#dc2626")
+    chart.bars[1].strokeColor = colors.HexColor("#dc2626")
+    drawing.add(chart)
+
+    drawing.add(String(
+        drawing.width / 2,
+        drawing.height - 16,
+        "Event Distribution",
+        textAnchor="middle",
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        fillColor=PANDATA_TEXT_PRIMARY,
+    ))
+
+    drawing.add(String(
+        drawing.width / 2,
+        18,
+        "time",
+        textAnchor="middle",
+        fontName="Helvetica-Bold",
+        fontSize=10,
+        fillColor=PANDATA_TEXT_SECONDARY,
+    ))
+
+    y_axis_label = Label()
+    y_axis_label.setOrigin(20, chart.y + (chart.height / 2))
+    y_axis_label.angle = 90
+    y_axis_label.boxAnchor = "c"
+    y_axis_label.setText("# of events")
+    y_axis_label.fontName = "Helvetica-Bold"
+    y_axis_label.fontSize = 10
+    y_axis_label.fillColor = PANDATA_TEXT_SECONDARY
+    drawing.add(y_axis_label)
+
+    return drawing
+
+
 def _draw_footer(canvas, doc):
     canvas.saveState()
     canvas.setFont("Helvetica", 9)
@@ -162,9 +252,9 @@ def _decorate_page(canvas, doc):
 
     _draw_footer(canvas, doc)
 
-#
-# Report generaton logic functions
-#
+####################################
+# Report generaton logic functions #
+####################################
 def generate_report_pdf(project, generated_by):
     '''
     project: Project row from db
@@ -172,6 +262,16 @@ def generate_report_pdf(project, generated_by):
         generated the report on pandata
     '''
     generated_at = datetime.datetime.now().astimezone()
+    timeline_start, timeline_end = _get_timeline_bounds(project.id)
+
+    if timeline_start:
+        active_delta = relativedelta(generated_at.date(), timeline_start.date())
+        active_months = (active_delta.years * 12) + active_delta.months
+        active_months_text = f"{active_months} month" if active_months == 1 else f"{active_months} months"
+        timeline_end_text = timeline_end.strftime("%A, %B %d, %Y")
+    else:
+        active_months_text = "0 months"
+        timeline_end_text = "an unknown date"
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -184,7 +284,16 @@ def generate_report_pdf(project, generated_by):
     )
     styles = _get_report_styles()
 
+    #
+    # Element sequence for the reportlab library stuff
+    # 
+    # The pages are defined by these PageBreak() elements in the elements list
+    #
+
     elements = [
+        #
+        # INTRO PAGE
+        #
         Paragraph(project.title or '', styles["title"]),
         Spacer(1, 0.22 * inch),
         Paragraph(
@@ -204,6 +313,32 @@ def generate_report_pdf(project, generated_by):
         Paragraph("Upcoming Events", styles["heading"]),
         Spacer(1, 0.12 * inch),
         _build_next_events_table(project, styles),
+        PageBreak(),
+        #
+        # PROGRESS AND MILESTONES PAGE
+        #
+        Paragraph("Progress and Milestones", styles["title"]),
+        Spacer(1, 0.28 * inch),
+        Paragraph(
+            (
+                f"As of {generated_at.strftime('%A, %B %d, %Y')}, the project has been active for "
+                f"{active_months_text}. Current timeline data expects all tasks will be completed on "
+                f"{timeline_end_text}. Below is a distribution of events across the entire project's timespan."
+            ),
+            styles["body"],
+        ),
+        Spacer(1, 0.18 * inch),
+        _build_event_distribution_chart(project, styles),
+        PageBreak(),
+        #
+        # STAKEHOLDERS PAGE
+        #
+        Paragraph("Stakeholders", styles["title"]),
+        PageBreak(),
+        #
+        # PERFORMANCE AND FINANCIALS PAGE
+        #
+        Paragraph("Performance and Financials", styles["title"]),
     ]
 
     doc.build(elements, onFirstPage=_decorate_page, onLaterPages=_decorate_page)
