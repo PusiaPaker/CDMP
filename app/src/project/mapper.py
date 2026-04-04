@@ -3,7 +3,7 @@ from sqlalchemy import select, exists, and_, insert
 
 from app.core import db
 from app.tables import Expense, Project, ProjectPerson, Person, TimelineEvent
-from app.src.utilities import parse_import_date
+from app.src.utilities import normalize_expense_frequency, parse_import_date
 
 #
 # Functions for handling column mapping related functionality
@@ -172,18 +172,6 @@ def expenses_mapping_handler(project_id, rows, mapped_to_index):
     created = 0
     skipped = 0
 
-    recurrence_aliases = {
-        "one time": "one_time",
-        "one-time": "one_time",
-        "one_time": "one_time",
-        "onetime": "one_time",
-        "monthly": "monthly",
-        "month": "monthly",
-        "annual": "annual",
-        "annually": "annual",
-        "yearly": "annual",
-    }
-
     for row in rows:
         expense_name = _get(row, expense_name_i)
         expense_purpose = _get(row, expense_purpose_i) or ""
@@ -196,8 +184,9 @@ def expenses_mapping_handler(project_id, rows, mapped_to_index):
             skipped += 1
             continue
 
-        normalized_recurrence = recurrence_aliases.get(recurrence_type.lower())
-        if not normalized_recurrence:
+        try:
+            normalized_recurrence = normalize_expense_frequency(recurrence_type)
+        except ValueError:
             skipped += 1
             continue
 

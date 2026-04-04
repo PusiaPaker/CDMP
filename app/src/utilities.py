@@ -6,6 +6,20 @@ from datetime import date, datetime, time
 
 from dateutil.parser import parse as parse_date
 
+# we need this to support different values from the spreadsheet input
+# for the frequency
+EXPENSE_FREQUENCY_ALIASES = {
+    "one time": "one_time",
+    "one-time": "one_time",
+    "one_time": "one_time",
+    "onetime": "one_time",
+    "monthly": "monthly",
+    "month": "monthly",
+    "annual": "annual",
+    "annually": "annual",
+    "yearly": "annual",
+}
+
 
 def normalize_role_to_level(role_name: str | None) -> int:
     '''
@@ -84,3 +98,14 @@ def parse_import_date(value, *, as_datetime=False):
 
     parsed = parse_date(text, dayfirst=False, yearfirst=False)
     return parsed if as_datetime else parsed.date()
+
+
+def normalize_expense_frequency(value: str) -> str:
+    '''
+    Normalize supported expense frequency values to the canonical DB values.
+    '''
+    normalized = EXPENSE_FREQUENCY_ALIASES.get(str(value).strip().lower())
+    if not normalized:
+        raise ValueError("Invalid expense frequency")
+
+    return normalized

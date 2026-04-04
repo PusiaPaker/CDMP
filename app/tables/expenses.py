@@ -1,15 +1,22 @@
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Date, ForeignKey, Numeric, String, Text
+from sqlalchemy.orm import Mapped, mapped_column, validates
+from sqlalchemy import CheckConstraint, Date, ForeignKey, Numeric, String, Text
 
 import uuid
 from datetime import date
 from decimal import Decimal
 
 from app.core import Base
+from app.src.utilities import normalize_expense_frequency
 
 
 class Expense(Base):
     __tablename__ = "expenses"
+    __table_args__ = (
+        CheckConstraint(
+            "recurrence_type IN ('one_time', 'monthly', 'annual')",
+            name="ck_expenses_recurrence_type",
+        ),
+    )
 
     id: Mapped[str] = mapped_column(primary_key=True, default=lambda: str(uuid.uuid4()))
     project_id: Mapped[str] = mapped_column(ForeignKey("projects.id"), nullable=False)
@@ -24,3 +31,8 @@ class Expense(Base):
 
     # e.g licensing fee, consulting, misc
     category: Mapped[str] = mapped_column(String(64), nullable=False, default="unspecified")
+
+    # make sure that they are one of ou expected values
+    @validates("recurrence_type")
+    def validate_recurrence_type(self, key, value):
+        return normalize_expense_frequency(value)

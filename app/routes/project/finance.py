@@ -5,6 +5,8 @@ from app.tables import Expense, Project
 
 from .project import ProjectBP
 
+from app.src.project.finance import compute_total_expenses, number_of_recurring_costs, next_year_spending
+
 @ProjectBP.route("/<project_id>/finance/", methods=["GET"])
 def finance(project_id):
     project = db.session.get(Project, project_id)
@@ -18,9 +20,16 @@ def finance(project_id):
         .all()
     )
 
+    stats = {
+        'total_expenses': compute_total_expenses(expenses),
+        'number_recurring_costs': number_of_recurring_costs(expenses),
+        'next_year_cost': next_year_spending(expenses)
+    }
+
     return render_template(
         "project/finance.html.j2",
         project=project,
         active_project_id=project.id,
         expenses=expenses,
+        finance_stats=stats
     ), 200

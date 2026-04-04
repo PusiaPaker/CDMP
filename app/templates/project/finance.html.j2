@@ -67,13 +67,31 @@
         </div>
 
         <div class="finance-panel" data-finance-panel="analysis">
-            <section class="finance-section">
-                <div class="section-header">
-                    <h2>Data Analysis</h2>
-                </div>
+            <div class="finance-stats-grid">
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label">Accumulated Expenes</p>
+                    <p class="finance-stat-caption">-</p>
+                    <h3 class="finance-stat-value">$ {{ finance_stats['total_expenses'] }}</h3>
+                </article>
 
-                <p class="section-empty-text">Data analysis here</p>
-            </section>
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label"># of Recurring Costs</p>
+                    <p class="finance-stat-caption">-</p>
+                    <h3 class="finance-stat-value">{{finance_stats['number_recurring_costs']}}</h3>
+                </article>
+
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label">Next Years Spending</p>
+                    <p class="finance-stat-caption">Based on current recurring costs</p>
+                    <h3 class="finance-stat-value">${{finance_stats['next_year_cost']}}</h3>
+                </article>
+
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label">Add something here</p>
+                    <p class="finance-stat-caption">Maybe add another stat?</p>
+                    <h3 class="finance-stat-value">99999</h3>
+                </article>
+            </div>
         </div>
     </div>
 {% endblock %}
