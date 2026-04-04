@@ -1,0 +1,100 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Finance{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/finance.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Finance</h1>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="finance-page-grid">
+        <div class="finance-topbar">
+            <div class="finance-tabs">
+                <button type="button" class="finance-tab-button is-active" data-finance-tab="analysis">Data Analysis</button>
+                <button type="button" class="finance-tab-button" data-finance-tab="expenses">Expense List</button>
+            </div>
+
+            <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='expenses') }}" class="button">
+                Import CSV/XLSX
+            </a>
+        </div>
+
+        <div class="finance-panel" data-finance-panel="expenses" hidden>
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Expenses List</h2>
+                </div>
+
+                {% if expenses %}
+                    <div class="finance-table-wrapper">
+                        <table class="finance-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Purpose</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Frequency</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                    <tr>
+                                        <td>{{ expense.expense_name }}</td>
+                                        <td>{{ expense.expense_purpose or "" }}</td>
+                                        <td>{{ expense.amount }}</td>
+                                        <td>{{ expense.expense_date }}</td>
+                                        <td>{{ expense.recurrence_type }}</td>
+                                        <td>{{ expense.category }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">No expenses added yet.</p>
+                {% endif %}
+            </section>
+        </div>
+
+        <div class="finance-panel" data-finance-panel="analysis">
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Data Analysis</h2>
+                </div>
+
+                <p class="section-empty-text">Data analysis here</p>
+            </section>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        const financeTabButtons = document.querySelectorAll("[data-finance-tab]");
+        const financePanels = document.querySelectorAll("[data-finance-panel]");
+
+        financeTabButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const targetPanel = button.dataset.financeTab;
+
+                financeTabButtons.forEach((tabButton) => {
+                    tabButton.classList.toggle("is-active", tabButton === button);
+                });
+
+                financePanels.forEach((panel) => {
+                    panel.hidden = panel.dataset.financePanel !== targetPanel;
+                });
+            });
+        });
+    </script>
+{% endblock %}

@@ -14,5 +14,9 @@ table_type_columns = {
     'timeline': {
         'required': ['Start Date', 'Title',],
         'optional': ['End Date', 'Description']
+    },
+    'expenses': {
+        'required': ['Expense Name', 'Amount', 'Date', 'Frequency'],
+        'optional': ['Expense Purpose', 'Category']
     }
 }

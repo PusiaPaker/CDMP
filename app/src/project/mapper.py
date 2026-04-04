@@ -1,7 +1,9 @@
+from decimal import Decimal, InvalidOperation
 from sqlalchemy import select, exists, and_, insert
+
 from app.core import db
-from app.tables import Project, ProjectPerson, Person, TimelineEvent
-from datetime import datetime
+from app.tables import Expense, Project, ProjectPerson, Person, TimelineEvent
+from app.src.utilities import parse_import_date
 
 #
 # Functions for handling column mapping related functionality
@@ -126,28 +128,100 @@ def events_mapping_handler(project_id, rows, mapped_to_index):
         # some events are "single date" (i.e don't have start and end dates)
         # add flexibility for either end/start date to be the "single date"
         single_date = None
-        if (start_date is None) ^ (end_date is None):
-            single_date = end_date if start_date is None else start_date
-            single_date = datetime.strptime(single_date, "%Y-%m-%d")
+        try:
+            if (start_date is None) ^ (end_date is None):
+                single_date = end_date if start_date is None else start_date
+                single_date = parse_import_date(single_date, as_datetime=True)
 
-        if not single_date:
-            start_date, end_date = datetime.strptime(start_date, "%Y-%m-%d"), datetime.strptime(end_date, "%Y-%m-%d")
-            timeline_event = TimelineEvent(project_id=project_id,
-                                        title=title,
-                                        description=description,
-                                        start_date=start_date,
-                                        end_date=end_date)
-        else:
-            timeline_event = TimelineEvent(project_id=project_id,
-                                        title=title,
-                                        description=description,
-                                        start_date=single_date,
-                                        end_date=None)
+            if not single_date:
+                start_date = parse_import_date(start_date, as_datetime=True)
+                end_date = parse_import_date(end_date, as_datetime=True)
+                timeline_event = TimelineEvent(project_id=project_id,
+                                            title=title,
+                                            description=description,
+                                            start_date=start_date,
+                                            end_date=end_date)
+            else:
+                timeline_event = TimelineEvent(project_id=project_id,
+                                            title=title,
+                                            description=description,
+                                            start_date=single_date,
+                                            end_date=None)
+        except ValueError:
+            skipped += 1
+            continue
 
         db.session.add(timeline_event)
         db.session.commit()
         created += 1
     
+    return {
+        'created': created,
+        'skipped': skipped
+    }
+
+
+def expenses_mapping_handler(project_id, rows, mapped_to_index):
+    expense_name_i = mapped_to_index["Expense Name"]
+    expense_purpose_i = mapped_to_index["Expense Purpose"]
+    amount_i = mapped_to_index["Amount"]
+    expense_date_i = mapped_to_index["Date"]
+    recurrence_type_i = mapped_to_index["Frequency"]
+    category_i = mapped_to_index["Category"]
+
+    created = 0
+    skipped = 0
+
+    recurrence_aliases = {
+        "one time": "one_time",
+        "one-time": "one_time",
+        "one_time": "one_time",
+        "onetime": "one_time",
+        "monthly": "monthly",
+        "month": "monthly",
+        "annual": "annual",
+        "annually": "annual",
+        "yearly": "annual",
+    }
+
+    for row in rows:
+        expense_name = _get(row, expense_name_i)
+        expense_purpose = _get(row, expense_purpose_i) or ""
+        amount = _get(row, amount_i)
+        expense_date = _get(row, expense_date_i)
+        recurrence_type = _get(row, recurrence_type_i)
+        category = _get(row, category_i) or "unspecified"
+
+        if not all([expense_name, amount, expense_date, recurrence_type]):
+            skipped += 1
+            continue
+
+        normalized_recurrence = recurrence_aliases.get(recurrence_type.lower())
+        if not normalized_recurrence:
+            skipped += 1
+            continue
+
+        cleaned_amount = amount.replace(",", "").replace("$", "")
+
+        try:
+            expense = Expense(
+                project_id=project_id,
+                expense_name=expense_name,
+                expense_purpose=expense_purpose,
+                amount=Decimal(cleaned_amount),
+                expense_date=parse_import_date(expense_date),
+                recurrence_type=normalized_recurrence,
+                category=category,
+            )
+        except (ValueError, InvalidOperation):
+            skipped += 1
+            continue
+
+        db.session.add(expense)
+        created += 1
+
+    db.session.commit()
+
     return {
         'created': created,
         'skipped': skipped

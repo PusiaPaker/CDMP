@@ -2,6 +2,10 @@
 #
 #
 import re
+from datetime import date, datetime, time
+
+from dateutil.parser import parse as parse_date
+
 
 def normalize_role_to_level(role_name: str | None) -> int:
     '''
@@ -54,3 +58,29 @@ def normalize_role_to_level(role_name: str | None) -> int:
             return level
 
     return 5
+
+
+def parse_import_date(value, *, as_datetime=False):
+    '''
+    Parse flexible date inputs used by spreadsheet imports.
+    Supports common formats like YYYY-MM-DD, M/D/YYYY, and month-name dates,
+
+    this uses the python-dateutil library parse function to be able
+    to extract date info in any format (it's easier than trying to account
+    for everything manually)
+    '''
+    if value is None:
+        raise ValueError("Missing date")
+
+    if isinstance(value, datetime):
+        return value if as_datetime else value.date()
+
+    if isinstance(value, date):
+        return datetime.combine(value, time.min) if as_datetime else value
+
+    text = str(value).strip()
+    if text == "":
+        raise ValueError("Missing date")
+
+    parsed = parse_date(text, dayfirst=False, yearfirst=False)
+    return parsed if as_datetime else parsed.date()

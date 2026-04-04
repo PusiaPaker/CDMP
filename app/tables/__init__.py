@@ -1,3 +1,4 @@
+from .expenses import Expense
 from .files import File
 from .groups import Group
 from .people import Person

@@ -6,7 +6,7 @@ from .project import ProjectBP
 from app.src.project.queries import get_projects_for_user, user_is_project_owner, user_has_project_access
 
 from app.core import db
-from app.tables import Project, Role, ProjectPerson, File, TimelineEvent
+from app.tables import Expense, Project, Role, ProjectPerson, File, TimelineEvent
 
 @ProjectBP.route('/<project_id>/settings', methods=['GET'])
 def settings(project_id):
@@ -118,10 +118,13 @@ def delete(project_id):
         proj_people = db.session.query(ProjectPerson).filter_by(project_id=project_id).all()
         proj_roles = db.session.query(Role).filter_by(project_id=project_id).all()
         proj_files = db.session.query(File).filter_by(project_id=project_id).all()
+        proj_expenses = db.session.query(Expense).filter_by(project_id=project_id).all()
         proj_timeline_events = db.session.query(TimelineEvent).filter_by(project_id=project_id).all()
 
         for proj_timeline_event in proj_timeline_events:
             db.session.delete(proj_timeline_event)
+        for proj_expense in proj_expenses:
+            db.session.delete(proj_expense)
         for proj_file in proj_files:
             db.session.delete(proj_file)
         for proj_person in proj_people:
@@ -136,5 +139,4 @@ def delete(project_id):
     # button won't display for editors/viewers)
     return redirect(url_for("dashboard.main"))
     
-
 
