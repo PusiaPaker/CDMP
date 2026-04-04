@@ -59,6 +59,25 @@ def _get_timeline_bounds(project_id):
     )
     return earliest_start, latest_timeline_date
 
+
+def _get_active_project_phase(project_id):
+    today = datetime.date.today()
+    events = db.session.scalars(
+        select(TimelineEvent)
+        .where(TimelineEvent.project_id == project_id)
+        .order_by(TimelineEvent.start_date.asc(), TimelineEvent.end_date.asc())
+    ).all()
+
+    for event in events:
+        event_end_date = (event.end_date or event.start_date).date()
+        if event.start_date.date() <= today <= event_end_date:
+            return {
+                "name": event.title,
+                "description": event.description,
+            }
+
+    return None
+
 #####################################
 # Reportlab/papyrus style utilities #
 #####################################
@@ -69,6 +88,9 @@ def _get_report_styles():
     base_styles = getSampleStyleSheet()
 
     return {
+        #
+        # General Styles
+        # 
         "title": ParagraphStyle(
             "ReportTitle",
             parent=base_styles["Title"],
@@ -97,6 +119,18 @@ def _get_report_styles():
             spaceAfter=0,
         ),
         "heading": ParagraphStyle(
+            "ReportHeading",
+            parent=base_styles["Heading2"],
+            fontName="Helvetica-Bold",
+            fontSize=13.5,
+            leading=18,
+            textColor=PANDATA_ACCENT,
+            spaceAfter=0,
+        ),
+        #
+        # Progress and Milestones
+        #
+        "TEST": ParagraphStyle(
             "ReportHeading",
             parent=base_styles["Heading2"],
             fontName="Helvetica-Bold",
@@ -263,6 +297,7 @@ def generate_report_pdf(project, generated_by):
     '''
     generated_at = datetime.datetime.now().astimezone()
     timeline_start, timeline_end = _get_timeline_bounds(project.id)
+    active_project_phase = _get_active_project_phase(project.id)
 
     if timeline_start:
         active_delta = relativedelta(generated_at.date(), timeline_start.date())
@@ -272,6 +307,13 @@ def generate_report_pdf(project, generated_by):
     else:
         active_months_text = "0 months"
         timeline_end_text = "an unknown date"
+
+    active_project_phase_name = active_project_phase["name"] if active_project_phase else "None"
+    active_project_phase_description = (
+        active_project_phase["description"]
+        if active_project_phase and active_project_phase.get("description")
+        else "No active project phase description is available."
+    )
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(
@@ -329,6 +371,10 @@ def generate_report_pdf(project, generated_by):
         ),
         Spacer(1, 0.18 * inch),
         _build_event_distribution_chart(project, styles),
+        Spacer(1, 0.22 * inch),
+        Paragraph(f"<b>Active Project Phase</b>: {active_project_phase_name}", styles["body"]),
+        Spacer(1, 0.06 * inch),
+        Paragraph(active_project_phase_description, styles["meta"]),
         PageBreak(),
         #
         # STAKEHOLDERS PAGE
