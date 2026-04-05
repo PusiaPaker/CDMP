@@ -69,6 +69,17 @@
         <div class="finance-panel" data-finance-panel="analysis">
             <div class="finance-stats-grid">
                 <article class="finance-stat-card">
+                    <p class="finance-stat-label">Allocated Project Budget</p>
+                    <p class="finance-stat-caption">Update this in settings.</p>
+                    <h3 class="finance-stat-value">
+                        {%if finance_stats['project_budget'] %}
+                            $ {{ finance_stats['project_budget'] }}
+                        {% else %}
+                            No budget.
+                        {% endif %}
+                    </h3>
+                </article>
+                <article class="finance-stat-card">
                     <p class="finance-stat-label">Accumulated Expenes</p>
                     <p class="finance-stat-caption">-</p>
                     <h3 class="finance-stat-value">$ {{ finance_stats['total_expenses'] }}</h3>
@@ -85,19 +96,13 @@
                     <p class="finance-stat-caption">Based on current recurring costs</p>
                     <h3 class="finance-stat-value">${{finance_stats['next_year_cost']}}</h3>
                 </article>
-
-                <article class="finance-stat-card">
-                    <p class="finance-stat-label">Add something here</p>
-                    <p class="finance-stat-caption">Maybe add another stat?</p>
-                    <h3 class="finance-stat-value">99999</h3>
-                </article>
             </div>
 
             <section class="finance-section">
                 <div class="section-header">
                     <h2>Accumulated Expenses Over Time</h2>
                 </div>
-                <p>dqVwd</p>
+                <p></p>
 
                 {% if finance_running_total_data.labels %}
                     <div class="finance-chart-shell">
@@ -105,6 +110,30 @@
                     </div>
                 {% else %}
                     <p class="section-empty-text">No expense data available for charting yet.</p>
+                {% endif %}
+            </section>
+
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Budget Overrun Forecast</h2>
+                </div>
+
+                {% if finance_budget_forecast_data.labels %}
+                    <p class="finance-chart-note">
+                        {% if finance_budget_forecast_data.already_over_budget %}
+                            Current spend is already above the project budget.
+                        {% elif finance_budget_forecast_data.crosses_budget_on %}
+                            Recurring costs are projected to push the project over budget on {{ finance_budget_forecast_data.crosses_budget_on }}.
+                        {% else %}
+                            Forecasting recurring costs forward for up to 60 months based on the current budget.
+                        {% endif %}
+                    </p>
+
+                    <div class="finance-chart-shell">
+                        <canvas id="finance-budget-forecast-chart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">Add a project budget and recurring expenses to see the over-budget forecast.</p>
                 {% endif %}
             </section>
         </div>
@@ -118,6 +147,7 @@
         const financeTabButtons = document.querySelectorAll("[data-finance-tab]");
         const financePanels = document.querySelectorAll("[data-finance-panel]");
         window.finance_running_total_data = {{ finance_running_total_data | tojson }};
+        window.finance_budget_forecast_data = {{ finance_budget_forecast_data | tojson }};
 
         financeTabButtons.forEach((button) => {
             button.addEventListener("click", () => {

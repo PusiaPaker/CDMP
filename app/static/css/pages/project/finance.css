@@ -85,6 +85,12 @@
     max-width: 100%;
 }
 
+.finance-chart-note {
+    margin: 0 0 var(--space-md) 0;
+    color: var(--color-text-secondary);
+    font-size: 0.92rem;
+}
+
 .finance-table {
     width: 100%;
     border-collapse: collapse;
