@@ -92,14 +92,32 @@
                     <h3 class="finance-stat-value">99999</h3>
                 </article>
             </div>
+
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Accumulated Expenses Over Time</h2>
+                </div>
+                <p>dqVwd</p>
+
+                {% if finance_running_total_data.labels %}
+                    <div class="finance-chart-shell">
+                        <canvas id="finance-running-total-chart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">No expense data available for charting yet.</p>
+                {% endif %}
+            </section>
         </div>
     </div>
 {% endblock %}
 
 {% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script>
         const financeTabButtons = document.querySelectorAll("[data-finance-tab]");
         const financePanels = document.querySelectorAll("[data-finance-panel]");
+        window.finance_running_total_data = {{ finance_running_total_data | tojson }};
 
         financeTabButtons.forEach((button) => {
             button.addEventListener("click", () => {
@@ -115,4 +133,6 @@
             });
         });
     </script>
+
+    <script src="{{ url_for('static', filename='js/pages/finance.js') }}"></script>
 {% endblock %}

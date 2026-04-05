@@ -40,6 +40,7 @@
 
 .finance-panel {
     display: grid;
+    gap: var(--space-lg);
 }
 
 .finance-panel[hidden] {
@@ -72,6 +73,16 @@
 .finance-table-wrapper {
     margin-top: 3rem;
     overflow-x: auto;
+}
+
+.finance-chart-shell {
+    position: relative;
+    min-height: 320px;
+    width: 100%;
+}
+
+.finance-chart-shell canvas {
+    max-width: 100%;
 }
 
 .finance-table {
