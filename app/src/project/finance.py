@@ -176,6 +176,28 @@ def running_expense_total_data(expenses_list):
     }
 
 
+def category_cost_split_data(expenses_list):
+    current = datetime.now().date()
+    totals_by_category = defaultdict(lambda: Decimal("0"))
+
+    for expense in expenses_list:
+        category = expense.category or "unspecified"
+
+        for _, amount in _expense_occurrences(expense, current):
+            totals_by_category[category] += amount
+
+    sorted_totals = sorted(
+        totals_by_category.items(),
+        key=lambda item: item[1],
+        reverse=True,
+    )
+
+    return {
+        "labels": [category for category, _ in sorted_totals],
+        "data": [round(float(total), 2) for _, total in sorted_totals],
+    }
+
+
 def budget_overrun_forecast_data(expenses_list, project_budget, max_months=60):
     if project_budget is None:
         return _empty_budget_forecast_payload()

@@ -7,6 +7,7 @@ from .project import ProjectBP
 
 from app.src.project.finance import (
     budget_overrun_forecast_data,
+    category_cost_split_data,
     compute_total_expenses,
     next_year_spending,
     number_of_recurring_costs,
@@ -34,6 +35,7 @@ def finance(project_id):
     }
     chart_data = running_expense_total_data(expenses)
     budget_forecast_chart_data = budget_overrun_forecast_data(expenses, project.budget_amount)
+    category_split_chart_data = category_cost_split_data(expenses)
 
 
     return render_template(
@@ -44,4 +46,5 @@ def finance(project_id):
         finance_stats=stats,
         finance_running_total_data=chart_data,
         finance_budget_forecast_data=budget_forecast_chart_data,
+        finance_category_split_data=category_split_chart_data,
     ), 200

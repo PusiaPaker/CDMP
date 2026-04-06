@@ -29,7 +29,7 @@ class Expense(Base):
     # one of: one_time, monthly, annual
     recurrence_type: Mapped[str] = mapped_column(String(20), nullable=False)
 
-    # e.g licensing fee, consulting, misc
+    # e.g licensing, consulting, misc
     category: Mapped[str] = mapped_column(String(64), nullable=False, default="unspecified")
 
     # make sure that they are one of ou expected values

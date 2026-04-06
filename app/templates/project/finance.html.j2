@@ -136,6 +136,22 @@
                     <p class="section-empty-text">Add a project budget and recurring expenses to see the over-budget forecast.</p>
                 {% endif %}
             </section>
+
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Cost Split by Category</h2>
+                </div>
+
+                {% if finance_category_split_data.labels %}
+                    <p class="finance-chart-note">Accumulated spend to date grouped by expense category.</p>
+
+                    <div class="finance-chart-shell">
+                        <canvas id="finance-category-split-chart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">No category data available for charting yet.</p>
+                {% endif %}
+            </section>
         </div>
     </div>
 {% endblock %}
@@ -148,6 +164,7 @@
         const financePanels = document.querySelectorAll("[data-finance-panel]");
         window.finance_running_total_data = {{ finance_running_total_data | tojson }};
         window.finance_budget_forecast_data = {{ finance_budget_forecast_data | tojson }};
+        window.finance_category_split_data = {{ finance_category_split_data | tojson }};
 
         financeTabButtons.forEach((button) => {
             button.addEventListener("click", () => {
