@@ -6,8 +6,9 @@ from sqlalchemy import select
 from dateutil.relativedelta import relativedelta
 
 from app.core import db
-from app.tables import TimelineEvent
-from app.src.project.visualizations import build_event_distribution
+from app.tables import TimelineEvent, Expense, ProjectPerson
+from app.src.project.visualizations import build_event_distribution, build_role_distribution
+from app.src.project.finance import *
 
 from reportlab.lib import colors
 from reportlab.lib.units import inch
@@ -25,6 +26,18 @@ PANDATA_BORDER = colors.HexColor("#e5e7eb")
 PANDATA_TEXT_PRIMARY = colors.HexColor("#111827")
 PANDATA_TEXT_SECONDARY = colors.HexColor("#6b7280")
 PANDATA_ACCENT = colors.HexColor("#1f2933")
+REPORT_BAR_COLORS = [
+    colors.HexColor("#6366f1"),
+    colors.HexColor("#3b82f6"),
+    colors.HexColor("#10b981"),
+    colors.HexColor("#f59e0b"),
+    colors.HexColor("#ec4899"),
+    colors.HexColor("#8b5cf6"),
+    colors.HexColor("#0ea5e9"),
+    colors.HexColor("#22c55e"),
+    colors.HexColor("#f97316"),
+    colors.HexColor("#a855f7"),
+]
 
 ##############################
 # Database utility functions #
@@ -238,6 +251,109 @@ def _build_event_distribution_chart(project, styles):
     return drawing
 
 
+def _build_role_distribution_chart(project_id, styles):
+    chart_data = build_role_distribution(project_id)
+    if not chart_data["data"]:
+        return Paragraph("No stakeholder role distribution data is available yet.", styles["body"])
+
+    drawing = Drawing(460, 250)
+    drawing.hAlign = "CENTER"
+
+    max_value = max(chart_data["data"])
+    chart = VerticalBarChart()
+    chart.x = 78
+    chart.y = 56
+    chart.width = 304
+    chart.height = 142
+    chart.data = [chart_data["data"]]
+    chart.categoryAxis.categoryNames = chart_data["labels"]
+    chart.categoryAxis.labels.angle = 25
+    chart.categoryAxis.labels.boxAnchor = "ne"
+    chart.categoryAxis.labels.fontName = "Helvetica"
+    chart.categoryAxis.labels.fontSize = 8
+    chart.valueAxis.valueMin = 0
+    chart.valueAxis.valueMax = max_value + 2
+    chart.valueAxis.forceZero = 1
+    for index, _ in enumerate(chart_data["data"]):
+        bar_color = REPORT_BAR_COLORS[index % len(REPORT_BAR_COLORS)]
+        chart.bars[(0, index)].fillColor = bar_color
+        chart.bars[(0, index)].strokeColor = bar_color
+    drawing.add(chart)
+
+    drawing.add(String(
+        drawing.width / 2,
+        drawing.height - 16,
+        "Role Distribution",
+        textAnchor="middle",
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        fillColor=PANDATA_TEXT_PRIMARY,
+    ))
+
+    y_axis_label = Label()
+    y_axis_label.setOrigin(20, chart.y + (chart.height / 2))
+    y_axis_label.angle = 90
+    y_axis_label.boxAnchor = "c"
+    y_axis_label.setText("# of people")
+    y_axis_label.fontName = "Helvetica-Bold"
+    y_axis_label.fontSize = 10
+    y_axis_label.fillColor = PANDATA_TEXT_SECONDARY
+    drawing.add(y_axis_label)
+
+    return drawing
+
+
+def _build_financial_category_chart(category_split, styles):
+    if not category_split["data"]:
+        return Paragraph("No financial category data is available yet.", styles["body"])
+
+    drawing = Drawing(460, 250)
+    drawing.hAlign = "CENTER"
+
+    max_value = max(category_split["data"])
+    chart = VerticalBarChart()
+    chart.x = 78
+    chart.y = 56
+    chart.width = 304
+    chart.height = 142
+    chart.data = [category_split["data"]]
+    chart.categoryAxis.categoryNames = category_split["labels"]
+    chart.categoryAxis.labels.angle = 25
+    chart.categoryAxis.labels.boxAnchor = "ne"
+    chart.categoryAxis.labels.fontName = "Helvetica"
+    chart.categoryAxis.labels.fontSize = 8
+    chart.valueAxis.valueMin = 0
+    chart.valueAxis.valueMax = max_value + (max_value * 0.15 if max_value else 2)
+    chart.valueAxis.forceZero = 1
+    for index, _ in enumerate(category_split["data"]):
+        bar_color = REPORT_BAR_COLORS[index % len(REPORT_BAR_COLORS)]
+        chart.bars[(0, index)].fillColor = bar_color
+        chart.bars[(0, index)].strokeColor = bar_color
+    drawing.add(chart)
+
+    drawing.add(String(
+        drawing.width / 2,
+        drawing.height - 16,
+        "Spend by Category",
+        textAnchor="middle",
+        fontName="Helvetica-Bold",
+        fontSize=12,
+        fillColor=PANDATA_TEXT_PRIMARY,
+    ))
+
+    y_axis_label = Label()
+    y_axis_label.setOrigin(20, chart.y + (chart.height / 2))
+    y_axis_label.angle = 90
+    y_axis_label.boxAnchor = "c"
+    y_axis_label.setText("spend ($)")
+    y_axis_label.fontName = "Helvetica-Bold"
+    y_axis_label.fontSize = 10
+    y_axis_label.fillColor = PANDATA_TEXT_SECONDARY
+    drawing.add(y_axis_label)
+
+    return drawing
+
+
 def _draw_footer(canvas, doc):
     canvas.saveState()
     canvas.setFont("Helvetica", 9)
@@ -295,6 +411,10 @@ def generate_report_pdf(project, generated_by):
     generated_by: username (or eventually name) of person who
         generated the report on pandata
     '''
+    #
+    # Prepare text fields and other data for being inserted into the reportlab PDF
+    #
+    
     generated_at = datetime.datetime.now().astimezone()
     timeline_start, timeline_end = _get_timeline_bounds(project.id)
     active_project_phase = _get_active_project_phase(project.id)
@@ -315,6 +435,47 @@ def generate_report_pdf(project, generated_by):
         else "No active project phase description is available."
     )
 
+    # need this for the financial data page functions
+    expenses = (
+        db.session.query(Expense)
+        .filter(Expense.project_id == project.id)
+        .order_by(Expense.expense_date.desc())
+        .all()
+    )
+
+    total_expenses = compute_total_expenses(expenses)
+    recurring_cost_count = number_of_recurring_costs(expenses)
+    next_year_cost = next_year_spending(expenses)
+    category_split = category_cost_split_data(expenses)
+    top_category = category_split["labels"][0] if category_split["labels"] else "unspecified"
+    stakeholder_count = (
+        db.session.query(ProjectPerson)
+        .filter(ProjectPerson.project_id == project.id)
+        .count()
+    )
+    role_distribution = build_role_distribution(project.id)
+
+    if project.budget_amount is None:
+        within_budget_text = "without an allocated budget set yet"
+        within_budget_color = "#6b7280"
+        budget_summary_text = "No project budget has been set for this workspace yet."
+    else:
+        budget_remaining = project.budget_amount - total_expenses
+
+        if total_expenses <= project.budget_amount:
+            within_budget_text = "within the allocated budget"
+            within_budget_color = "#16a34a"
+            budget_summary_text = f"${budget_remaining} remains in the current project budget."
+        else:
+            within_budget_text = "outside of the allocated budget"
+            within_budget_color = "#dc2626"
+            budget_summary_text = f"The project is currently ${abs(budget_remaining)} over budget."
+
+    #
+    # Element sequence for the reportlab library stuff
+    # 
+    # The pages are defined by these PageBreak() elements in the elements list
+    #
     buffer = BytesIO()
     doc = SimpleDocTemplate(
         buffer,
@@ -325,12 +486,6 @@ def generate_report_pdf(project, generated_by):
         bottomMargin=1.0 * inch,
     )
     styles = _get_report_styles()
-
-    #
-    # Element sequence for the reportlab library stuff
-    # 
-    # The pages are defined by these PageBreak() elements in the elements list
-    #
 
     elements = [
         #
@@ -377,14 +532,42 @@ def generate_report_pdf(project, generated_by):
         Paragraph(active_project_phase_description, styles["meta"]),
         PageBreak(),
         #
-        # STAKEHOLDERS PAGE
-        #
-        Paragraph("Stakeholders", styles["title"]),
-        PageBreak(),
-        #
         # PERFORMANCE AND FINANCIALS PAGE
         #
         Paragraph("Performance and Financials", styles["title"]),
+        Spacer(1, 0.24 * inch),
+        Paragraph(
+                f"""
+                This project is currently <font color="{within_budget_color}">{within_budget_text}</font>.
+                Pandata is currently tracking {len(expenses)} individual expenses (consisting of annual, monthly and one time
+                costs).
+                """, 
+                styles["body"]),
+        Spacer(1, 0.24 * inch),
+        Paragraph(f"<b>Allocated Project Budget</b>: $ {project.budget_amount if project.budget_amount is not None else 'Not set'}", styles["body"]),
+        Paragraph(f"<b>Accumulated Expenses</b>: $ {total_expenses}", styles["body"]),
+        Paragraph(f"<b>Recurring Cost Count</b>: {recurring_cost_count}", styles["body"]),
+        Paragraph(f"<b>Projected Next-Year Recurring Spend</b>: $ {next_year_cost}", styles["body"]),
+        Paragraph(f"<b>Largest Cost Category</b>: {top_category}", styles["body"]),
+        Spacer(1, 0.08 * inch),
+        Paragraph(budget_summary_text, styles["meta"]),
+        Spacer(1, 0.18 * inch),
+        _build_financial_category_chart(category_split, styles),
+        PageBreak(),
+        #
+        # STAKEHOLDERS PAGE
+        #
+        Paragraph("Stakeholders", styles["title"]),
+        Spacer(1, 0.22 * inch),
+        Paragraph(
+            (
+                f"Pandata is currently tracking {stakeholder_count} assigned stakeholders for this project. "
+                f"Current role mapping spans {role_distribution['total_roles']} distinct role categories."
+            ),
+            styles["body"],
+        ),
+        Spacer(1, 0.16 * inch),
+        _build_role_distribution_chart(project.id, styles),
     ]
 
     doc.build(elements, onFirstPage=_decorate_page, onLaterPages=_decorate_page)

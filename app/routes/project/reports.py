@@ -1,6 +1,7 @@
 import os
 import uuid
 
+from sqlalchemy import select
 from flask import render_template, abort, send_file, session, redirect, url_for
 from werkzeug.utils import secure_filename
 
@@ -16,9 +17,23 @@ def reports(project_id):
     if not project:
         return abort(404)
 
+    recent_saved_reports = (
+        db.session.execute(
+            select(File)
+            .where(File.project_id == project_id)
+            .where(File.description == "Auto-generated project report")
+            .order_by(File.upload_date.desc())
+            .limit(5)
+        )
+        .scalars()
+        .all()
+    )
+
     return render_template(
         "project/reports.html.j2",
-        project=project
+        project=project,
+        active_project_id=project.id,
+        recent_saved_reports=recent_saved_reports,
     ), 200
 
 

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import datetime
+import datetime
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
@@ -137,7 +137,7 @@ def _base_forecast_chart(expenses_list, current_date, current_total, budget_amou
 
 
 def compute_total_expenses(expenses_list):
-    current = datetime.now().date()
+    current = datetime.datetime.now().date()
     totals_by_date = _occurrence_totals_by_date(expenses_list, current)
     return sum(totals_by_date.values(), Decimal("0"))
 
@@ -167,7 +167,7 @@ def next_year_spending(expenses_list):
 
 
 def running_expense_total_data(expenses_list):
-    current = datetime.now().date()
+    current = datetime.datetime.now().date()
     labels, data = _running_total_series(_occurrence_totals_by_date(expenses_list, current))
 
     return {
@@ -177,7 +177,7 @@ def running_expense_total_data(expenses_list):
 
 
 def category_cost_split_data(expenses_list):
-    current = datetime.now().date()
+    current = datetime.datetime.now().date()
     totals_by_category = defaultdict(lambda: Decimal("0"))
 
     for expense in expenses_list:
@@ -202,7 +202,7 @@ def budget_overrun_forecast_data(expenses_list, project_budget, max_months=60):
     if project_budget is None:
         return _empty_budget_forecast_payload()
 
-    current = datetime.now().date()
+    current = datetime.datetime.now().date()
     budget_amount = Decimal(project_budget)
     current_total = compute_total_expenses(expenses_list)
     chart_data = _base_forecast_chart(
