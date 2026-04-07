@@ -60,7 +60,7 @@ def timeline():
         })
 
     return render_template(
-        "dashboard/timeline.html",
+        "dashboard/timeline.html.j2",
         dashboard_title=f"Global Timeline",
         description="Visualize phases, events and deadlines across all your projects.",
         projects=projects,
