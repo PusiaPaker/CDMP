@@ -57,7 +57,7 @@
         </div>
 
         <div class="timeline-shell">
-            <div id="timelineContainer" class="timeline-container"></div>
+            <div id="globalTimelineContainer" class="timeline-container"></div>
         </div>
     </section>
 {% endblock %}
@@ -67,5 +67,5 @@
     <script>
         window.timelineEvents = {{ timeline_events|default([], true)|tojson }};
     </script>
-    <script src="{{ url_for('static', filename='js/pages/timeline-dashboard.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pages/timeline-global.js') }}"></script>
 {% endblock %}

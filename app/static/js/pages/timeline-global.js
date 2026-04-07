@@ -1,6 +1,7 @@
 (function () {
     const events = window.timelineEvents || [];
-    const container = document.getElementById("timelineContainer");
+    const container = document.getElementById("globalTimelineContainer");
+    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
     if (!container || !Array.isArray(events)) {
         return;
@@ -8,7 +9,7 @@
 
     if (events.length === 0) {
         container.innerHTML =
-            '<div class="timeline-empty-state">This timeline does not have any dates attached to it yet.</div>';
+            '<div class="p-3 text-muted">This timeline does not have any dates attached to it yet.</div>';
         return;
     }
 
@@ -17,12 +18,12 @@
             .slice()
             .sort((a, b) => String(a.start).localeCompare(String(b.start)))
             .map((e) => {
-                const endText = e.end ? " -> " + String(e.end).slice(0, 10) : "";
+                const endText = e.end ? " -> " + e.end.slice(0, 10) : "";
                 return (
                     "<li><strong>" +
-                    String(e.content) +
+                    e.content +
                     "</strong> (" +
-                    String(e.start).slice(0, 10) +
+                    e.start.slice(0, 10) +
                     endText +
                     ")</li>"
                 );
@@ -30,9 +31,9 @@
             .join("");
 
         container.innerHTML =
-            '<div class="timeline-empty-state">' +
-            "<p>Interactive timeline library did not load. Showing fallback list.</p>" +
-            "<ul>" +
+            '<div class="p-3">' +
+            '<p class="text-warning mb-2">Interactive timeline library did not load. Showing fallback list.</p>' +
+            '<ul class="mb-0">' +
             listHtml +
             "</ul>" +
             "</div>";
@@ -60,12 +61,28 @@
         });
     };
 
+    const validEvents = events.filter((event) => !Number.isNaN(new Date(event.start).getTime()));
+
+    if (validEvents.length === 0) {
+        container.innerHTML =
+            '<div class="p-3 text-muted">This timeline does not have any valid dates to display yet.</div>';
+        return;
+    }
+
+    const groupMap = new Map();
+    validEvents.forEach((event) => {
+        if (!groupMap.has(event.project_id)) {
+            groupMap.set(event.project_id, {
+                id: event.project_id,
+                content: event.project_title || "Untitled Project",
+            });
+        }
+    });
+
     const items = new vis.DataSet(
-        events.map((e) => {
+        validEvents.map((e) => {
             const startLabel = formatDateLabel(e.start);
             const endLabel = formatDateLabel(e.end || e.start);
-            const isMissingStart = Boolean(e.missing_start);
-            const isRange = Boolean(e.end);
             const description =
                 typeof e.description === "string" && e.description.trim()
                     ? e.description.trim()
@@ -75,7 +92,7 @@
                 id: e.id,
                 content: e.content,
                 start: e.start,
-                group: !isMissingStart && isRange ? "dated_range" : "unspecified_start",
+                group: e.project_id,
                 title:
                     "<strong>" +
                     escapeHtml(e.content) +
@@ -84,7 +101,7 @@
                     escapeHtml(e.project_title || "Untitled Project") +
                     "<br>" +
                     "Start: " +
-                    escapeHtml(isMissingStart ? "Unspecified (inferred)" : startLabel) +
+                    escapeHtml(startLabel) +
                     "<br>" +
                     "End: " +
                     escapeHtml(endLabel) +
@@ -105,10 +122,9 @@
         })
     );
 
-    const groups = new vis.DataSet([
-        { id: "dated_range", content: "Phases", sortOrder: 1 },
-        { id: "unspecified_start", content: "Deadlines", sortOrder: 2 },
-    ]);
+    const groups = new vis.DataSet(
+        Array.from(groupMap.values()).sort((a, b) => a.content.localeCompare(b.content))
+    );
 
     const timeline = new vis.Timeline(container, items, groups, {
         stack: true,
@@ -118,8 +134,19 @@
         height: "520px",
         maxHeight: 520,
         showCurrentTime: true,
-        groupOrder: (a, b) => a.sortOrder - b.sortOrder,
+        groupOrder: (a, b) => String(a.content).localeCompare(String(b.content)),
     });
+
+    const startTimes = validEvents.map((event) => new Date(event.start).getTime());
+    const endTimes = validEvents.map((event) => new Date(event.end || event.start).getTime());
+    const minTime = Math.min(...startTimes);
+    const maxTime = Math.max(...endTimes);
+
+    timeline.setWindow(
+        new Date(minTime - ONE_DAY_MS * 7),
+        new Date(maxTime + ONE_DAY_MS * 7),
+        { animation: false }
+    );
 
     const zoomInBtn = document.getElementById("zoomInBtn");
     const zoomOutBtn = document.getElementById("zoomOutBtn");
@@ -127,7 +154,13 @@
 
     if (zoomInBtn) zoomInBtn.addEventListener("click", () => timeline.zoomIn(0.4));
     if (zoomOutBtn) zoomOutBtn.addEventListener("click", () => timeline.zoomOut(0.4));
-    if (fitBtn) fitBtn.addEventListener("click", () => timeline.fit());
-
-    timeline.fit();
+    if (fitBtn) {
+        fitBtn.addEventListener("click", () => {
+            timeline.setWindow(
+                new Date(minTime - ONE_DAY_MS * 7),
+                new Date(maxTime + ONE_DAY_MS * 7),
+                { animation: false }
+            );
+        });
+    }
 })();
