@@ -7,3 +7,4 @@ from . import timeline
 from . import visualizations
 from . import reports
 from . import share
+from . import finance

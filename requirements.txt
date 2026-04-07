@@ -8,3 +8,4 @@ python-dotenv
 pandas
 openpyxl
 reportlab
+python-dateutil

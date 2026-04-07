@@ -36,6 +36,17 @@
                     <span class="settings-label">Project ID</span>
                     <p class="settings-value settings-mono">{{ project.id }}</p>
                 </div>
+
+                <div class="settings-info-item">
+                    <span class="settings-label">Budget</span>
+                    <p class="settings-value">
+                        {% if project.budget_amount is not none %}
+                            ${{ project.budget_amount }}
+                        {% else %}
+                            No budget set yet.
+                        {% endif %}
+                    </p>
+                </div>
             </div>
 
             <div class="settings-actions">
