@@ -1,5 +1,6 @@
 from flask import render_template, session, request, redirect, url_for, jsonify, abort
 from sqlalchemy import select, exists, and_, insert
+import re
 
 from .project import ProjectBP
 from app.src.project.queries import user_has_project_access
@@ -17,7 +18,12 @@ def people(project_id):
         title = request.form['title']
         email = request.form['email']
         phone = request.form['phone']
-        
+
+        # Got this Regex off google looks pretty legit
+        phone_number_pattern = r"^(\+\d{1,3})?\s?\(?\d{1,4}\)?[\s.-]?\d{3}[\s.-]?\d{4}$"
+        if not re.match(phone_number_pattern, phone):
+            phone = ""
+
         existing_person = db.session.execute(
             select(Person).where(Person.email == email)
         ).first()
@@ -27,7 +33,7 @@ def people(project_id):
                 select(User).where(User.email == email)
             ).first()
             if existing_user:
-                new_person = Person(user_id=existing_user.id, name=name, email=email, phone=phone, title=title)
+                new_person = Person(user_id=existing_user[0].id, name=name, email=email, phone=phone, title=title)
             else:
                 new_person = Person(name=name, email=email, phone=phone, title=title)
             db.session.add(new_person)
@@ -37,10 +43,10 @@ def people(project_id):
             db.session.commit()
         else:
             existing_proj_person = db.session.execute(
-                select(ProjectPerson).where(ProjectPerson.person_id == existing_person)
+                select(ProjectPerson).where(ProjectPerson.person_id == existing_person[0].id)
             ).first()
             if not existing_proj_person:
-                db.session.add(ProjectPerson(project_id=project_id, person_id=existing_person.id, role_level=role))
+                db.session.add(ProjectPerson(project_id=project_id, person_id=existing_person[0].id, role_level=role))
                 db.session.commit()
 
         return redirect(url_for('project.people', project_id=project_id))
@@ -102,9 +108,23 @@ def people(project_id):
 
 @ProjectBP.route("/<project_id>/people/<person_id>")
 def delete_project_person(project_id, person_id):
-    to_delete = db.session.query(ProjectPerson).filter_by(project_id=project_id, person_id=person_id).first()
-    if to_delete:
-        db.session.delete(to_delete)
+    projperson_to_delete = db.session.execute(
+        select(ProjectPerson)
+        .where(
+            and_(ProjectPerson.project_id == project_id, ProjectPerson.person_id == person_id)
+            )
+        ).first()
+
+    if projperson_to_delete:
+        ## Deleting person from all projects deletes the person themselves from the database.
+        if db.session.query(ProjectPerson).filter_by(person_id=person_id).count() == 1:
+            person_to_delete = db.session.execute(
+                select(Person)
+                    .where(Person.id == person_id)
+                ).first()
+            db.session.delete(person_to_delete[0])
+
+        db.session.delete(projperson_to_delete[0])
         db.session.commit()
     
     return redirect(url_for('project.people', project_id=project_id))
