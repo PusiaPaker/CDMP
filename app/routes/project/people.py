@@ -9,8 +9,20 @@ from app.tables import Project, ProjectPerson, PersonReport, Person
 from app.core import db
 from app.src.utilities import normalize_role_to_level
 
-@ProjectBP.route("/<project_id>/people/")
+@ProjectBP.route("/<project_id>/people/", methods=['GET', 'POST'])
 def people(project_id):
+    if request.method == 'POST':
+        name = request.form['name']
+        role_level = request.form['role-level']
+        title = request.form['title']
+        email = request.form['email']
+        phone = request.form['phone']
+
+        
+
+        new_person = new Person(name=name, email=email, phone=phone, title=title)
+
+
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)

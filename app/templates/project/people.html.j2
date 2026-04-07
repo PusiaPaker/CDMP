@@ -37,15 +37,14 @@
             <div id="modal" class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <p class="modal-header">Add a New Person</p>
-                    <form class="project-form">
-                            <input class="form-input" type="text" placeholder="Name" required/>
-                            <input class="form-input" type="text" placeholder="Role Level"/>
-                            <input class="form-input" type="text" placeholder="Title"/>
-                            <input class="form-input" type="email" placeholder="Email"/>
-                            <input class="form-input" type="tel" placeholder="Phone"/>
-                            <input class="form-input" type="text" placeholder="Account"/>
-                            <input class="button" type="submit" value="Submit"/>
+                    <form class="project-form" method="POST" action="">
+                        <label for="title" class="modal-header">Add a New Person</p>
+                        <input class="form-input" type="text" id="name" placeholder="Name" maxlength="120" required/>
+                        <input class="form-input" type="text" id="role-level" placeholder="Role Level" maxlength="64"/>
+                        <input class="form-input" type="text" id="title" placeholder="Title" maxlength="120"/>
+                        <input class="form-input" type="email" id="email" placeholder="Email" minlength="5" maxlength="254"/>
+                        <input class="form-input" type="tel" id="phone" placeholder="Phone" maxlength="32"/>
+                        <input class="button" type="submit" value="Submit"/>
                     </form>
                 </div>
             </div>
