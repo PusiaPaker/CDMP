@@ -9,3 +9,4 @@ pandas
 openpyxl
 reportlab
 python-dateutil
+pytest
