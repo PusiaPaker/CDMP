@@ -70,9 +70,19 @@
     margin: 0;
 }
 
+.finance-section-actions {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+}
+
 .finance-table-wrapper {
     margin-top: 3rem;
     overflow-x: auto;
+}
+
+.finance-modal .modal-content {
+    width: min(520px, calc(100% - 2rem));
 }
 
 .finance-chart-shell {
@@ -118,6 +128,16 @@
 
 .finance-table tbody tr:hover {
     background: rgba(0, 0, 0, 0.02);
+}
+
+.finance-table-delete {
+    color: var(--color-danger);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.finance-table-delete:hover {
+    text-decoration: underline;
 }
 
 .section-empty-text {
