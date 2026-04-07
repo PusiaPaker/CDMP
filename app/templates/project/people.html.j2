@@ -4,6 +4,8 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/people.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
 {% endblock %}
 
 {% block page_header %}
@@ -25,8 +27,30 @@
                     <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}" class="button">
                         Import CSV/XLSX
                     </a>
+                    <br>
+                    <a id="modal-btn" class="button-secondary">
+                        Add New
+                    </a>
                 </div>
             </div>
+
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }} ">
+                        <label>Add New Person</label>
+                        <div class="form-section">
+                            <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required/>
+                            <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required/>
+                            <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120"/>
+                            <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254"/>
+                            <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32"/>
+                        <input class="button" type="submit" value="Submit"/>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
 
             {% if people_rows and people_rows|length > 0 %}
                 <div class="people-table-wrapper">
@@ -39,6 +63,7 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Account</th>
+                                <th></th>
                             </tr>
                         </thead>
 
@@ -55,6 +80,9 @@
                                             {% if p.user_id %}Linked{% else %}Not registered{% endif %}
                                         </span>
                                     </td>
+                                    <td>
+                                        <a class="people-table-delete" href="{{ url_for('project.delete_project_person', project_id=project['id'], person_id=p['id']) }}">Delete</a>
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -66,4 +94,6 @@
         </section>
 
     </div>
+
+    <script src='{{ url_for('static', filename='js/components/modal.js') }}'/>
 {% endblock %}

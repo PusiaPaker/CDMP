@@ -1,16 +1,57 @@
 from flask import render_template, session, request, redirect, url_for, jsonify, abort
 from sqlalchemy import select, exists, and_, insert
+import re
 
 from .project import ProjectBP
 from app.src.project.queries import user_has_project_access
 from app.src.project.files import parse_csv_headers_preview, parse_xlsx_headers_preview, read_all_csv_rows, read_all_xlsx_rows
 
-from app.tables import Project, ProjectPerson, PersonReport, Person
+from app.tables import Project, ProjectPerson, PersonReport, Person, User
 from app.core import db
 from app.src.utilities import normalize_role_to_level
 
-@ProjectBP.route("/<project_id>/people/")
+@ProjectBP.route("/<project_id>/people/", methods=['GET', 'POST'])
 def people(project_id):
+    if request.method == 'POST':
+        name = request.form['name']
+        role = request.form['role']
+        title = request.form['title']
+        email = request.form['email']
+        phone = request.form['phone']
+
+        # Got this Regex off google looks pretty legit
+        phone_number_pattern = r"^(\+\d{1,3})?\s?\(?\d{1,4}\)?[\s.-]?\d{3}[\s.-]?\d{4}$"
+        if not re.match(phone_number_pattern, phone):
+            phone = ""
+
+        existing_person = db.session.execute(
+            select(Person).where(Person.email == email)
+        ).first()
+
+        if not existing_person:
+            existing_user = db.session.execute(
+                select(User).where(User.email == email)
+            ).first()
+            if existing_user:
+                new_person = Person(user_id=existing_user[0].id, name=name, email=email, phone=phone, title=title)
+            else:
+                new_person = Person(name=name, email=email, phone=phone, title=title)
+            db.session.add(new_person)
+            db.session.commit()
+
+            db.session.add(ProjectPerson(project_id=project_id, person_id=new_person.id, role_level=role))
+            db.session.commit()
+        else:
+            existing_proj_person = db.session.execute(
+                select(ProjectPerson).where(ProjectPerson.person_id == existing_person[0].id)
+            ).first()
+            if not existing_proj_person:
+                db.session.add(ProjectPerson(project_id=project_id, person_id=existing_person[0].id, role_level=role))
+                db.session.commit()
+
+        return redirect(url_for('project.people', project_id=project_id))
+
+
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
@@ -64,6 +105,29 @@ def people(project_id):
         reporting_links=reporting_links,
         people_nodes=people_nodes,
         ), 200
+
+@ProjectBP.route("/<project_id>/people/<person_id>")
+def delete_project_person(project_id, person_id):
+    projperson_to_delete = db.session.execute(
+        select(ProjectPerson)
+        .where(
+            and_(ProjectPerson.project_id == project_id, ProjectPerson.person_id == person_id)
+            )
+        ).first()
+
+    if projperson_to_delete:
+        ## Deleting person from all projects deletes the person themselves from the database.
+        if db.session.query(ProjectPerson).filter_by(person_id=person_id).count() == 1:
+            person_to_delete = db.session.execute(
+                select(Person)
+                    .where(Person.id == person_id)
+                ).first()
+            db.session.delete(person_to_delete[0])
+
+        db.session.delete(projperson_to_delete[0])
+        db.session.commit()
+    
+    return redirect(url_for('project.people', project_id=project_id))
 
 
 @ProjectBP.route("/<project_id>/people/updatematrix", methods=["POST"])

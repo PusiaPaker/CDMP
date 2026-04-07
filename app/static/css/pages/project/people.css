@@ -69,3 +69,13 @@
         padding: 10px 12px;
     }
 }
+
+.people-table-delete {
+    color: var(--color-danger);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.people-table-delete:hover {
+    text-decoration: underline;
+}
