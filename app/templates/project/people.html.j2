@@ -37,14 +37,16 @@
             <div id="modal" class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <form class="project-form" method="POST" action="">
-                        <label for="title" class="modal-header">Add a New Person</p>
-                        <input class="form-input" type="text" id="name" placeholder="Name" maxlength="120" required/>
-                        <input class="form-input" type="text" id="role-level" placeholder="Role Level" maxlength="64"/>
-                        <input class="form-input" type="text" id="title" placeholder="Title" maxlength="120"/>
-                        <input class="form-input" type="email" id="email" placeholder="Email" minlength="5" maxlength="254"/>
-                        <input class="form-input" type="tel" id="phone" placeholder="Phone" maxlength="32"/>
+                    <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }} ">
+                        <label>Add New Person</label>
+                        <div class="form-section">
+                            <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required/>
+                            <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required/>
+                            <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120"/>
+                            <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254"/>
+                            <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32"/>
                         <input class="button" type="submit" value="Submit"/>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -61,6 +63,7 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th>Account</th>
+                                <th></th>
                             </tr>
                         </thead>
 
@@ -76,6 +79,9 @@
                                         <span class="people-account-badge{% if p.user_id %} linked{% endif %}">
                                             {% if p.user_id %}Linked{% else %}Not registered{% endif %}
                                         </span>
+                                    </td>
+                                    <td>
+                                        <a class="people-table-delete" href="{{ url_for('project.delete_project_person', project_id=project['id'], person_id=p['id']) }}">Delete</a>
                                     </td>
                                 </tr>
                             {% endfor %}

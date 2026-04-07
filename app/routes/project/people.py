@@ -5,7 +5,7 @@ from .project import ProjectBP
 from app.src.project.queries import user_has_project_access
 from app.src.project.files import parse_csv_headers_preview, parse_xlsx_headers_preview, read_all_csv_rows, read_all_xlsx_rows
 
-from app.tables import Project, ProjectPerson, PersonReport, Person
+from app.tables import Project, ProjectPerson, PersonReport, Person, User
 from app.core import db
 from app.src.utilities import normalize_role_to_level
 
@@ -13,14 +13,37 @@ from app.src.utilities import normalize_role_to_level
 def people(project_id):
     if request.method == 'POST':
         name = request.form['name']
-        role_level = request.form['role-level']
+        role = request.form['role']
         title = request.form['title']
         email = request.form['email']
         phone = request.form['phone']
-
         
+        existing_person = db.session.execute(
+            select(Person).where(Person.email == email)
+        ).first()
 
-        new_person = new Person(name=name, email=email, phone=phone, title=title)
+        if not existing_person:
+            existing_user = db.session.execute(
+                select(User).where(User.email == email)
+            ).first()
+            if existing_user:
+                new_person = Person(user_id=existing_user.id, name=name, email=email, phone=phone, title=title)
+            else:
+                new_person = Person(name=name, email=email, phone=phone, title=title)
+            db.session.add(new_person)
+            db.session.commit()
+
+            db.session.add(ProjectPerson(project_id=project_id, person_id=new_person.id, role_level=role))
+            db.session.commit()
+        else:
+            existing_proj_person = db.session.execute(
+                select(ProjectPerson).where(ProjectPerson.person_id == existing_person)
+            ).first()
+            if not existing_proj_person:
+                db.session.add(ProjectPerson(project_id=project_id, person_id=existing_person.id, role_level=role))
+                db.session.commit()
+
+        return redirect(url_for('project.people', project_id=project_id))
 
 
     project = db.session.get(Project, project_id)
@@ -76,6 +99,15 @@ def people(project_id):
         reporting_links=reporting_links,
         people_nodes=people_nodes,
         ), 200
+
+@ProjectBP.route("/<project_id>/people/<person_id>")
+def delete_project_person(project_id, person_id):
+    to_delete = db.session.query(ProjectPerson).filter_by(project_id=project_id, person_id=person_id).first()
+    if to_delete:
+        db.session.delete(to_delete)
+        db.session.commit()
+    
+    return redirect(url_for('project.people', project_id=project_id))
 
 
 @ProjectBP.route("/<project_id>/people/updatematrix", methods=["POST"])
