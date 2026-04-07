@@ -4,6 +4,8 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/people.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
 {% endblock %}
 
 {% block page_header %}
@@ -25,8 +27,29 @@
                     <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}" class="button">
                         Import CSV/XLSX
                     </a>
+                    <br>
+                    <a id="modal-btn" class="button-secondary">
+                        Add New
+                    </a>
                 </div>
             </div>
+
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <p class="modal-header">Add a New Person</p>
+                    <form class="project-form">
+                            <input class="form-input" type="text" placeholder="Name" required/>
+                            <input class="form-input" type="text" placeholder="Role Level"/>
+                            <input class="form-input" type="text" placeholder="Title"/>
+                            <input class="form-input" type="email" placeholder="Email"/>
+                            <input class="form-input" type="tel" placeholder="Phone"/>
+                            <input class="form-input" type="text" placeholder="Account"/>
+                            <input class="button" type="submit" value="Submit"/>
+                    </form>
+                </div>
+            </div>
+
 
             {% if people_rows and people_rows|length > 0 %}
                 <div class="people-table-wrapper">
@@ -66,4 +89,6 @@
         </section>
 
     </div>
+
+    <script src='{{ url_for('static', filename='js/components/modal.js') }}'/>
 {% endblock %}
