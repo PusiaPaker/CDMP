@@ -6,9 +6,10 @@ from sqlalchemy import select
 from dateutil.relativedelta import relativedelta
 
 from app.core import db
-from app.tables import TimelineEvent, Expense, ProjectPerson
+from app.tables import TimelineEvent, Expense, ProjectPerson, Person
 from app.src.project.visualizations import build_event_distribution, build_role_distribution
 from app.src.project.finance import *
+from app.src.utilities import normalize_role_to_level
 
 from reportlab.lib import colors
 from reportlab.lib.units import inch
@@ -90,6 +91,47 @@ def _get_active_project_phase(project_id):
             }
 
     return None
+
+
+def _get_upper_level_managers(project_id):
+    rows = (
+        db.session.execute(
+            select(Person, ProjectPerson)
+            .join(ProjectPerson, ProjectPerson.person_id == Person.id)
+            .where(ProjectPerson.project_id == project_id)
+            .order_by(Person.name.asc())
+        )
+        .all()
+    )
+
+    upper_level_managers = []
+    for person, project_person in rows:
+        if normalize_role_to_level(project_person.role_level) > 1:
+            continue
+
+        upper_level_managers.append(
+            {
+                "name": person.name,
+                "role_level": project_person.role_level or "",
+                "title": person.title or "",
+                "email": person.email or "Not provided",
+                "phone": person.phone or "Not provided",
+            }
+        )
+
+    return upper_level_managers
+
+##################
+# Misc utilities #
+##################
+def compute_percentage_largest_exp(expense_split):
+    '''
+    expense split should come from src/project/finance.py's category_cost_split_data function
+    it's already sorted by largest cost first
+    '''
+    if len(expense_split['data']) == 0:
+        return 0
+    return expense_split['data'][0]/sum(expense_split['data'])
 
 #####################################
 # Reportlab/papyrus style utilities #
@@ -354,6 +396,43 @@ def _build_financial_category_chart(category_split, styles):
     return drawing
 
 
+def _build_upper_manager_contacts_table(project_id, styles):
+    upper_level_managers = _get_upper_level_managers(project_id)
+    if not upper_level_managers:
+        return Paragraph("No upper-level manager contact information is available yet.", styles["body"])
+
+    rows = [["Name", "Role / Title", "Email", "Phone"]]
+
+    for manager in upper_level_managers:
+        role_and_title = manager["role_level"]
+        if manager["title"]:
+            role_and_title = f'{role_and_title}<br/>{manager["title"]}' if role_and_title else manager["title"]
+
+        rows.append([
+            Paragraph(manager["name"], styles["body"]),
+            Paragraph(role_and_title, styles["body"]),
+            Paragraph(manager["email"], styles["body"]),
+            Paragraph(manager["phone"], styles["body"]),
+        ])
+
+    table = Table(rows, colWidths=[1.3 * inch, 1.55 * inch, 2.25 * inch, 1.5 * inch])
+    table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), PANDATA_ACCENT),
+        ("TEXTCOLOR", (0, 0), (-1, 0), PANDATA_SURFACE),
+        ("TEXTCOLOR", (0, 1), (-1, -1), PANDATA_TEXT_PRIMARY),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [PANDATA_SURFACE, PANDATA_BG]),
+        ("BOX", (0, 0), (-1, -1), 1, PANDATA_BORDER),
+        ("INNERGRID", (0, 0), (-1, -1), 0.75, PANDATA_BORDER),
+        ("LEFTPADDING", (0, 0), (-1, -1), 8),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+        ("TOPPADDING", (0, 0), (-1, -1), 7),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+    ]))
+    return table
+
+
 def _draw_footer(canvas, doc):
     canvas.saveState()
     canvas.setFont("Helvetica", 9)
@@ -553,6 +632,10 @@ def generate_report_pdf(project, generated_by):
         Paragraph(budget_summary_text, styles["meta"]),
         Spacer(1, 0.18 * inch),
         _build_financial_category_chart(category_split, styles),
+        Spacer(1, 0.18 * inch),
+        Paragraph(f"""The <i>{top_category}</i> expense category represents <b>
+                  {compute_percentage_largest_exp(category_split)*100:.2f}%
+                  </b> of the allocated budget for this project.""", styles["body"]),
         PageBreak(),
         #
         # STAKEHOLDERS PAGE
@@ -568,6 +651,15 @@ def generate_report_pdf(project, generated_by):
         ),
         Spacer(1, 0.16 * inch),
         _build_role_distribution_chart(project.id, styles),
+        Spacer(1, 0.2 * inch),
+        Paragraph("Upper-Level Managers", styles["heading"]),
+        Spacer(1, 0.08 * inch),
+        Paragraph(
+            "Direct contact details for the highest-level stakeholders currently mapped to this project.",
+            styles["meta"],
+        ),
+        Spacer(1, 0.12 * inch),
+        _build_upper_manager_contacts_table(project.id, styles),
     ]
 
     doc.build(elements, onFirstPage=_decorate_page, onLaterPages=_decorate_page)
