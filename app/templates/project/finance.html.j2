@@ -1,0 +1,185 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Finance{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/finance.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Finance</h1>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="finance-page-grid">
+        <div class="finance-topbar">
+            <div class="finance-tabs">
+                <button type="button" class="finance-tab-button is-active" data-finance-tab="analysis">Data Analysis</button>
+                <button type="button" class="finance-tab-button" data-finance-tab="expenses">Expense List</button>
+            </div>
+
+            <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='expenses') }}" class="button">
+                Import CSV/XLSX
+            </a>
+        </div>
+
+        <div class="finance-panel" data-finance-panel="expenses" hidden>
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Expenses List</h2>
+                </div>
+
+                {% if expenses %}
+                    <div class="finance-table-wrapper">
+                        <table class="finance-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Purpose</th>
+                                    <th>Amount</th>
+                                    <th>Date</th>
+                                    <th>Frequency</th>
+                                    <th>Category</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in expenses %}
+                                    <tr>
+                                        <td>{{ expense.expense_name }}</td>
+                                        <td>{{ expense.expense_purpose or "" }}</td>
+                                        <td>{{ expense.amount }}</td>
+                                        <td>{{ expense.expense_date }}</td>
+                                        <td>{{ expense.recurrence_type }}</td>
+                                        <td>{{ expense.category }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">No expenses added yet.</p>
+                {% endif %}
+            </section>
+        </div>
+
+        <div class="finance-panel" data-finance-panel="analysis">
+            <div class="finance-stats-grid">
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label">Allocated Project Budget</p>
+                    <p class="finance-stat-caption">Update this in settings.</p>
+                    <h3 class="finance-stat-value">
+                        {%if finance_stats['project_budget'] %}
+                            $ {{ finance_stats['project_budget'] }}
+                        {% else %}
+                            No budget.
+                        {% endif %}
+                    </h3>
+                </article>
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label">Accumulated Expenes</p>
+                    <p class="finance-stat-caption">-</p>
+                    <h3 class="finance-stat-value">$ {{ finance_stats['total_expenses'] }}</h3>
+                </article>
+
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label"># of Recurring Costs</p>
+                    <p class="finance-stat-caption">-</p>
+                    <h3 class="finance-stat-value">{{finance_stats['number_recurring_costs']}}</h3>
+                </article>
+
+                <article class="finance-stat-card">
+                    <p class="finance-stat-label">Next Years Spending</p>
+                    <p class="finance-stat-caption">Based on current recurring costs</p>
+                    <h3 class="finance-stat-value">${{finance_stats['next_year_cost']}}</h3>
+                </article>
+            </div>
+
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Accumulated Expenses Over Time</h2>
+                </div>
+                <p></p>
+
+                {% if finance_running_total_data.labels %}
+                    <div class="finance-chart-shell">
+                        <canvas id="finance-running-total-chart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">No expense data available for charting yet.</p>
+                {% endif %}
+            </section>
+
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Budget Overrun Forecast</h2>
+                </div>
+
+                {% if finance_budget_forecast_data.labels %}
+                    <p class="finance-chart-note">
+                        {% if finance_budget_forecast_data.already_over_budget %}
+                            Current spend is already above the project budget.
+                        {% elif finance_budget_forecast_data.crosses_budget_on %}
+                            Recurring costs are projected to push the project over budget on {{ finance_budget_forecast_data.crosses_budget_on }}.
+                        {% else %}
+                            Forecasting recurring costs forward for up to 60 months based on the current budget.
+                        {% endif %}
+                    </p>
+
+                    <div class="finance-chart-shell">
+                        <canvas id="finance-budget-forecast-chart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">Add a project budget and recurring expenses to see the over-budget forecast.</p>
+                {% endif %}
+            </section>
+
+            <section class="finance-section">
+                <div class="section-header">
+                    <h2>Cost Split by Category</h2>
+                </div>
+
+                {% if finance_category_split_data.labels %}
+                    <p class="finance-chart-note">Accumulated spend to date grouped by expense category.</p>
+
+                    <div class="finance-chart-shell">
+                        <canvas id="finance-category-split-chart"></canvas>
+                    </div>
+                {% else %}
+                    <p class="section-empty-text">No category data available for charting yet.</p>
+                {% endif %}
+            </section>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const financeTabButtons = document.querySelectorAll("[data-finance-tab]");
+        const financePanels = document.querySelectorAll("[data-finance-panel]");
+        window.finance_running_total_data = {{ finance_running_total_data | tojson }};
+        window.finance_budget_forecast_data = {{ finance_budget_forecast_data | tojson }};
+        window.finance_category_split_data = {{ finance_category_split_data | tojson }};
+
+        financeTabButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                const targetPanel = button.dataset.financeTab;
+
+                financeTabButtons.forEach((tabButton) => {
+                    tabButton.classList.toggle("is-active", tabButton === button);
+                });
+
+                financePanels.forEach((panel) => {
+                    panel.hidden = panel.dataset.financePanel !== targetPanel;
+                });
+            });
+        });
+    </script>
+
+    <script src="{{ url_for('static', filename='js/pages/finance.js') }}"></script>
+{% endblock %}

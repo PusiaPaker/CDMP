@@ -55,6 +55,8 @@ def build_event_distribution(project_id):
         return {
             "labels": [],
             "data": [],
+            "past_data": [],
+            "future_data": [],
             "type": "month",
         }
 
@@ -68,6 +70,8 @@ def build_event_distribution(project_id):
 
     labels = []
     data = []
+    past_data = []
+    future_data = []
     current_date = earliest_date
     while current_date <= latest_date:
         next_date = current_date + step
@@ -79,15 +83,31 @@ def build_event_distribution(project_id):
             labels.append(current_date.strftime("%b %Y"))
 
         count = 0
+        past_count = 0
+        future_count = 0
         for event in events:
             if current_date <= event.start_date < next_date:
                 count += 1
+                
+                # this basically checks if the event is the in the past or will still happen
+                if (
+                    event.start_date <= datetime.now()
+                    if event.start_date.tzinfo is None or event.start_date.tzinfo.utcoffset(event.start_date) is None
+                    else event.start_date <= datetime.now(event.start_date.tzinfo)
+                ):
+                    past_count += 1
+                else:
+                    future_count += 1
         data.append(count)
+        past_data.append(past_count)
+        future_data.append(future_count)
 
         current_date = next_date
 
     return {
         "labels": labels,
         "data": data,
+        "past_data": past_data,
+        "future_data": future_data,
         "type": "quarter" if use_quarters else "month",
     }

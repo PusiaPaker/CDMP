@@ -1,0 +1,54 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Report Generation{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/reports.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Report Generation</h1>
+    <p class="page-subtitle">Generate and download project summaries for stakeholders.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=project.id) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+    <div class="reports-actions-grid">
+        <section class="reports-page-container">
+            <div class="reports-card-copy">
+                <h2>Download Report PDF</h2>
+                <p class="reports-card-text">
+                    Generate and download a presentable PDF to your device with the current project summary, timeline highlights,
+                    and other report details pulled from Pandata's database
+                </p>
+            </div>
+
+            <form
+                action="{{ url_for('project.download_report', project_id=project.id) }}"
+                class="reports-action-form"
+                target="_blank"
+            >
+                <button type="submit" class="button reports-download-button">Preview Report</button>
+            </form>
+        </section>
+
+        <section class="reports-page-container">
+            <div class="reports-card-copy">
+                <h2>Save Copy to Files</h2>
+                <p class="reports-card-text">
+                    Store a generated PDF inside this project so it appears in the Pandata files list for later use.
+                </p>
+            </div>
+
+            <form action="{{ url_for('project.save_report_to_files', project_id=project.id) }}" class="reports-action-form">
+                <button type="submit" class="button reports-download-button">Save Copy in Files</button>
+            </form>
+        </section>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

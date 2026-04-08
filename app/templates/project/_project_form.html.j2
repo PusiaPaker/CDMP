@@ -15,7 +15,7 @@
             name="title"
             class="form-input"
             placeholder="Enter project name"
-            value="{{ project.title if project else '' }}"
+            value="{{ request.form.get('title', project.title if project else '') }}"
             minlength="3"
             maxlength="100"
             required
@@ -31,7 +31,21 @@
             placeholder="Brief description of the project"
             rows="6"
             maxlength="512"
-        >{{ project.description if project and project.description else '' }}</textarea>
+        >{{ request.form.get('description', project.description if project and project.description else '') }}</textarea>
+    </div>
+
+    <div class="form-section">
+        <label for="budget_amount" class="form-label">Budget Amount</label>
+        <input
+            type="number"
+            id="budget_amount"
+            name="budget_amount"
+            class="form-input"
+            placeholder="Optional project budget"
+            value="{{ request.form.get('budget_amount', project.budget_amount if project and project.budget_amount is not none else '') }}"
+            min="0"
+            step="0.01"
+        >
     </div>
 
     <div class="form-actions">

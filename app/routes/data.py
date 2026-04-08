@@ -19,6 +19,12 @@ from collections import defaultdict
 
 DataBP = Blueprint('data', __name__)
 
+TABLE_TYPE_REDIRECTS = {
+    "people": "project.people",
+    "timeline": "project.timeline",
+    "expenses": "project.finance",
+}
+
 # The plan here is that this endpoint will take care of
 # importing a spreadsheet and mapping what columns go to where.
 # this is upposed to be flexible enough to work with any kind of spreadsheet (people, timeline, ...)
@@ -36,7 +42,8 @@ def column_mapper(project_id, table_type):
             "project/upload.html.j2",
             active_project_id=project_id,
             project=project,
-            table_type=table_type
+            table_type=table_type,
+            back_endpoint=TABLE_TYPE_REDIRECTS.get(table_type, "project.home"),
         ), 200
 
     f = request.files.get("file")
@@ -46,6 +53,8 @@ def column_mapper(project_id, table_type):
             active_project_id=project_id,
             project=project,
             error="Please choose a file.",
+            table_type=table_type,
+            back_endpoint=TABLE_TYPE_REDIRECTS.get(table_type, "project.home"),
         ), 400
 
     ext = f.filename.split(".")[-1].lower()
@@ -55,6 +64,8 @@ def column_mapper(project_id, table_type):
             active_project_id=project_id,
             project=project,
             error="Only .csv or .xlsx is supported.",
+            table_type=table_type,
+            back_endpoint=TABLE_TYPE_REDIRECTS.get(table_type, "project.home"),
         ), 400
 
     instance_dir = os.path.join(os.getcwd(), "instance")
@@ -78,6 +89,8 @@ def column_mapper(project_id, table_type):
             active_project_id=project_id,
             project=project,
             error="Could not read headers from file.",
+            table_type=table_type,
+            back_endpoint=TABLE_TYPE_REDIRECTS.get(table_type, "project.home"),
         ), 400
 
     tt_cols = table_type_columns[table_type]
@@ -184,3 +197,8 @@ def column_mapper_commit(project_id, table_type):
         commit_status = events_mapping_handler(project_id, rows, mapped_to_index)
         flash(f'Successfully added {commit_status["created"]} events. Skipped {commit_status["skipped"]}')
         return redirect(url_for("project.timeline", project_id=project_id))
+
+    elif table_type == 'expenses':
+        commit_status = expenses_mapping_handler(project_id, rows, mapped_to_index)
+        flash(f'Successfully added {commit_status["created"]} expenses. Skipped {commit_status["skipped"]}')
+        return redirect(url_for("project.finance", project_id=project_id))

@@ -60,6 +60,9 @@
                                 <a href="{{ url_for('project.file_list', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.file_list' %} active{% endif %}">Files</a>
                                 <a href="{{ url_for('project.people', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.people' %} active{% endif %}">People</a>
                                 <a href="{{ url_for('project.visualizations', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.visualizations' %} active{% endif %}">Visualizations</a>
+                                <a href="{{ url_for('project.timeline', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.timeline' %} active{% endif %}">Timeline</a>
+                                <a href="{{ url_for('project.reports', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.reports' %} active{% endif %}">Reports</a>
+                                <a href="{{ url_for('project.finance', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.finance' %} active{% endif %}">Finance</a>
                                 <a href="{{ url_for('project.settings', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.settings' %} active{% endif %}">Settings</a>
                             </div>
                         </div>

@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block page_header_actions %}
-    <a href="{{ url_for('project.people', project_id=active_project_id) }}" class="button-secondary">← Back</a>
+    <a href="{{ url_for(back_endpoint, project_id=active_project_id) }}" class="button-secondary">← Back</a>
 {% endblock %}
 
 {% block main_content %}

@@ -264,6 +264,17 @@ def timeline(project_id):
         .scalars()
         .all()
     )
+    timeline_visualization_events = [
+        {
+            "id": event.id,
+            "content": event.title,
+            "description": event.description,
+            "start": event.start_date.isoformat(),
+            "end": event.end_date.isoformat() if event.end_date else None,
+            "missing_start": False,
+        }
+        for event in all_events
+    ]
 
     unlisted_events = (
         db.session.execute(
@@ -296,6 +307,7 @@ def timeline(project_id):
         calendar_weeks=_build_calendar_weeks(year, month, month_events),
         all_events=all_events,
         unlisted_events=unlisted_events,
+        timeline_visualization_events=timeline_visualization_events,
         assignment_project_options=get_assignment_project_options(user_id),
         calendar_year=year,
         calendar_month=month,

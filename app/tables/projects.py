@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import ForeignKey, String, Text
+from sqlalchemy import ForeignKey, Numeric, String, Text
 
 import uuid
+from decimal import Decimal
 
 from app.core import Base
 
@@ -12,3 +13,4 @@ class Project(Base):
     owner_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
     title: Mapped[str] = mapped_column(String(100), unique=True)
     description: Mapped[str] = mapped_column(Text)
+    budget_amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)

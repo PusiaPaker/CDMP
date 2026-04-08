@@ -186,6 +186,19 @@ def timeline():
             event["content"].lower(),
         )
     )
+    timeline_visualization_events = [
+        {
+            "id": event["id"],
+            "project_id": event["project_id"] or "unlisted",
+            "project_title": event["project_title"],
+            "content": event["content"],
+            "description": event["description"],
+            "start": event["start"].isoformat(),
+            "end": event["end"].isoformat() if event["end"] else None,
+            "missing_start": event["missing_start"],
+        }
+        for event in timeline_events
+    ]
 
     month_start = datetime(year, month, 1)
     next_year, next_month = _shift_month(year, month, 1)
@@ -211,12 +224,13 @@ def timeline():
 
     return render_template(
         "dashboard/timeline.html",
-        dashboard_title=f"Global Calendar ",
-        description="Track global and project-specific events in calendar view.",
+        dashboard_title=f"Global Timeline",
+        description="Visualize phases, events and deadlines across all your projects.",
         projects=projects,
         assignment_project_options=get_assignment_project_options(user_id),
         google_calendar_connected=has_google_calendar_connection(user_id),
         timeline_events=timeline_events,
+        timeline_visualization_events=timeline_visualization_events,
         calendar_weeks=_build_calendar_weeks(year, month, month_events),
         calendar_year=year,
         calendar_month=month,
