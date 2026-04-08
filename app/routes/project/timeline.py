@@ -32,7 +32,7 @@ def timeline(project_id):
         })
 
     return render_template(
-        "project/timeline.html",
+        "project/timeline.html.j2",
         project=project,
         active_project_id=project.id,
         timeline_events=timeline_events,

@@ -1,0 +1,81 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}{{ project['title'] }} Timeline{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/timeline.css') }}">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/styles/vis-timeline-graph2d.min.css"
+    >
+{% endblock %}
+
+{% block page_header %}
+    <h1>{{ project['title'] }}</h1>
+    <p>{{ project['description'] or 'No description provided.' }}</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a
+        href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='timeline') }}"
+        class="button"
+    >
+        Import CSV/XLSX With Dates
+    </a>
+{% endblock %}
+
+{% block main_content %}
+    <section class="timeline-page-card">
+        <div class="timeline-header-row">
+            <div>
+                <p class="timeline-eyebrow">Project Schedule</p>
+                <h2 class="timeline-panel-title">Timeline Visualization</h2>
+                <p class="timeline-panel-subtitle">
+                    Review project phases and deadlines in one place.
+                </p>
+            </div>
+        </div>
+
+        <div class="timeline-info-row">
+            <p class="timeline-help-text">
+                Hover over each phase or deadline to view the full event name and description.
+            </p>
+
+            <div class="timeline-legend-block">
+                <span class="timeline-legend-label">Legend</span>
+
+                <div class="timeline-legend">
+                    <span class="timeline-legend-item">
+                        <span class="timeline-legend-swatch timeline-legend-swatch-phase"></span>
+                        Phases
+                    </span>
+
+                    <span class="timeline-legend-item">
+                        <span class="timeline-legend-swatch timeline-legend-swatch-deadline"></span>
+                        Deadlines
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-controls">
+            <button id="zoomInBtn" class="button-secondary" type="button">Zoom In</button>
+            <button id="zoomOutBtn" class="button-secondary" type="button">Zoom Out</button>
+            <button id="fitBtn" class="button-secondary" type="button">Fit All</button>
+        </div>
+
+        <div class="timeline-shell">
+            <div id="timelineContainer" class="timeline-container"></div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
+
+    <script>
+        window.timelineEvents = {{ timeline_events|default([], true)|tojson }};
+    </script>
+
+    <script src="{{ url_for('static', filename='js/pages/timeline.js') }}"></script>
+{% endblock %}
