@@ -9,7 +9,7 @@
 
 .timeline-layout {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(280px, 340px);
+    grid-template-columns: minmax(0, 1.75fr) minmax(280px, 340px);
     gap: var(--space-md);
     align-items: start;
 }
@@ -145,6 +145,11 @@
     border-radius: 16px;
     overflow: hidden;
     background: var(--color-border);
+}
+
+.calendar-grid-shell {
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 .calendar-weekday {
@@ -401,11 +406,13 @@ body.modal-open {
 
 .timeline-shell {
     overflow-x: auto;
+    max-width: 100%;
 }
 
 .timeline-container {
     height: 520px;
-    min-width: 1700px;
+    width: 100%;
+    min-width: 0;
     border: 1px solid #d9dde3;
     border-radius: 6px;
     background: #fff;
@@ -442,8 +449,13 @@ body.modal-open {
     border-color: #3f5a89;
 }
 
+@media (max-width: 1200px) {
+    .timeline-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
 @media (max-width: 760px) {
-    .timeline-layout,
     .calendar-toolbar,
     .timeline-header-row,
     .timeline-legend-block {
@@ -465,6 +477,10 @@ body.modal-open {
 
     .calendar-grid {
         grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .calendar-grid-shell {
+        overflow-x: visible;
     }
 
     .calendar-weekday {

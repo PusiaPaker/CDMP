@@ -1,6 +1,7 @@
 from flask import Flask, session, render_template, redirect, url_for
 from flask_session import Session
 import os
+from sqlalchemy import inspect, text
 
 from app.config import Config
 from app.src.commands import CommandsBP
@@ -9,6 +10,18 @@ from app.src.project.queries import get_projects_for_user
 from app.routes import DashBP, DebugBP, ProjectBP, DataBP, AuthBP
 from app.core import db, oauth
 import app.tables
+
+
+def _upgrade_existing_schema():
+    inspector = inspect(db.engine)
+
+    if "projects" not in inspector.get_table_names():
+        return
+
+    project_columns = {column["name"] for column in inspector.get_columns("projects")}
+    if "budget_amount" not in project_columns:
+        db.session.execute(text("ALTER TABLE projects ADD COLUMN budget_amount NUMERIC(12, 2)"))
+        db.session.commit()
 
 def create_app():
     app = Flask(__name__, template_folder='./templates/')
@@ -37,6 +50,7 @@ def create_app():
 
     with app.app_context():
         db.create_all()
+        _upgrade_existing_schema()
 
     # Not every route passes projects for us, so this just makes sure that it doesn't break randomly
     @app.context_processor

@@ -224,7 +224,7 @@ def timeline():
 
     return render_template(
         "dashboard/timeline.html",
-        dashboard_title=f"Global Timeline",
+        dashboard_title="Global Calendar and Timeline",
         description="Visualize phases, events and deadlines across all your projects.",
         projects=projects,
         assignment_project_options=get_assignment_project_options(user_id),

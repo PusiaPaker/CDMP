@@ -5,7 +5,7 @@
 
 .calendar-page-grid {
     display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+    grid-template-columns: minmax(0, 1.75fr) minmax(280px, 360px);
     gap: var(--space-md);
     align-items: start;
 }
@@ -79,6 +79,11 @@
     border-radius: 16px;
     overflow: hidden;
     background: var(--color-border);
+}
+
+.calendar-grid-shell {
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 .calendar-weekday {
@@ -264,6 +269,20 @@ body.modal-open {
     margin-top: 12px;
 }
 
+.import-csv-link {
+    display: flex;
+    width: fit-content;
+    margin: 12px auto 0;
+    background: #6b7280;
+    border-color: #4b5563;
+    color: #fff;
+}
+
+.import-csv-link:hover {
+    background: #4b5563;
+    border-color: #374151;
+}
+
 .event-list {
     display: flex;
     flex-direction: column;
@@ -419,13 +438,29 @@ body.modal-open {
     flex-wrap: wrap;
 }
 
+.timeline-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.timeline-count-text {
+    margin: 0;
+    color: var(--color-text-secondary);
+}
+
 .timeline-shell {
     overflow-x: auto;
+    max-width: 100%;
 }
 
 .timeline-container {
     height: 520px;
-    min-width: 1700px;
+    width: 100%;
+    min-width: 0;
     border: 1px solid #d9dde3;
     border-radius: 6px;
     background: #fff;
@@ -462,7 +497,7 @@ body.modal-open {
     border-color: #3f5a89;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1280px) {
     .calendar-page-grid {
         grid-template-columns: 1fr;
     }
@@ -490,6 +525,10 @@ body.modal-open {
 
     .calendar-grid {
         grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+
+    .calendar-grid-shell {
+        overflow-x: visible;
     }
 
     .calendar-weekday {
@@ -522,9 +561,14 @@ body.modal-open {
         font-size: 1.4rem;
     }
 
+    .timeline-summary-row {
+        align-items: flex-start;
+    }
+
     .timeline-panel-subtitle,
     .timeline-help-text,
-    .timeline-legend {
+    .timeline-legend,
+    .timeline-count-text {
         font-size: 0.92rem;
     }
 }

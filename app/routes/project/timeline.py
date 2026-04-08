@@ -224,7 +224,7 @@ def _build_calendar_weeks(year: int, month: int, events: list[TimelineEvent]) ->
 
 def _build_month_link(project_id: str, year: int, month: int, selected_date: date) -> str:
     return url_for(
-        "project.timeline",
+        "project.calendar",
         project_id=project_id,
         year=year,
         month=month,
@@ -232,8 +232,34 @@ def _build_month_link(project_id: str, year: int, month: int, selected_date: dat
     )
 
 
-@ProjectBP.route("/<project_id>/timeline/", methods=["GET"])
-def timeline(project_id):
+def _get_all_project_events(project_id: str) -> list[TimelineEvent]:
+    return (
+        db.session.execute(
+            select(TimelineEvent)
+            .where(TimelineEvent.project_id == project_id)
+            .order_by(TimelineEvent.start_date.asc(), TimelineEvent.title.asc())
+        )
+        .scalars()
+        .all()
+    )
+
+
+def _build_timeline_visualization_events(events: list[TimelineEvent]) -> list[dict]:
+    return [
+        {
+            "id": event.id,
+            "content": event.title,
+            "description": event.description,
+            "start": event.start_date.isoformat(),
+            "end": event.end_date.isoformat() if event.end_date else None,
+            "missing_start": False,
+        }
+        for event in events
+    ]
+
+
+@ProjectBP.route("/<project_id>/calendar/", methods=["GET"])
+def calendar(project_id):
     project = _get_project_or_404(project_id)
     user_id = session["user_id"]
     year, month = _resolve_month_request()
@@ -255,26 +281,7 @@ def timeline(project_id):
         .all()
     )
 
-    all_events = (
-        db.session.execute(
-            select(TimelineEvent)
-            .where(TimelineEvent.project_id == project_id)
-            .order_by(TimelineEvent.start_date.asc(), TimelineEvent.title.asc())
-        )
-        .scalars()
-        .all()
-    )
-    timeline_visualization_events = [
-        {
-            "id": event.id,
-            "content": event.title,
-            "description": event.description,
-            "start": event.start_date.isoformat(),
-            "end": event.end_date.isoformat() if event.end_date else None,
-            "missing_start": False,
-        }
-        for event in all_events
-    ]
+    all_events = _get_all_project_events(project_id)
 
     unlisted_events = (
         db.session.execute(
@@ -301,13 +308,12 @@ def timeline(project_id):
     month_options = [{"value": idx, "label": month_name[idx]} for idx in range(1, 13)]
 
     return render_template(
-        "project/timeline.html.j2",
+        "project/calendar.html.j2",
         project=project,
         active_project_id=project.id,
         calendar_weeks=_build_calendar_weeks(year, month, month_events),
         all_events=all_events,
         unlisted_events=unlisted_events,
-        timeline_visualization_events=timeline_visualization_events,
         assignment_project_options=get_assignment_project_options(user_id),
         calendar_year=year,
         calendar_month=month,
@@ -317,6 +323,20 @@ def timeline(project_id):
         year_options=year_options,
         previous_month_link=_build_month_link(project.id, previous_year, previous_month, selected_date),
         next_month_link=_build_month_link(project.id, following_year, following_month, selected_date),
+    ), 200
+
+
+@ProjectBP.route("/<project_id>/timeline/", methods=["GET"])
+def timeline(project_id):
+    project = _get_project_or_404(project_id)
+    all_events = _get_all_project_events(project_id)
+
+    return render_template(
+        "project/timeline.html.j2",
+        project=project,
+        active_project_id=project.id,
+        timeline_visualization_events=_build_timeline_visualization_events(all_events),
+        timeline_event_count=len(all_events),
     ), 200
 
 
@@ -333,7 +353,7 @@ def create_timeline_event(project_id):
         flash("Event title is required.")
         return redirect(
             url_for(
-                "project.timeline",
+                "project.calendar",
                 project_id=project.id,
                 year=request.form.get("return_year", type=int),
                 month=request.form.get("return_month", type=int),
@@ -345,7 +365,7 @@ def create_timeline_event(project_id):
         flash("Please provide a valid start date.")
         return redirect(
             url_for(
-                "project.timeline",
+                "project.calendar",
                 project_id=project.id,
                 year=request.form.get("return_year", type=int),
                 month=request.form.get("return_month", type=int),
@@ -357,7 +377,7 @@ def create_timeline_event(project_id):
         flash("End date cannot be earlier than start date.")
         return redirect(
             url_for(
-                "project.timeline",
+                "project.calendar",
                 project_id=project.id,
                 year=request.form.get("return_year", type=int),
                 month=request.form.get("return_month", type=int),
@@ -378,7 +398,7 @@ def create_timeline_event(project_id):
     flash("Event added to the project calendar.")
     return redirect(
         url_for(
-            "project.timeline",
+            "project.calendar",
             project_id=project.id,
             year=start_date.year,
             month=start_date.month,
@@ -401,7 +421,7 @@ def delete_timeline_event(project_id, event_id):
     flash("Event removed from the project calendar.")
     return redirect(
         url_for(
-            "project.timeline",
+            "project.calendar",
             project_id=project.id,
             year=request.form.get("return_year", type=int),
             month=request.form.get("return_month", type=int),
@@ -419,7 +439,7 @@ def import_timeline_events(project_id):
         flash("Choose an .ics calendar file to import.")
         return redirect(
             url_for(
-                "project.timeline",
+                "project.calendar",
                 project_id=project.id,
                 year=request.form.get("return_year", type=int),
                 month=request.form.get("return_month", type=int),
@@ -431,7 +451,7 @@ def import_timeline_events(project_id):
         flash("Only .ics calendar exports are supported here.")
         return redirect(
             url_for(
-                "project.timeline",
+                "project.calendar",
                 project_id=project.id,
                 year=request.form.get("return_year", type=int),
                 month=request.form.get("return_month", type=int),
@@ -450,7 +470,7 @@ def import_timeline_events(project_id):
         flash("No importable events were found in that calendar file.")
         return redirect(
             url_for(
-                "project.timeline",
+                "project.calendar",
                 project_id=project.id,
                 year=request.form.get("return_year", type=int),
                 month=request.form.get("return_month", type=int),
@@ -480,7 +500,7 @@ def import_timeline_events(project_id):
     first_event = parsed_events[0]["start_date"]
     return redirect(
         url_for(
-            "project.timeline",
+            "project.calendar",
             project_id=project.id,
             year=first_event.year,
             month=first_event.month,

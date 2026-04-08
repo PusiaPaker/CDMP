@@ -66,50 +66,52 @@
                         <a href="{{ next_month_link }}" class="button-secondary">Next</a>
                     </div>
 
-                    <div class="calendar-grid">
-                        <div class="calendar-weekday">Sun</div>
-                        <div class="calendar-weekday">Mon</div>
-                        <div class="calendar-weekday">Tue</div>
-                        <div class="calendar-weekday">Wed</div>
-                        <div class="calendar-weekday">Thu</div>
-                        <div class="calendar-weekday">Fri</div>
-                        <div class="calendar-weekday">Sat</div>
+                    <div class="calendar-grid-shell">
+                        <div class="calendar-grid">
+                            <div class="calendar-weekday">Sun</div>
+                            <div class="calendar-weekday">Mon</div>
+                            <div class="calendar-weekday">Tue</div>
+                            <div class="calendar-weekday">Wed</div>
+                            <div class="calendar-weekday">Thu</div>
+                            <div class="calendar-weekday">Fri</div>
+                            <div class="calendar-weekday">Sat</div>
 
-                        {% for week in calendar_weeks %}
-                            {% for day in week %}
-                                <article class="calendar-day{% if not day.is_current_month %} is-muted{% endif %}{% if day.is_today %} is-today{% endif %}{% if day.date == selected_date %} is-selected{% endif %}">
-                                    <a href="{{ url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=day.date.isoformat()) }}" class="calendar-day-number">
-                                        {{ day.date.day }}
-                                    </a>
+                            {% for week in calendar_weeks %}
+                                {% for day in week %}
+                                    <article class="calendar-day{% if not day.is_current_month %} is-muted{% endif %}{% if day.is_today %} is-today{% endif %}{% if day.date == selected_date %} is-selected{% endif %}">
+                                        <a href="{{ url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=day.date.isoformat()) }}" class="calendar-day-number">
+                                            {{ day.date.day }}
+                                        </a>
 
-                                    <div class="calendar-day-events">
-                                        {% if day.events %}
-                                            {% for event in day.events %}
-                                                <button
-                                                    type="button"
-                                                    class="calendar-event-chip calendar-event-trigger{% if event.kind == 'unlisted' %} is-unlisted{% endif %}"
-                                                    title="{{ event.project_title }}: {{ event.content }}"
-                                                    data-event-id="{{ event.id }}"
-                                                    data-event-kind="{{ event.kind }}"
-                                                    data-title="{{ event.content }}"
-                                                    data-description="{{ event.description or '' }}"
-                                                    data-start="{{ event.start.strftime('%Y-%m-%d') }}"
-                                                    data-end="{% if event.end %}{{ event.end.strftime('%Y-%m-%d') }}{% endif %}"
-                                                    data-project-id="{{ event.project_id or '' }}"
-                                                    data-project-label="{{ event.project_title }}"
-                                                    data-update-url="{{ url_for('dashboard.update_event_details', event_kind=event.kind, event_id=event.id) }}"
-                                                    data-delete-url="{{ url_for('dashboard.delete_any_event', event_kind=event.kind, event_id=event.id) }}"
-                                                >
-                                                    {{ event.content }}
-                                                </button>
-                                            {% endfor %}
-                                        {% else %}
-                                            <div class="calendar-empty-text">No events</div>
-                                        {% endif %}
-                                    </div>
-                                </article>
+                                        <div class="calendar-day-events">
+                                            {% if day.events %}
+                                                {% for event in day.events %}
+                                                    <button
+                                                        type="button"
+                                                        class="calendar-event-chip calendar-event-trigger{% if event.kind == 'unlisted' %} is-unlisted{% endif %}"
+                                                        title="{{ event.project_title }}: {{ event.content }}"
+                                                        data-event-id="{{ event.id }}"
+                                                        data-event-kind="{{ event.kind }}"
+                                                        data-title="{{ event.content }}"
+                                                        data-description="{{ event.description or '' }}"
+                                                        data-start="{{ event.start.strftime('%Y-%m-%d') }}"
+                                                        data-end="{% if event.end %}{{ event.end.strftime('%Y-%m-%d') }}{% endif %}"
+                                                        data-project-id="{{ event.project_id or '' }}"
+                                                        data-project-label="{{ event.project_title }}"
+                                                        data-update-url="{{ url_for('dashboard.update_event_details', event_kind=event.kind, event_id=event.id) }}"
+                                                        data-delete-url="{{ url_for('dashboard.delete_any_event', event_kind=event.kind, event_id=event.id) }}"
+                                                    >
+                                                        {{ event.content }}
+                                                    </button>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="calendar-empty-text">No events</div>
+                                            {% endif %}
+                                        </div>
+                                    </article>
+                                {% endfor %}
                             {% endfor %}
-                        {% endfor %}
+                        </div>
                     </div>
                 </section>
             </div>

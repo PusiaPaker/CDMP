@@ -14,7 +14,8 @@
 {% block page_header_actions %}
     <a href="{{ url_for('project.file_list', project_id=project['id']) }}" class="button-secondary">Files</a>
     <a href="{{ url_for('project.people', project_id=project['id']) }}" class="button-secondary">People</a>
-    <a href="{{ url_for('project.timeline', project_id=project['id']) }}" class="button">Calendar</a>
+    <a href="{{ url_for('project.calendar', project_id=project['id']) }}" class="button-secondary">Calendar</a>
+    <a href="{{ url_for('project.timeline', project_id=project['id']) }}" class="button">Timeline</a>
 {% endblock %}
 
 {% block main_content %}

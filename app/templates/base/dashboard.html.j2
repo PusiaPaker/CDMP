@@ -56,7 +56,7 @@
 
                             <div class="sidebar-project-list">
                                 <a href="{{ url_for('project.home', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.home' %} active{% endif %}">Home</a>
-                                <a href="{{ url_for('project.timeline', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.timeline' %} active{% endif %}">Calendar</a>
+                                <a href="{{ url_for('project.calendar', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.calendar' %} active{% endif %}">Calendar</a>
                                 <a href="{{ url_for('project.file_list', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.file_list' %} active{% endif %}">Files</a>
                                 <a href="{{ url_for('project.people', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.people' %} active{% endif %}">People</a>
                                 <a href="{{ url_for('project.visualizations', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.visualizations' %} active{% endif %}">Visualizations</a>

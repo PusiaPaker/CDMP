@@ -12,24 +12,28 @@ body {
 .dashboard-layout {
     display: flex;
     height: 100vh;
+    min-width: 0;
 }
 
 .main-area {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
 .content {
      flex: 1;
      padding: var(--space-lg);
      overflow-y: auto;
+     overflow-x: hidden;
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
+    min-width: 0;
 }
 
 /* For Mobile Devices */
