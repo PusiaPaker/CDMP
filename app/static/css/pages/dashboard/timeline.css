@@ -3,6 +3,7 @@
     border: 1px solid var(--color-border);
     border-radius: 14px;
     padding: var(--space-lg);
+    min-width: 0;
 }
 
 .timeline-header-row {
@@ -109,6 +110,9 @@
 }
 
 .timeline-shell {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     overflow-x: auto;
 }
 

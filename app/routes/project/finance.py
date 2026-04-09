@@ -32,7 +32,7 @@ def finance(project_id):
         category = request.form.get("category", "").strip() or "unspecified"
 
         if not all([expense_name, amount, expense_date, recurrence_type]):
-            flash("Expense name, amount, date, and frequency are required.")
+            flash("Expense name, amount, date, and frequency are required.", "error")
             return redirect(url_for("project.finance", project_id=project_id, tab="expenses"))
 
         cleaned_amount = amount.replace(",", "").replace("$", "")
@@ -49,7 +49,7 @@ def finance(project_id):
                 category=category,
             )
         except (ValueError, InvalidOperation):
-            flash("Could not add expense. Check the amount, date, and frequency.")
+            flash("Could not add expense. Check the amount, date, and frequency.", "error")
             return redirect(url_for("project.finance", project_id=project_id, tab="expenses"))
 
         db.session.add(expense)

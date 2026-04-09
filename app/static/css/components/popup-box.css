@@ -1,0 +1,124 @@
+.popup-box-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(17, 24, 39, 0.52);
+}
+
+.popup-box-window {
+    position: relative;
+    width: min(480px, 100%);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+    padding: 24px;
+}
+
+.popup-box-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 34px;
+    height: 34px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--color-bg);
+    color: var(--color-text-secondary);
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.popup-box-close:hover {
+    color: var(--color-text-primary);
+}
+
+.popup-box-panel + .popup-box-panel {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-border);
+}
+
+.popup-box-kicker {
+    margin: 0 40px 10px 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+}
+
+.popup-box-panel-success .popup-box-kicker {
+    color: #166534;
+}
+
+.popup-box-panel-error .popup-box-kicker {
+    color: var(--color-danger);
+}
+
+.popup-box-title {
+    margin: 0 40px 10px 0;
+    color: var(--color-text-primary);
+    font-size: 1.7rem;
+    line-height: 1.1;
+}
+
+.popup-box-body {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+}
+
+.popup-box-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.popup-box-stat {
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-bg);
+}
+
+.popup-box-stat-label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--color-text-secondary);
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.popup-box-stat-value {
+    display: block;
+    color: var(--color-text-primary);
+    font-size: 1.7rem;
+    line-height: 1.05;
+}
+
+.popup-box-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 22px;
+}
+
+@media (max-width: 640px) {
+    .popup-box-overlay {
+        padding: 16px;
+    }
+
+    .popup-box-window {
+        padding: 20px;
+    }
+
+    .popup-box-stats {
+        grid-template-columns: 1fr;
+    }
+}

@@ -11,17 +11,75 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buttons.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/footer.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/popup-box.css') }}">
 
         {% block extra_css %}{% endblock %}
     </head>
 
     <body>
-        {% with messages = get_flashed_messages() %}
-            {% for message in messages %}
-                <div class="alert alert-warning" role="alert">
-                    {{ message }}
+        {% with popup_messages = get_flashed_messages(with_categories=true) %}
+            {% if popup_messages %}
+                <div class="popup-box-overlay" data-popup-box>
+                    <div class="popup-box-window" role="alertdialog" aria-modal="true">
+                        <button type="button" class="popup-box-close" aria-label="Close" data-popup-box-close>&times;</button>
+
+                        {% for category, message in popup_messages %}
+                            <section class="popup-box-panel popup-box-panel-{{ category|replace('_', '-') }}">
+                                <p class="popup-box-kicker">
+                                    {% if category == "success" %}
+                                        Update Complete
+                                    {% elif category == "error" %}
+                                        Action Needed
+                                    {% else %}
+                                        Notice
+                                    {% endif %}
+                                </p>
+
+                                {% if message is mapping %}
+                                    <h2 class="popup-box-title">{{ message.title }}</h2>
+
+                                    {% if message.body %}
+                                        <p class="popup-box-body">{{ message.body }}</p>
+                                    {% endif %}
+
+                                    {% if message.created is defined or message.skipped is defined %}
+                                        <div class="popup-box-stats">
+                                            {% if message.created is defined %}
+                                                <article class="popup-box-stat">
+                                                    <span class="popup-box-stat-label">Inserted</span>
+                                                    <strong class="popup-box-stat-value">{{ message.created }}</strong>
+                                                </article>
+                                            {% endif %}
+
+                                            {% if message.skipped is defined %}
+                                                <article class="popup-box-stat">
+                                                    <span class="popup-box-stat-label">Skipped</span>
+                                                    <strong class="popup-box-stat-value">{{ message.skipped }}</strong>
+                                                </article>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <h2 class="popup-box-title">
+                                        {% if category == "error" %}
+                                            Something went wrong
+                                        {% elif category == "success" %}
+                                            Success
+                                        {% else %}
+                                            Notice
+                                        {% endif %}
+                                    </h2>
+                                    <p class="popup-box-body">{{ message }}</p>
+                                {% endif %}
+                            </section>
+                        {% endfor %}
+
+                        <div class="popup-box-actions">
+                            <button type="button" class="button" data-popup-box-close>Continue</button>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
+            {% endif %}
         {% endwith %}
 
         <div class="dashboard-layout">
@@ -128,6 +186,7 @@
         </div>
 
         {% block extra_js %}{% endblock %}
+        <script src="{{ url_for('static', filename='js/components/popup-box.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
