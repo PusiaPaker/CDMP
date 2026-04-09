@@ -83,7 +83,12 @@ def download_file(project_id, file_id):
     storage_dir = os.getenv("FILE_UPLOAD_STORAGE_PATH")
     download_dir = os.path.join('../', storage_dir, to_download.file_name_disk)
 
-    return send_file(download_dir, as_attachment=True, download_name=to_download.file_name_original)
+    if to_download.file_name_original.endswith('.pdf'): 
+        attachment = False 
+    else:
+        attachment = True
+
+    return send_file(download_dir, as_attachment=attachment, download_name=to_download.file_name_original)
 
     
 

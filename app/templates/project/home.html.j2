@@ -38,8 +38,10 @@
                                 <div class="file-preview-name">
                                     {{ file.file_name_original }}
                                 </div>
-                                <a class="file-preview-download" href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}">
-                                    Download  
+                                <a class="file-preview-download"
+                                   href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}"
+                                   target="_blank">
+                                    Download
                                 </a>
                             </div>
                             <div class="file-preview-meta">

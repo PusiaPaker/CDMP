@@ -31,8 +31,8 @@
                             <th>Category</th>
                             <th>Description</th>
                             <th>Uploaded</th>
-                            <th>Download</th>
-                            <th>Delete</th>
+                            <th class="center">Download</th>
+                            <th class="center">Delete</th>
                         </tr>
                     </thead>
 
@@ -43,10 +43,10 @@
                                 <td>{{ file.file_category }}</td>
                                 <td>{{ file.description or "" }}</td>
                                 <td>{{ file.upload_date }}</td>
-                                <td><a class="table-link" href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}">
+                                <td class="center"><a class="table-link" href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}" target="_blank">
                                     &plus;
                                 </a></td>
-                                <td><a class="table-link del" href="{{ url_for('project.delete_file', project_id=project['id'], file_id=file['id']) }}">
+                                <td class="center"><a class="table-link del" href="{{ url_for('project.delete_file', project_id=project['id'], file_id=file['id']) }}">
                                     &times;
                                 </a></td>
                             </tr>

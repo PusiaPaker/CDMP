@@ -19,6 +19,9 @@
     font-weight: 600;
 }
 
+td.center, th.center {
+    text-align: center;
+}
 .table-link {
     text-decoration: none;
     font-weight: 500;
