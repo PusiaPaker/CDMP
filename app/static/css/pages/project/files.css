@@ -20,9 +20,13 @@
 }
 
 .table-link {
-    color: var(--color-danger);
     text-decoration: none;
     font-weight: 500;
+    font-size: 1.75rem;
+    color: var(--color-accent);
+}
+.table-link.del {
+    color: var(--color-danger);
 }
 
 .table-link:hover {

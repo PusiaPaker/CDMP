@@ -1,5 +1,5 @@
 from werkzeug.utils import secure_filename
-from flask import render_template, redirect, request, url_for, jsonify
+from flask import render_template, redirect, request, url_for, jsonify, send_file
 
 import uuid
 import os
@@ -72,6 +72,20 @@ def delete_file(project_id, file_id):
     db.session.commit()
 
     return redirect(url_for('project.file_list', project_id=project_id))
+
+@ProjectBP.route('/<project_id>/files/download/<file_id>')
+def download_file(project_id, file_id):
+    to_download = db.session.query(File).filter(File.id == file_id).first()
+
+    if not to_download or to_download.project_id != project_id:
+        return render_template("error/404.html"), 404
+
+    storage_dir = os.getenv("FILE_UPLOAD_STORAGE_PATH")
+    download_dir = os.path.join('../', storage_dir, to_download.file_name_disk)
+
+    return send_file(download_dir, as_attachment=True, download_name=to_download.file_name_original)
+
+    
 
 # debug endpoint
 @ProjectBP.route('/getfiles/<project_id>')
