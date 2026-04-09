@@ -33,6 +33,19 @@
     border-bottom: none;
 }
 
+.file-name-download {
+    display: flex;
+    justify-content: space-between;
+}
+
+.file-preview-download {
+    text-decoration: none;
+    color: var(--color-accent);
+}
+.file-preview-download:hover {
+    text-decoration: underline;
+}
+
 .file-preview-name {
     font-weight: 599;
 }
