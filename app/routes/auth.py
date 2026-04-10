@@ -6,6 +6,16 @@ from app.tables import User
 
 AuthBP = Blueprint('authentication', __name__)
 
+
+def _is_strong_password(password: str) -> bool:
+    return (
+        len(password) >= 10
+        and any(character.isdigit() for character in password)
+        and any(character.islower() for character in password)
+        and any(character.isupper() for character in password)
+        and any(not character.isalnum() for character in password)
+    )
+
 @AuthBP.route("/logout")
 def logout():
     session.clear()
@@ -41,6 +51,11 @@ def register():
 
         if not full_name:
             return render_template("auth/register.html", error="Full name is required."), 400
+        if not _is_strong_password(password):
+            return render_template(
+                "auth/register.html",
+                error="Password must be 10+ characters and include uppercase, lowercase, number, and special character.",
+            ), 400
 
         user = db.session.query(User).filter_by(username=username).first()
         if user:

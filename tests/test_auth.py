@@ -41,7 +41,7 @@ def test_register_rejects_duplicate_username(client, make_user):
         data={
             "full_name": "Taken Name",
             "username": "taken",
-            "password": "newpass123",
+            "password": "Newpass123!",
             "email": "new@example.com",
         },
     )
@@ -50,13 +50,28 @@ def test_register_rejects_duplicate_username(client, make_user):
     assert b"Username is taken." in response.data
 
 
+def test_register_rejects_weak_password(client):
+    response = client.post(
+        "/register",
+        data={
+            "full_name": "Weak Password User",
+            "username": "weak_user",
+            "password": "weakpass1",
+            "email": "weak@example.com",
+        },
+    )
+
+    assert response.status_code == 400
+    assert b"Password must be 10+ characters" in response.data
+
+
 def test_register_creates_user_and_redirects(client, app_ctx):
     response = client.post(
         "/register",
         data={
             "full_name": "New User",
             "username": "new_user",
-            "password": "newpass123",
+            "password": "Newpass123!",
             "email": "new@example.com",
         },
     )
