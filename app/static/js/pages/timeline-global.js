@@ -169,8 +169,8 @@
         zoomKey: "ctrlKey",
         horizontalScroll: true,
         verticalScroll: true,
-        height: "520px",
-        maxHeight: 520,
+        height: "760px",
+        maxHeight: 760,
         showCurrentTime: true,
         groupOrder: (a, b) => String(a.content).localeCompare(String(b.content)),
     });
