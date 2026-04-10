@@ -34,20 +34,28 @@ def login():
 @AuthBP.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
-        email = request.form.get("email", "")
+        email = request.form.get("email", "").strip()
+
+        if not full_name:
+            return render_template("auth/register.html", error="Full name is required."), 400
 
         user = db.session.query(User).filter_by(username=username).first()
         if user:
             return render_template("auth/register.html", error="Username is taken."), 401
         
 
-        new_user = User(username=username, password=generate_password_hash(password), email=email)
+        new_user = User(
+            username=username,
+            full_name=full_name,
+            password=generate_password_hash(password),
+            email=email,
+        )
         db.session.add(new_user)
         db.session.commit()
 
         return redirect(url_for("authentication.login"))
 
     return render_template("auth/register.html")
-

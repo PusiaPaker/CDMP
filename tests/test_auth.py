@@ -38,7 +38,12 @@ def test_register_rejects_duplicate_username(client, make_user):
 
     response = client.post(
         "/register",
-        data={"username": "taken", "password": "newpass123", "email": "new@example.com"},
+        data={
+            "full_name": "Taken Name",
+            "username": "taken",
+            "password": "newpass123",
+            "email": "new@example.com",
+        },
     )
 
     assert response.status_code == 401
@@ -48,7 +53,12 @@ def test_register_rejects_duplicate_username(client, make_user):
 def test_register_creates_user_and_redirects(client, app_ctx):
     response = client.post(
         "/register",
-        data={"username": "new_user", "password": "newpass123", "email": "new@example.com"},
+        data={
+            "full_name": "New User",
+            "username": "new_user",
+            "password": "newpass123",
+            "email": "new@example.com",
+        },
     )
 
     assert response.status_code == 302
@@ -56,4 +66,5 @@ def test_register_creates_user_and_redirects(client, app_ctx):
 
     created = db.session.query(User).filter_by(username="new_user").first()
     assert created is not None
+    assert created.full_name == "New User"
     assert created.email == "new@example.com"
