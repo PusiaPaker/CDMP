@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from sqlalchemy import select, exists, and_
 
 from app.core import db
-from app.tables import Role, Project, User
+from app.tables import Role, Project, User, TimelineEvent
 
 def user_has_project_access(user_id: str, project_id: str) -> bool:
     return db.session.execute(
@@ -40,9 +42,30 @@ def get_projects_for_user(user_id: str) -> dict[str, dict[str, str]]:
         .all()
     )
 
+    now = datetime.now()
     result = {}
     for project in projects:
-        result[project.id] = {"description": project.description, "title": project.title}
+        upcoming_event = (
+            db.session.execute(
+                select(TimelineEvent)
+                .where(
+                    TimelineEvent.project_id == project.id,
+                    TimelineEvent.start_date >= now,
+                )
+                .order_by(TimelineEvent.start_date.asc())
+                .limit(1)
+            )
+            .scalars()
+            .first()
+        )
+
+        result[project.id] = {
+            "description": project.description,
+            "title": project.title,
+            "budget_amount": f"${project.budget_amount:,.2f}" if project.budget_amount is not None else "Not set",
+            "upcoming_event_title": upcoming_event.title if upcoming_event else "No upcoming events",
+            "upcoming_event_date": upcoming_event.start_date.strftime("%b %d, %Y") if upcoming_event else "",
+        }
 
     return result
 
@@ -76,4 +99,3 @@ def get_all_projects():
         result[project.id] = {'description': project.description, 'title': project.title}
 
     return result
-

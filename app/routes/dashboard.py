@@ -19,13 +19,14 @@ def main():
     user_id = session["user_id"]
 
     user = db.session.get(User, user_id)
-    username = user.username if user else "User"
+    display_name = (user.full_name or user.username) if user else "User"
 
     projects = get_projects_for_user(user_id)
 
     return render_template(
         "dashboard/home.html.j2",
         projects=projects,
+        display_name=display_name,
     ), 200
 
 @DashBP.route("/timeline")

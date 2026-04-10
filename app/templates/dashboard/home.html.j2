@@ -3,7 +3,7 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block page_header %}
-    <h1>Your Projects</h1>
+    <h1>Welcome, {{ display_name }}</h1>
     <p>Browse and manage your active projects</p>
 {% endblock %}
 
@@ -29,6 +29,21 @@
                             <p class="project-card-description">
                                 {{ project_data['description'] }}
                             </p>
+
+                            <div class="project-card-meta">
+                                <div class="project-card-meta-item">
+                                    <span class="project-card-meta-label">Allocated Budget</span>
+                                    <strong class="project-card-meta-value">{{ project_data['budget_amount'] }}</strong>
+                                </div>
+
+                                <div class="project-card-meta-item">
+                                    <span class="project-card-meta-label">Upcoming Event</span>
+                                    <strong class="project-card-meta-value">{{ project_data['upcoming_event_title'] }}</strong>
+                                    {% if project_data['upcoming_event_date'] %}
+                                        <span class="project-card-meta-date">{{ project_data['upcoming_event_date'] }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </div>
                     </a>
                 {% endfor %}

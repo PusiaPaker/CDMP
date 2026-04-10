@@ -3,6 +3,38 @@
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: var(--space-md);
 }
+
+.project-card-meta {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.project-card-meta-item {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.project-card-meta-label {
+    color: var(--color-text-secondary);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.project-card-meta-value {
+    color: var(--color-text-primary);
+    font-size: 0.95rem;
+    line-height: 1.35;
+}
+
+.project-card-meta-date {
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
 .empty-state {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
