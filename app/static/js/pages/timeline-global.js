@@ -2,6 +2,19 @@
     const events = window.timelineEvents || [];
     const container = document.getElementById("globalTimelineContainer");
     const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+    const PROJECT_COLORS = [
+        "#6366f1",
+        "#3b82f6",
+        "#10b981",
+        "#f59e0b",
+        "#ec4899",
+        "#8b5cf6",
+        "#0ea5e9",
+        "#22c55e",
+        "#f97316",
+        "#a855f7",
+        "#a855f7",
+    ];
 
     if (!container || !Array.isArray(events)) {
         return;
@@ -61,6 +74,26 @@
         });
     };
 
+    const hashString = (value) => {
+        let hash = 0;
+
+        for (let index = 0; index < value.length; index += 1) {
+            hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
+        }
+
+        return hash;
+    };
+
+    const getProjectStyle = (event) => {
+        const projectKey = String(event.project_id || event.project_title || event.id || "");
+        const color = PROJECT_COLORS[hashString(projectKey) % PROJECT_COLORS.length];
+
+        return {
+            color,
+            softColor: `${color}26`,
+        };
+    };
+
     const validEvents = events.filter((event) => !Number.isNaN(new Date(event.start).getTime()));
 
     if (validEvents.length === 0) {
@@ -87,12 +120,17 @@
                 typeof e.description === "string" && e.description.trim()
                     ? e.description.trim()
                     : "No description for this event";
+            const projectStyle = getProjectStyle(e);
 
             const out = {
                 id: e.id,
                 content: e.content,
                 start: e.start,
                 group: e.project_id,
+                style: [
+                    `--timeline-project-color: ${projectStyle.color}`,
+                    `--timeline-project-soft: ${projectStyle.softColor}`,
+                ].join("; "),
                 title:
                     "<strong>" +
                     escapeHtml(e.content) +
