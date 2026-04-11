@@ -1,6 +1,8 @@
 from decimal import Decimal, InvalidOperation
 
-from flask import render_template, redirect, url_for, jsonify, session, request
+import os
+
+from flask import current_app, render_template, redirect, url_for, jsonify, session, request
 
 import uuid
 
@@ -21,6 +23,42 @@ def _parse_budget_amount(raw_value):
         raise InvalidOperation
 
     return budget_amount
+
+
+def _delete_project_data(project_id):
+    project_people = db.session.query(ProjectPerson).filter_by(project_id=project_id).all()
+    project_files = db.session.query(File).filter_by(project_id=project_id).all()
+    project_expenses = db.session.query(Expense).filter_by(project_id=project_id).all()
+    project_timeline_events = db.session.query(TimelineEvent).filter_by(project_id=project_id).all()
+    storage_dir = current_app.config.get("UPLOAD_FOLDER")
+
+    for project_timeline_event in project_timeline_events:
+        db.session.delete(project_timeline_event)
+    for project_expense in project_expenses:
+        db.session.delete(project_expense)
+    for project_file in project_files:
+        if storage_dir:
+            file_path = os.path.join(storage_dir, project_file.file_name_disk)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+        db.session.delete(project_file)
+    for project_person in project_people:
+        db.session.delete(project_person)
+
+
+def _delete_project(project_id):
+    project = db.session.query(Project).filter_by(id=project_id).first()
+    if not project:
+        return
+
+    project_roles = db.session.query(Role).filter_by(project_id=project_id).all()
+
+    _delete_project_data(project_id)
+
+    for project_role in project_roles:
+        db.session.delete(project_role)
+    db.session.delete(project)
+    db.session.commit()
 
 @ProjectBP.route('/<project_id>/settings', methods=['GET'])
 def settings(project_id):
@@ -154,31 +192,7 @@ def get_projects():
 @ProjectBP.route('/<project_id>/delete')
 def delete(project_id):
     if user_is_project_owner(session["user_id"], project_id):
-
-        ### SOMEONE MAKE SURE THIS LOOKS RIGHT!!!
-        ### Idk the difference between .query() and .execute() so IDK which to use.
-        ### I believe this should work fine though. It deletes the appropriate roles, 
-        ### I know that for a fact, so the rest /should/ work.
-
-        proj = db.session.query(Project).filter_by(id=project_id).first()
-        proj_people = db.session.query(ProjectPerson).filter_by(project_id=project_id).all()
-        proj_roles = db.session.query(Role).filter_by(project_id=project_id).all()
-        proj_files = db.session.query(File).filter_by(project_id=project_id).all()
-        proj_expenses = db.session.query(Expense).filter_by(project_id=project_id).all()
-        proj_timeline_events = db.session.query(TimelineEvent).filter_by(project_id=project_id).all()
-
-        for proj_timeline_event in proj_timeline_events:
-            db.session.delete(proj_timeline_event)
-        for proj_expense in proj_expenses:
-            db.session.delete(proj_expense)
-        for proj_file in proj_files:
-            db.session.delete(proj_file)
-        for proj_person in proj_people:
-            db.session.delete(proj_person) 
-        for proj_role in proj_roles:
-            db.session.delete(proj_role)
-        db.session.delete(proj)
-        db.session.commit()
+        _delete_project(project_id)
 
     # Redirect to dashboard either way since users should NOT be able
     # to execute this function if they're not the project owner (the 

@@ -1,0 +1,35 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}About Your Data{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard/about-your-data.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>About Your Data</h1>
+    <p>Learn how Pandata uses the information attached to your projects.</p>
+{% endblock %}
+
+{% block main_content %}
+    <section class="project-card about-data-card">
+        <div class="project-card-body about-data-card-body">
+            <h2 class="project-card-title">About Pandata's Usage of Your Data</h2>
+
+            <div class="about-data-entry">
+                <p class="about-data-question">What are the names, phone numbers and emails of people connected to a project used for?</p>
+                <p class="project-card-description about-data-answer">Pandata uses the data on people connected to a project exclusively for your own record-keeping. This data is only used to display tables, and contact information on a generated report. The contact information is not shared with any third party software, and is not accessible by anyone else other than the person that created the project.</p>
+            </div>
+
+            <div class="about-data-entry">
+                <p class="about-data-question">can all my data be permanently removed from Pandata?</p>
+                <p class="project-card-description about-data-answer">Yes. In the account settings page, you can clear all the data for a given project from Pandata. This will irreversibly remove all the data from Pandata's databases, as well as stored files. The data is not kept anywhere else.</p>
+            </div>
+
+            <div class="about-data-entry">
+                <p class="about-data-question">What else does Pandata do with my data?</p>
+                <p class="project-card-description about-data-answer">Pandata uses all uploaded data exclusively for generating visualizations and analysis. There are no third-party systems that have access to Pandata's data on each project.</p>
+            </div>
+        </div>
+    </section>
+{% endblock %}
