@@ -45,7 +45,22 @@
     text-decoration: none;
     padding: 10px 12px;
     border-radius: 10px;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
     transition: background 0.2s ease;
+}
+
+.sidebar-link-icon {
+    width: 1rem;
+    font-size: 0.95rem;
+    text-align: center;
+    flex: 0 0 1rem;
+    opacity: 0.92;
+}
+
+.sidebar-link-text {
+    min-width: 0;
 }
 
 .sidebar-link:hover {
