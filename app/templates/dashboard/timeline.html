@@ -90,6 +90,7 @@
                                                         type="button"
                                                         class="calendar-event-chip calendar-event-trigger{% if event.kind == 'unlisted' %} is-unlisted{% endif %}"
                                                         title="{{ event.project_title }}: {{ event.content }}"
+                                                        style="--calendar-event-bg: {{ event.project_color.background }}; --calendar-event-border: {{ event.project_color.border }}; --calendar-event-text: {{ event.project_color.text }};"
                                                         data-event-id="{{ event.id }}"
                                                         data-event-kind="{{ event.kind }}"
                                                         data-title="{{ event.content }}"

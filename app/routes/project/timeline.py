@@ -8,9 +8,10 @@ from flask import render_template, abort, request, jsonify, flash, redirect, url
 from sqlalchemy import select, func
 
 from app.core import db
+from app.src.project_colors import build_project_color_map, get_project_color
 from app.tables import Project, TimelineEvent, UnlistedTimelineEvent
 from app.src.calendar_assignment import get_assignment_project_options
-from app.src.project.queries import user_has_project_access
+from app.src.project.queries import get_projects_for_user, user_has_project_access
 
 from .project import ProjectBP
 
@@ -262,6 +263,7 @@ def _build_timeline_visualization_events(events: list[TimelineEvent]) -> list[di
 def calendar(project_id):
     project = _get_project_or_404(project_id)
     user_id = session["user_id"]
+    project_colors = build_project_color_map(get_projects_for_user(user_id).keys())
     year, month = _resolve_month_request()
     selected_date = _resolve_selected_date(year, month)
 
@@ -318,6 +320,7 @@ def calendar(project_id):
         calendar_year=year,
         calendar_month=month,
         month_label=f"{month_name[month]} {year}",
+        project_event_color=project_colors.get(project.id, get_project_color(project.id)),
         selected_date=selected_date,
         month_options=month_options,
         year_options=year_options,

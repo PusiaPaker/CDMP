@@ -12,6 +12,7 @@ from app.src.calendar_assignment import (
     update_calendar_event,
 )
 from app.src.google_calendar import GoogleCalendarSyncError, has_google_calendar_connection, sync_primary_google_calendar
+from app.src.project_colors import build_project_color_map, get_project_color
 from app.src.project.queries import get_projects_for_user, user_has_project_access
 
 from app.core import db
@@ -129,6 +130,7 @@ def timeline():
     selected_date = _resolve_selected_date(year, month)
 
     projects = get_projects_for_user(user_id)
+    project_colors = build_project_color_map(projects.keys())
 
     events = (
         db.session.execute(
@@ -149,6 +151,7 @@ def timeline():
             'kind': 'project',
             'project_id': event.project_id,
             'project_title': project_title,
+            'project_color': project_colors.get(event.project_id, get_project_color(event.project_id)),
             'content': event.title,
             'description': event.description,
             'start': event.start_date,
@@ -172,6 +175,7 @@ def timeline():
             'kind': 'unlisted',
             'project_id': None,
             'project_title': 'Unlisted',
+            'project_color': get_project_color(None),
             'content': event.title,
             'description': event.description,
             'start': event.start_date,
@@ -191,6 +195,7 @@ def timeline():
             "id": event["id"],
             "project_id": event["project_id"] or "unlisted",
             "project_title": event["project_title"],
+            "project_color": event["project_color"],
             "content": event["content"],
             "description": event["description"],
             "start": event["start"].isoformat(),
