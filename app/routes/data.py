@@ -21,7 +21,7 @@ DataBP = Blueprint('data', __name__)
 
 TABLE_TYPE_REDIRECTS = {
     "people": "project.people",
-    "timeline": "project.timeline",
+    "timeline": "project.calendar",
     "expenses": "project.finance",
 }
 
@@ -212,7 +212,7 @@ def column_mapper_commit(project_id, table_type):
             },
             "success",
         )
-        return redirect(url_for("project.timeline", project_id=project_id))
+        return redirect(url_for("project.calendar", project_id=project_id))
 
     elif table_type == 'expenses':
         commit_status = expenses_mapping_handler(project_id, rows, mapped_to_index)

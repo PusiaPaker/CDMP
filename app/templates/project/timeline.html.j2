@@ -12,12 +12,13 @@
 
 {% block page_header %}
     <h1>{{ project['title'] }}</h1>
-    <p>{{ project['description'] or 'No description provided.' }}</p>
+    <p>{{ project['description'] or 'Review project phases and deadlines in one place.' }}</p>
 {% endblock %}
 
 {% block page_header_actions %}
+    <a href="{{ url_for('project.calendar', project_id=project['id']) }}" class="button-secondary">Calendar</a>
     <a
-        href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='timeline') }}"
+        href="{{ url_for('data.column_mapper', project_id=project['id'], table_type='timeline') }}"
         class="button"
     >
         Import CSV/XLSX With Dates
@@ -31,14 +32,14 @@
                 <p class="timeline-eyebrow">Project Schedule</p>
                 <h2 class="timeline-panel-title">Timeline Visualization</h2>
                 <p class="timeline-panel-subtitle">
-                    Review project phases and deadlines in one place.
+                    Review phases, deadlines, and milestones for {{ project['title'] }}.
                 </p>
             </div>
         </div>
 
         <div class="timeline-info-row">
             <p class="timeline-help-text">
-                Hover over each phase or deadline to view the full event name and description.
+                Hover over each item to view the full event name and description.
             </p>
 
             <div class="timeline-legend-block">
@@ -58,6 +59,15 @@
             </div>
         </div>
 
+        <div class="timeline-summary-row">
+            <p class="timeline-count-text">
+                {{ timeline_event_count }} event{% if timeline_event_count != 1 %}s{% endif %} in this project.
+            </p>
+            <a href="{{ url_for('project.calendar', project_id=project['id']) }}" class="button-secondary">
+                Open Calendar
+            </a>
+        </div>
+
         <div class="timeline-controls">
             <button id="zoomInBtn" class="button-secondary" type="button">Zoom In</button>
             <button id="zoomOutBtn" class="button-secondary" type="button">Zoom Out</button>
@@ -72,10 +82,8 @@
 
 {% block extra_js %}
     <script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
-
     <script>
-        window.timelineEvents = {{ timeline_events|default([], true)|tojson }};
+        window.timelineEvents = {{ timeline_visualization_events|default([], true)|tojson }};
     </script>
-
     <script src="{{ url_for('static', filename='js/pages/timeline.js') }}"></script>
 {% endblock %}

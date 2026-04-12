@@ -1,0 +1,315 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Calendar{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/dashboard/timeline.css') }}">
+    <link
+        rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/styles/vis-timeline-graph2d.min.css"
+    >
+{% endblock %}
+
+{% block page_header %}
+    <h1>{{ dashboard_title }}</h1>
+    <p>{{ description }}</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    {% if google_calendar_connected %}
+    <form method="post" action="{{ url_for('dashboard.refresh_google_calendar') }}" class="page-action-form">
+        <input type="hidden" name="return_year" value="{{ calendar_year }}">
+        <input type="hidden" name="return_month" value="{{ calendar_month }}">
+        <input type="hidden" name="selected_date" value="{{ selected_date.isoformat() }}">
+        <button type="submit" class="button-secondary">Refresh Google Calendar</button>
+    </form>
+    {% else %}
+    <a href="{{ url_for('authentication.login_google', next=url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=selected_date.isoformat())) }}" class="button-secondary">
+        Reconnect Google
+    </a>
+    {% endif %}
+    <a href="{{ url_for('project.create') }}" class="button">New Project</a>
+{% endblock %}
+
+{% block main_content %}
+    <section class="timeline-page">
+        <div class="timeline-layout">
+            <div class="timeline-content calendar-content">
+                <section class="timeline-panel calendar-panel">
+                    <div class="calendar-toolbar">
+                        <a href="{{ previous_month_link }}" class="button-secondary">Previous</a>
+
+                        <form method="get" action="{{ url_for('dashboard.timeline') }}" class="calendar-toolbar-form" id="dashboard-calendar-form">
+                            <label class="toolbar-select-group">
+                                <span class="sr-only">Select month</span>
+                                <select name="month" aria-label="Select month">
+                                    {% for option in month_options %}
+                                        <option value="{{ option.value }}"{% if option.value == calendar_month %} selected{% endif %}>
+                                            {{ option.label }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+
+                            <label class="toolbar-select-group">
+                                <span class="sr-only">Select year</span>
+                                <select name="year" aria-label="Select year">
+                                    {% for option in year_options %}
+                                        <option value="{{ option }}"{% if option == calendar_year %} selected{% endif %}>
+                                            {{ option }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </label>
+                        </form>
+
+                        <a href="{{ next_month_link }}" class="button-secondary">Next</a>
+                    </div>
+
+                    <div class="calendar-grid-shell">
+                        <div class="calendar-grid">
+                            <div class="calendar-weekday">Sun</div>
+                            <div class="calendar-weekday">Mon</div>
+                            <div class="calendar-weekday">Tue</div>
+                            <div class="calendar-weekday">Wed</div>
+                            <div class="calendar-weekday">Thu</div>
+                            <div class="calendar-weekday">Fri</div>
+                            <div class="calendar-weekday">Sat</div>
+
+                            {% for week in calendar_weeks %}
+                                {% for day in week %}
+                                    <article class="calendar-day{% if not day.is_current_month %} is-muted{% endif %}{% if day.is_today %} is-today{% endif %}{% if day.date == selected_date %} is-selected{% endif %}">
+                                        <a href="{{ url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=day.date.isoformat()) }}" class="calendar-day-number">
+                                            {{ day.date.day }}
+                                        </a>
+
+                                        <div class="calendar-day-events">
+                                            {% if day.events %}
+                                                {% for event in day.events %}
+                                                    <button
+                                                        type="button"
+                                                        class="calendar-event-chip calendar-event-trigger{% if event.kind == 'unlisted' %} is-unlisted{% endif %}"
+                                                        title="{{ event.project_title }}: {{ event.content }}"
+                                                        style="--calendar-event-bg: {{ event.project_color.background }}; --calendar-event-border: {{ event.project_color.border }}; --calendar-event-text: {{ event.project_color.text }};"
+                                                        data-event-id="{{ event.id }}"
+                                                        data-event-kind="{{ event.kind }}"
+                                                        data-title="{{ event.content }}"
+                                                        data-description="{{ event.description or '' }}"
+                                                        data-start="{{ event.start.strftime('%Y-%m-%d') }}"
+                                                        data-end="{% if event.end %}{{ event.end.strftime('%Y-%m-%d') }}{% endif %}"
+                                                        data-project-id="{{ event.project_id or '' }}"
+                                                        data-project-label="{{ event.project_title }}"
+                                                        data-update-url="{{ url_for('dashboard.update_event_details', event_kind=event.kind, event_id=event.id) }}"
+                                                        data-delete-url="{{ url_for('dashboard.delete_any_event', event_kind=event.kind, event_id=event.id) }}"
+                                                    >
+                                                        {{ event.content }}
+                                                    </button>
+                                                {% endfor %}
+                                            {% else %}
+                                                <div class="calendar-empty-text">No events</div>
+                                            {% endif %}
+                                        </div>
+                                    </article>
+                                {% endfor %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="timeline-sidebar">
+                <section class="timeline-panel">
+                    <div class="timeline-panel-header">
+                        <h2>New Event</h2>
+                        <p>Create a new event here and choose whether it should stay unlisted or go straight into a project.</p>
+                    </div>
+
+                    <form method="post" action="{{ url_for('dashboard.create_unlisted_timeline_event') }}" class="timeline-form">
+                        <input type="hidden" name="return_year" value="{{ calendar_year }}">
+                        <input type="hidden" name="return_month" value="{{ calendar_month }}">
+                        <input type="hidden" name="selected_date" value="{{ selected_date.isoformat() }}">
+
+                        <label class="form-field">
+                            <span>Title</span>
+                            <input type="text" name="title" maxlength="100" placeholder="Vendor call" required>
+                        </label>
+
+                        <label class="form-field">
+                            <span>Start date</span>
+                            <input type="date" name="start_date" value="{{ selected_date.isoformat() }}" required>
+                        </label>
+
+                        <label class="form-field">
+                            <span>End date</span>
+                            <input type="date" name="end_date">
+                        </label>
+
+                        <label class="form-field">
+                            <span>Project</span>
+                            <select name="target_project_id" class="assignment-select">
+                                {% for option in assignment_project_options %}
+                                    <option value="{{ option.id or '' }}">{{ option.label }}</option>
+                                {% endfor %}
+                            </select>
+                        </label>
+
+                        <label class="form-field">
+                            <span>Description</span>
+                            <textarea name="description" rows="4" maxlength="256" placeholder="Optional notes"></textarea>
+                        </label>
+
+                        <button type="submit" class="button">Save Event</button>
+                    </form>
+                </section>
+
+                <section class="timeline-panel">
+                    <div class="timeline-panel-header">
+                        <h2>Google Calendar</h2>
+                        {% if google_calendar_connected %}
+                        <p>Refresh pulls your primary Google Calendar into the global calendar as synced events.</p>
+                        <form method="post" action="{{ url_for('dashboard.refresh_google_calendar') }}" class="timeline-form google-refresh-form">
+                            <input type="hidden" name="return_year" value="{{ calendar_year }}">
+                            <input type="hidden" name="return_month" value="{{ calendar_month }}">
+                            <input type="hidden" name="selected_date" value="{{ selected_date.isoformat() }}">
+                            <button type="submit" class="button-secondary">Refresh Google Calendar</button>
+                        </form>
+                        {% else %}
+                        <p>Sign in with Google again to grant calendar access and enable sync to the global calendar.</p>
+                        <a href="{{ url_for('authentication.login_google', next=url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=selected_date.isoformat())) }}" class="button-secondary google-connect-link">
+                            Connect Google Calendar
+                        </a>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section class="timeline-panel timeline-panel-spaced">
+                    <div class="timeline-panel-header">
+                        <h2>Edit Events</h2>
+                        <p>Click any event directly on the calendar to edit its details, project assignment, or delete it.</p>
+                    </div>
+                </section>
+            </aside>
+        </div>
+
+        <section class="timeline-panel timeline-panel-spaced timeline-visualization-panel">
+            <div class="timeline-header-row">
+                <div>
+                    <p class="timeline-eyebrow">Project Schedule</p>
+                    <h2 class="timeline-panel-title">Timeline Visualization</h2>
+                    <p class="timeline-panel-subtitle">
+                        Review project phases and deadlines across all your projects in one place.
+                    </p>
+                </div>
+            </div>
+
+            <div class="timeline-info-row">
+                <p class="timeline-help-text">
+                    Hover over each phase or deadline to view the full event name, project, and description.
+                </p>
+
+                <div class="timeline-legend-block">
+                    <span class="timeline-legend-label">Legend</span>
+
+                    <div class="timeline-legend">
+                        <span class="timeline-legend-item">
+                            <span class="timeline-legend-swatch timeline-legend-swatch-phase"></span>
+                            Phases
+                        </span>
+
+                        <span class="timeline-legend-item">
+                            <span class="timeline-legend-swatch timeline-legend-swatch-deadline"></span>
+                            Deadlines
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-controls">
+                <button id="zoomInBtn" class="button-secondary" type="button">Zoom In</button>
+                <button id="zoomOutBtn" class="button-secondary" type="button">Zoom Out</button>
+                <button id="fitBtn" class="button-secondary" type="button">Fit All</button>
+            </div>
+
+            <div class="timeline-shell">
+                <div id="globalTimelineContainer" class="timeline-container"></div>
+            </div>
+        </section>
+    </section>
+
+    <div class="modal-backdrop" id="calendar-event-modal" aria-hidden="true">
+        <div class="modal-surface" role="dialog" aria-modal="true" aria-labelledby="calendar-event-modal-title">
+            <div class="modal-header">
+                <div>
+                    <p class="modal-eyebrow" id="calendar-event-modal-project">Calendar Event</p>
+                    <h2 id="calendar-event-modal-title">Edit Event</h2>
+                </div>
+                <button type="button" class="modal-close" data-modal-close aria-label="Close">&times;</button>
+            </div>
+
+            <form method="post" id="calendar-event-edit-form" class="timeline-form">
+                <input type="hidden" name="return_to" value="{{ url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=selected_date.isoformat()) }}">
+
+                <label class="form-field">
+                    <span>Title</span>
+                    <input type="text" name="title" id="modal-title-input" maxlength="100" required>
+                </label>
+
+                <label class="form-field">
+                    <span>Start date</span>
+                    <input type="date" name="start_date" id="modal-start-input" required>
+                </label>
+
+                <label class="form-field">
+                    <span>End date</span>
+                    <input type="date" name="end_date" id="modal-end-input">
+                </label>
+
+                <label class="form-field">
+                    <span>Project</span>
+                    <select name="target_project_id" id="modal-project-select" class="assignment-select">
+                        {% for option in assignment_project_options %}
+                            <option value="{{ option.id or '' }}">{{ option.label }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label class="form-field">
+                    <span>Description</span>
+                    <textarea name="description" id="modal-description-input" rows="4" maxlength="256"></textarea>
+                </label>
+
+                <div class="modal-actions">
+                    <button type="submit" class="button">Save Changes</button>
+                </div>
+            </form>
+
+            <form method="post" id="calendar-event-delete-form" class="inline-action-form modal-delete-form">
+                <input type="hidden" name="return_to" value="{{ url_for('dashboard.timeline', year=calendar_year, month=calendar_month, selected_date=selected_date.isoformat()) }}">
+                <button type="submit" class="button-danger">Delete Event</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="https://cdn.jsdelivr.net/npm/vis-timeline@7.7.3/standalone/umd/vis-timeline-graph2d.min.js"></script>
+    <script>
+        window.timelineEvents = {{ timeline_visualization_events|default([], true)|tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='js/pages/timeline-global.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pages/calendar-modal.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("dashboard-calendar-form");
+            if (!form) {
+                return;
+            }
+
+            for (const select of form.querySelectorAll("select")) {
+                select.addEventListener("change", function () {
+                    form.submit();
+                });
+            }
+        });
+    </script>
+{% endblock %}

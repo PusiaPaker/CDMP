@@ -12,6 +12,7 @@ body {
 .dashboard-layout {
     display: flex;
     height: 100vh;
+    min-width: 0;
 }
 
 .main-area {
@@ -25,14 +26,24 @@ body {
      flex: 1;
      padding: var(--space-lg);
      overflow-y: auto;
+     overflow-x: hidden;
      scrollbar-gutter: stable;
      min-width: 0;
 }
 
 .content-container {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     width: 100%;
+    min-width: 0;
+    transition: max-width 0.2s ease;
+}
+
+.dashboard-layout.is-sidebar-collapsed .content-container {
+    max-width: min(1720px, calc(100vw - 120px));
+}
+
+.page-content {
     min-width: 0;
 }
 
@@ -46,10 +57,20 @@ body {
         flex-direction: column;
     }
 
+    .dashboard-layout.is-sidebar-collapsed {
+        flex-direction: column;
+    }
+
     .sidebar {
         width: 100%;
+        min-width: 0;
         border-right: none;
         border-bottom: 1px solid var(--color-border);
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .sidebar {
+        width: 100%;
+        min-width: 0;
     }
 
     .sidebar-inner {
@@ -57,7 +78,43 @@ body {
         max-height: 220px;
     }
 
+    .dashboard-layout.is-sidebar-collapsed .sidebar-inner {
+        padding-left: var(--space-md);
+        padding-right: var(--space-md);
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .logo-text {
+        display: inline;
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .sidebar-nav,
+    .dashboard-layout.is-sidebar-collapsed .sidebar-section {
+        display: flex;
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .sidebar-logo {
+        justify-content: flex-start;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        padding-bottom: var(--space-md);
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .logo-mark {
+        display: none;
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .sidebar-toggle {
+        right: 14px;
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .sidebar-toggle-icon {
+        transform: none;
+    }
+
     .content {
         padding: var(--space-md);
+    }
+
+    .dashboard-layout.is-sidebar-collapsed .content-container {
+        max-width: 100%;
     }
 }

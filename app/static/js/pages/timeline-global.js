@@ -2,32 +2,40 @@
     const events = window.timelineEvents || [];
     const container = document.getElementById("globalTimelineContainer");
     const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-    const PROJECT_COLORS = [
-        "#6366f1",
-        "#3b82f6",
-        "#10b981",
-        "#f59e0b",
-        "#ec4899",
-        "#8b5cf6",
-        "#0ea5e9",
-        "#22c55e",
-        "#f97316",
-        "#a855f7",
-        "#a855f7",
-    ];
+    const today = new Date();
+    const rangeStart = new Date(today);
+    const rangeEnd = new Date(today);
+    rangeStart.setFullYear(rangeStart.getFullYear() - 1);
+    rangeEnd.setFullYear(rangeEnd.getFullYear() + 5);
 
     if (!container || !Array.isArray(events)) {
         return;
     }
 
-    if (events.length === 0) {
+    const eventOverlapsRange = (event) => {
+        const start = new Date(event.start);
+        if (Number.isNaN(start.getTime())) {
+            return false;
+        }
+
+        const end = event.end ? new Date(event.end) : start;
+        if (Number.isNaN(end.getTime())) {
+            return false;
+        }
+
+        return start <= rangeEnd && end >= rangeStart;
+    };
+
+    const filteredEvents = events.filter(eventOverlapsRange);
+
+    if (filteredEvents.length === 0) {
         container.innerHTML =
-            '<div class="p-3 text-muted">This timeline does not have any dates attached to it yet.</div>';
+            '<div class="p-3 text-muted">No timeline events fall between one year ago and five years from today.</div>';
         return;
     }
 
     if (!window.vis || !window.vis.DataSet || !window.vis.Timeline) {
-        const listHtml = events
+        const listHtml = filteredEvents
             .slice()
             .sort((a, b) => String(a.start).localeCompare(String(b.start)))
             .map((e) => {
@@ -74,31 +82,11 @@
         });
     };
 
-    const hashString = (value) => {
-        let hash = 0;
-
-        for (let index = 0; index < value.length; index += 1) {
-            hash = (hash * 31 + value.charCodeAt(index)) >>> 0;
-        }
-
-        return hash;
-    };
-
-    const getProjectStyle = (event) => {
-        const projectKey = String(event.project_id || event.project_title || event.id || "");
-        const color = PROJECT_COLORS[hashString(projectKey) % PROJECT_COLORS.length];
-
-        return {
-            color,
-            softColor: `${color}26`,
-        };
-    };
-
-    const validEvents = events.filter((event) => !Number.isNaN(new Date(event.start).getTime()));
+    const validEvents = filteredEvents.filter((event) => !Number.isNaN(new Date(event.start).getTime()));
 
     if (validEvents.length === 0) {
         container.innerHTML =
-            '<div class="p-3 text-muted">This timeline does not have any valid dates to display yet.</div>';
+            '<div class="p-3 text-muted">No valid timeline events fall between one year ago and five years from today.</div>';
         return;
     }
 
@@ -120,7 +108,7 @@
                 typeof e.description === "string" && e.description.trim()
                     ? e.description.trim()
                     : "No description for this event";
-            const projectStyle = getProjectStyle(e);
+            const projectColor = e.project_color || {};
 
             const out = {
                 id: e.id,
@@ -128,8 +116,8 @@
                 start: e.start,
                 group: e.project_id,
                 style: [
-                    `--timeline-project-color: ${projectStyle.color}`,
-                    `--timeline-project-soft: ${projectStyle.softColor}`,
+                    `--timeline-project-color: ${projectColor.border || "#6366f1"}`,
+                    `--timeline-project-soft: ${projectColor.background || "rgba(99, 102, 241, 0.14)"}`,
                 ].join("; "),
                 title:
                     "<strong>" +
@@ -164,6 +152,22 @@
         Array.from(groupMap.values()).sort((a, b) => a.content.localeCompare(b.content))
     );
 
+    const startTimes = validEvents.map((event) => new Date(event.start).getTime());
+    const endTimes = validEvents.map((event) => new Date(event.end || event.start).getTime());
+    const eventMinTime = Math.min(...startTimes);
+    const eventMaxTime = Math.max(...endTimes);
+    const fitPadding = eventMinTime === eventMaxTime
+        ? ONE_DAY_MS * 7
+        : Math.max(ONE_DAY_MS * 3, Math.round((eventMaxTime - eventMinTime) * 0.08));
+
+    const fitToEvents = () => {
+        timeline.setWindow(
+            new Date(eventMinTime - fitPadding),
+            new Date(eventMaxTime + fitPadding),
+            { animation: false }
+        );
+    };
+
     const timeline = new vis.Timeline(container, items, groups, {
         stack: true,
         zoomKey: "ctrlKey",
@@ -173,16 +177,13 @@
         maxHeight: 760,
         showCurrentTime: true,
         groupOrder: (a, b) => String(a.content).localeCompare(String(b.content)),
+        min: rangeStart,
+        max: rangeEnd,
     });
 
-    const startTimes = validEvents.map((event) => new Date(event.start).getTime());
-    const endTimes = validEvents.map((event) => new Date(event.end || event.start).getTime());
-    const minTime = Math.min(...startTimes);
-    const maxTime = Math.max(...endTimes);
-
     timeline.setWindow(
-        new Date(minTime - ONE_DAY_MS * 7),
-        new Date(maxTime + ONE_DAY_MS * 7),
+        new Date(rangeStart.getTime() - ONE_DAY_MS * 7),
+        new Date(rangeEnd.getTime() + ONE_DAY_MS * 7),
         { animation: false }
     );
 
@@ -194,11 +195,7 @@
     if (zoomOutBtn) zoomOutBtn.addEventListener("click", () => timeline.zoomOut(0.4));
     if (fitBtn) {
         fitBtn.addEventListener("click", () => {
-            timeline.setWindow(
-                new Date(minTime - ONE_DAY_MS * 7),
-                new Date(maxTime + ONE_DAY_MS * 7),
-                { animation: false }
-            );
+            fitToEvents();
         });
     }
 })();

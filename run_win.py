@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sqlite3
 import subprocess
 import sys
 import threading
@@ -16,6 +17,21 @@ REQUIREMENTS_FILE = PROJECT_ROOT / "requirements.txt"
 ENV_FILE = PROJECT_ROOT / ".env"
 APP_ENTRYPOINT = "app.py"
 APP_URL = "http://localhost:5000"
+
+
+def read_env_file() -> dict[str, str]:
+    env_map: dict[str, str] = {}
+    if not ENV_FILE.exists():
+        return env_map
+
+    for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        env_map[key.strip()] = value.strip()
+
+    return env_map
 
 def run_command(
     command: list[str],
@@ -109,14 +125,12 @@ def install_requirements() -> None:
     
 def create_dotenv(download_file_path: str) -> str:
     selected_path = download_file_path.strip().strip('"')
+    env_map = read_env_file()
 
-    if not selected_path and ENV_FILE.exists():
-        for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-            if line.startswith("FILE_UPLOAD_STORAGE_PATH="):
-                selected_path = line.split("=", 1)[1].strip().strip('"')
-                if selected_path:
-                    print("Using FILE_UPLOAD_STORAGE_PATH from existing .env.")
-                break
+    if not selected_path and "FILE_UPLOAD_STORAGE_PATH" in env_map:
+        selected_path = env_map["FILE_UPLOAD_STORAGE_PATH"].strip().strip('"')
+        if selected_path:
+            print("Using FILE_UPLOAD_STORAGE_PATH from existing .env.")
 
     while not selected_path:
         selected_path = input(
@@ -125,9 +139,83 @@ def create_dotenv(download_file_path: str) -> str:
         if not selected_path:
             print("Path cannot be blank.")
 
-    ENV_FILE.write_text(f"FILE_UPLOAD_STORAGE_PATH={selected_path}\n", encoding="utf-8")
-    print(f"Created {ENV_FILE.name} with FILE_UPLOAD_STORAGE_PATH.")
+    env_map["FILE_UPLOAD_STORAGE_PATH"] = selected_path
+    lines = [f"{key}={value}" for key, value in env_map.items()]
+    ENV_FILE.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    print(f"Updated {ENV_FILE.name} with FILE_UPLOAD_STORAGE_PATH.")
     return selected_path
+
+
+def resolve_sqlite_database_path() -> Path | None:
+    env_map = read_env_file()
+    database_uri = env_map.get("SQLALCHEMY_DATABASE_URI", "sqlite:///database.db")
+    normalized_uri = database_uri.strip().strip('"').strip("'")
+
+    if not normalized_uri.startswith(("sqlite:///", "sqlite+pysqlite:///")):
+        return None
+
+    after_scheme = normalized_uri.split("://", 1)[1]
+    if after_scheme in {"/:memory:", ":memory:"}:
+        return None
+
+    relative_candidate = after_scheme.lstrip("/")
+    if len(relative_candidate) >= 2 and relative_candidate[1] == ":":
+        return Path(relative_candidate)
+
+    return PROJECT_ROOT / "instance" / relative_candidate
+
+
+def ensure_legacy_sqlite_schema() -> None:
+    database_path = resolve_sqlite_database_path()
+    if database_path is None:
+        print("Database is not a local SQLite file. Skipping schema compatibility check.")
+        return
+
+    if not database_path.exists():
+        print(f"No existing database found at {database_path}. A fresh one will be created.")
+        return
+
+    database_path.parent.mkdir(parents=True, exist_ok=True)
+    updates: list[str] = []
+
+    with sqlite3.connect(database_path) as connection:
+        table_names = {
+            row[0]
+            for row in connection.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            )
+        }
+
+        if "users" in table_names:
+            user_columns = {
+                row[1] for row in connection.execute("PRAGMA table_info(users)")
+            }
+            if "full_name" not in user_columns:
+                connection.execute(
+                    "ALTER TABLE users ADD COLUMN full_name VARCHAR(255)"
+                )
+                updates.append("users.full_name")
+
+        if "projects" in table_names:
+            project_columns = {
+                row[1] for row in connection.execute("PRAGMA table_info(projects)")
+            }
+            if "budget_amount" not in project_columns:
+                connection.execute(
+                    "ALTER TABLE projects ADD COLUMN budget_amount NUMERIC(12, 2)"
+                )
+                updates.append("projects.budget_amount")
+
+        if updates:
+            connection.commit()
+
+    if updates:
+        print(
+            "Updated legacy SQLite schema in "
+            f"{database_path} to add: {', '.join(updates)}"
+        )
+    else:
+        print("SQLite schema compatibility check passed.")
 
 def flask_populate() -> None:
     print("Populating database with flask populate...")
@@ -154,6 +242,7 @@ def main() -> None:
     activate_virtualenv_script()
     install_requirements()
     create_dotenv(download_file_path)
+    ensure_legacy_sqlite_schema()
     flask_populate()
     open_browser_after_delay()
     run_flask()
