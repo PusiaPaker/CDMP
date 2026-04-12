@@ -15,14 +15,14 @@
 
 .btn-purp {
     width: 100%;
-    background: #3730a3;
-    color: #ffffff;
-    border: 1px solid #3730a3;
+    background: var(--color-sidebar-bg);
+    color: var(--color-sidebar-text);
+    border: 1px solid var(--color-sidebar-bg);
 }
 
 .btn-purp:hover {
-    background: #312e81;
-    color: #ffffff;
+    background: var(--color-text-primary);
+    color: var(--color-sidebar-text);
 }
 
 .oauth-divider {
