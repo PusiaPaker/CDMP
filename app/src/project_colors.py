@@ -21,6 +21,7 @@ def _hsl_to_hex(hue: float, saturation: float, lightness: float) -> str:
     )
 
 
+
 def _normalize_project_ids(project_ids: Iterable[str]) -> list[str]:
     return sorted(
         {(project_id or "").strip() for project_id in project_ids if (project_id or "").strip()},
