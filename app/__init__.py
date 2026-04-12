@@ -65,7 +65,9 @@ def create_app():
 
     @app.route('/')
     def mainPage():
-        return redirect(url_for("dashboard.main"))
+        if "user_id" in session:
+            return redirect(url_for("dashboard.main"))
+        return render_template("auth/landing.html")
 
     app.register_blueprint(AuthBP)
     app.register_blueprint(DashBP, url_prefix='/dashboard/')
