@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>About Pandata</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
+</head>
+<body>
+    <main>
+        <section class="about-page">
+            <div class="about-card">
+                <h1 class="about-title">About Pandata</h1>
+
+                <h3>Quick Overview</h3>
+                <p class="about-copy">
+                    Pandata is a consulting data management platform built to help consultants manage multiple
+                     ongoing projects in one place. It features multiple data visualizations tools (timelines, calendar, people, financial, files),
+                    and is able to integrate with Google Calendar data. Additionally, Pandata features 
+                     a PDF report generator, that can be used to create shareable summaries of a project's
+                    ongoing state.
+                </p>
+                <h3>How Your Data is Handled</h3>
+                <p class="about-copy">
+                    All data uploaded by a user for a specific project (files, manual entries, spreadsheet imports)
+                    are only accessible to the project owner, and other users that are explicity given view/edit access.
+                    Pandata does <b>NOT</b> share the data with any third party systems. Moreover, Pandata uses
+                    your data exclusively to generate visualizations, analysis and project reports. If a user wishes to,
+                    a user can completely remove all the data that has been uploaded for any project form Pandata.
+                </p>
+                <h3>Who created Pandata?</h3>
+                <p class="about-copy">
+                    The platform was created as part of the Kent State University's Spring 2026 
+                    Computer Science Capstone class by João Donaton, Antek Chelstowki, Miles Keffer, 
+                    Tristian Clayman, and Antonio Chiefallo.
+                </p>
+                <a class="about-back-link" href="{{ url_for('mainPage') }}">Back</a>
+            </div>
+        </section>
+    </main>
+    <footer>Pandata &copy; 2026 · Kent State University</footer>
+</body>
+</html>

@@ -11,7 +11,7 @@ ProjectBP = Blueprint('project', __name__)
 @ProjectBP.before_request
 def require_login():
     if "user_id" not in session:
-        return redirect(url_for("authentication.login", next=request.path))
+        return redirect(url_for("mainPage"))
 
 
 @ProjectBP.route("/<project_id>/")

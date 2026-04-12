@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Pandata</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
+</head>
+<body>
+    <main>
+        <img class="landing-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}" alt="Pandata logo">
+        <h1 class="landing-title">Pandata</h1>
+        <p class="landing-description">A data management platform for consultants</p>
+        <a href="{{ url_for('authentication.login') }}">
+            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+            <span>Login</span>
+        </a>
+        <a href="{{ url_for('authentication.register') }}">
+            <i class="bi bi-person-plus" aria-hidden="true"></i>
+            <span>Create an Account</span>
+        </a>
+        <a href="{{ url_for('authentication.about') }}">
+            <i class="bi bi-info-circle" aria-hidden="true"></i>
+            <span>About Pandata</span>
+        </a>
+    </main>
+    <footer>Pandata &copy; 2026 · Kent State University</footer>
+</body>
+</html>

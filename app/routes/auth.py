@@ -43,10 +43,16 @@ def _is_strong_password(password: str) -> bool:
         and any(not character.isalnum() for character in password)
     )
 
+
+@AuthBP.route("/about")
+def about():
+    return render_template("auth/about.html")
+
+
 @AuthBP.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("authentication.login"))
+    return redirect(url_for("mainPage"))
 
 @AuthBP.route("/login", methods=["GET", "POST"])
 def login():
