@@ -465,7 +465,7 @@ body.modal-open {
 .vis-item.timeline-single-date-object.vis-selected {
     background: var(--timeline-project-soft, rgba(99, 102, 241, 0.14));
     border-color: var(--timeline-project-color, #6366f1);
-    color: #fff;
+    color: var(--color-text-primary);
     box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.12);
 }
 
