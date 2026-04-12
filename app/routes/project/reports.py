@@ -46,7 +46,7 @@ def download_report(project_id):
     user = db.session.get(User, session.get("user_id"))
     
     return send_file(
-        generate_report_pdf(project, user.username if user else "Unknown"),
+        generate_report_pdf(project, user.full_name if user else "Unknown"),
         mimetype="application/pdf",
         as_attachment=False,
         download_name=get_report_file_name(project.title),

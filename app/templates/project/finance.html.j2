@@ -4,6 +4,8 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/finance.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
 {% endblock %}
 
 {% block page_header %}
@@ -18,19 +20,57 @@
     <div class="finance-page-grid">
         <div class="finance-topbar">
             <div class="finance-tabs">
-                <button type="button" class="finance-tab-button is-active" data-finance-tab="analysis">Data Analysis</button>
-                <button type="button" class="finance-tab-button" data-finance-tab="expenses">Expense List</button>
+                <button
+                    type="button"
+                    class="finance-tab-button{% if active_finance_tab == 'analysis' %} is-active{% endif %}"
+                    data-finance-tab="analysis"
+                >
+                    Data Analysis
+                </button>
+                <button
+                    type="button"
+                    class="finance-tab-button{% if active_finance_tab == 'expenses' %} is-active{% endif %}"
+                    data-finance-tab="expenses"
+                >
+                    Expense List
+                </button>
             </div>
-
-            <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='expenses') }}" class="button">
-                Import CSV/XLSX
-            </a>
         </div>
 
-        <div class="finance-panel" data-finance-panel="expenses" hidden>
+        <div class="finance-panel" data-finance-panel="expenses"{% if active_finance_tab != 'expenses' %} hidden{% endif %}>
             <section class="finance-section">
                 <div class="section-header">
                     <h2>Expenses List</h2>
+
+                    <div class="finance-section-actions">
+                        <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='expenses') }}" class="button">
+                            Import CSV/XLSX
+                        </a>
+                        <a id="modal-btn" class="button-secondary">Add New</a>
+                    </div>
+                </div>
+
+                <div id="modal" class="modal finance-modal">
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <form class="project-form" method="POST" action="{{ url_for('project.finance', project_id=project['id']) }}">
+                            <label>Add New Expense</label>
+                            <div class="form-section">
+                                <input class="form-input" type="text" name="expense_name" placeholder="Expense Name" maxlength="150" required />
+                                <input class="form-input" type="text" name="amount" placeholder="Amount" inputmode="decimal" required />
+                                <input class="form-input" type="date" name="expense_date" required />
+                                <select class="form-input" name="recurrence_type" required>
+                                    <option value="">Frequency</option>
+                                    <option value="one_time">One Time</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="annual">Annual</option>
+                                </select>
+                                <input class="form-input" type="text" name="expense_purpose" placeholder="Purpose" />
+                                <input class="form-input" type="text" name="category" placeholder="Category" maxlength="64" />
+                                <input class="button" type="submit" value="Submit" />
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 {% if expenses %}
@@ -44,6 +84,7 @@
                                     <th>Date</th>
                                     <th>Frequency</th>
                                     <th>Category</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -55,6 +96,14 @@
                                         <td>{{ expense.expense_date }}</td>
                                         <td>{{ expense.recurrence_type }}</td>
                                         <td>{{ expense.category }}</td>
+                                        <td>
+                                            <a
+                                                class="finance-table-delete"
+                                                href="{{ url_for('project.delete_project_expense', project_id=project['id'], expense_id=expense.id) }}"
+                                            >
+                                                Delete
+                                            </a>
+                                        </td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -66,7 +115,7 @@
             </section>
         </div>
 
-        <div class="finance-panel" data-finance-panel="analysis">
+        <div class="finance-panel" data-finance-panel="analysis"{% if active_finance_tab != 'analysis' %} hidden{% endif %}>
             <div class="finance-stats-grid">
                 <article class="finance-stat-card">
                     <p class="finance-stat-label">Allocated Project Budget</p>
@@ -169,6 +218,7 @@
         financeTabButtons.forEach((button) => {
             button.addEventListener("click", () => {
                 const targetPanel = button.dataset.financeTab;
+                const url = new URL(window.location.href);
 
                 financeTabButtons.forEach((tabButton) => {
                     tabButton.classList.toggle("is-active", tabButton === button);
@@ -177,9 +227,13 @@
                 financePanels.forEach((panel) => {
                     panel.hidden = panel.dataset.financePanel !== targetPanel;
                 });
+
+                url.searchParams.set("tab", targetPanel);
+                window.history.replaceState({}, "", url);
             });
         });
     </script>
 
+    <script src="{{ url_for('static', filename='js/components/modal.js') }}"></script>
     <script src="{{ url_for('static', filename='js/pages/finance.js') }}"></script>
 {% endblock %}

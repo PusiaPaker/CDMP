@@ -35,10 +35,16 @@
                 {% if recent_files %}
                     {% for file in recent_files %}
                         <div class="file-preview-item">
-                           <div class="file-preview-name">
-                                {{ file.file_name_original }}
+                            <div class="file-name-download">
+                                <div class="file-preview-name">
+                                    {{ file.file_name_original }}
+                                </div>
+                                <a class="file-preview-download"
+                                   href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}"
+                                   target="_blank">
+                                    Download
+                                </a>
                             </div>
-
                             <div class="file-preview-meta">
                                 {{ file.file_category }} · {{ file.upload_date }}
                             </div> 

@@ -100,18 +100,6 @@
         }
     });
 
-    const buildProjectStyle = (projectColor) => {
-        if (!projectColor) {
-            return "";
-        }
-
-        return [
-            "background-color: " + projectColor.background,
-            "border-color: " + projectColor.border,
-            "color: " + projectColor.text,
-        ].join("; ");
-    };
-
     const items = new vis.DataSet(
         validEvents.map((e) => {
             const startLabel = formatDateLabel(e.start);
@@ -120,13 +108,17 @@
                 typeof e.description === "string" && e.description.trim()
                     ? e.description.trim()
                     : "No description for this event";
+            const projectColor = e.project_color || {};
 
             const out = {
                 id: e.id,
                 content: e.content,
                 start: e.start,
                 group: e.project_id,
-                style: buildProjectStyle(e.project_color),
+                style: [
+                    `--timeline-project-color: ${projectColor.border || "#6366f1"}`,
+                    `--timeline-project-soft: ${projectColor.background || "rgba(99, 102, 241, 0.14)"}`,
+                ].join("; "),
                 title:
                     "<strong>" +
                     escapeHtml(e.content) +
@@ -181,8 +173,8 @@
         zoomKey: "ctrlKey",
         horizontalScroll: true,
         verticalScroll: true,
-        height: "520px",
-        maxHeight: 520,
+        height: "760px",
+        maxHeight: 760,
         showCurrentTime: true,
         groupOrder: (a, b) => String(a.content).localeCompare(String(b.content)),
         min: rangeStart,

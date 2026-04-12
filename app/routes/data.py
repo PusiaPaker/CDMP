@@ -190,15 +190,39 @@ def column_mapper_commit(project_id, table_type):
     # redirect to mapping handlers for each table type to save data in DB
     if table_type == 'people':
         commit_status = people_mapping_handler(project_id, rows, mapped_to_index)
-        flash(f'Successfully added {commit_status["created"]} inidividuals. Skipped {commit_status["skipped"]}')
+        flash(
+            {
+                "title": "People data inserted",
+                "body": "The uploaded spreadsheet was processed and the project stakeholder data was updated.",
+                "created": commit_status["created"],
+                "skipped": commit_status["skipped"],
+            },
+            "success",
+        )
         return redirect(url_for("project.people", project_id=project_id))
 
     elif table_type == 'timeline':
         commit_status = events_mapping_handler(project_id, rows, mapped_to_index)
-        flash(f'Successfully added {commit_status["created"]} events. Skipped {commit_status["skipped"]}')
+        flash(
+            {
+                "title": "Timeline data inserted",
+                "body": "The uploaded spreadsheet was processed and the project timeline was updated.",
+                "created": commit_status["created"],
+                "skipped": commit_status["skipped"],
+            },
+            "success",
+        )
         return redirect(url_for("project.calendar", project_id=project_id))
 
     elif table_type == 'expenses':
         commit_status = expenses_mapping_handler(project_id, rows, mapped_to_index)
-        flash(f'Successfully added {commit_status["created"]} expenses. Skipped {commit_status["skipped"]}')
-        return redirect(url_for("project.finance", project_id=project_id))
+        flash(
+            {
+                "title": "Expense data inserted",
+                "body": "The uploaded spreadsheet was processed and the project finance data was updated.",
+                "created": commit_status["created"],
+                "skipped": commit_status["skipped"],
+            },
+            "success",
+        )
+        return redirect(url_for("project.finance", project_id=project_id, tab="expenses"))

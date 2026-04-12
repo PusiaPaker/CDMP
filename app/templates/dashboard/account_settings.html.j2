@@ -1,0 +1,83 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Account Settings</h1>
+    <p>Manage your account credentials and project data.</p>
+{% endblock %}
+
+{% block main_content %}
+    <div class="project-form-layout">
+        <section class="project-form-card">
+            <div class="project-form-card-header">
+                <h2>Change Password</h2>
+                <p>Update the password for {{ current_user.full_name or current_user.username }}.</p>
+            </div>
+
+            <form class="project-form" method="POST" action="{{ url_for('dashboard.account_settings') }}">
+                <input type="hidden" name="form_action" value="change_password">
+
+                <div class="form-section">
+                    <label class="form-label" for="new_password">New Password</label>
+                    <input class="form-input" type="password" id="new_password" name="new_password" required>
+                </div>
+
+                <div class="form-section">
+                    <label class="form-label" for="confirm_password">Confirm New Password</label>
+                    <input class="form-input" type="password" id="confirm_password" name="confirm_password" required>
+                </div>
+
+                <p class="page-subtitle">
+                    Passwords must be at least 10 characters and include uppercase, lowercase, a number, and a special character.
+                </p>
+
+                <div class="form-actions">
+                    <button type="submit" class="button">Update Password</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="project-form-card">
+            <div class="project-form-card-header">
+                <h2>Clear Project Data</h2>
+                <p>Permanently clear a project's files, people, expenses, and timeline data while keeping the project itself.</p>
+            </div>
+
+            {% if owned_projects %}
+                <form
+                    class="project-form"
+                    method="POST"
+                    action="{{ url_for('dashboard.account_settings') }}"
+                    onsubmit="return confirm('Clear all data for this project? This cannot be undone.');"
+                >
+                    <input type="hidden" name="form_action" value="clear_project_data">
+
+                    <div class="form-section">
+                        <label class="form-label" for="project_id">Project</label>
+                        <select class="form-input" id="project_id" name="project_id" required>
+                            <option value="" selected disabled>Select a project</option>
+                            {% for project in owned_projects %}
+                                <option value="{{ project.id }}">{{ project.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <p class="page-subtitle">
+                        This keeps the project and access roles in place, but removes its files, timeline events, expenses, and people links.
+                    </p>
+
+                    <div class="form-actions">
+                        <button type="submit" class="button-danger">Clear Project Data</button>
+                    </div>
+                </form>
+            {% else %}
+                <p class="page-subtitle">You do not currently own any projects that can be cleared.</p>
+            {% endif %}
+        </section>
+    </div>
+{% endblock %}

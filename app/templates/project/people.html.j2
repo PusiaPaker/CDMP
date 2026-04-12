@@ -95,5 +95,8 @@
 
     </div>
 
-    <script src='{{ url_for('static', filename='js/components/modal.js') }}'/>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/components/modal.js') }}"></script>
 {% endblock %}

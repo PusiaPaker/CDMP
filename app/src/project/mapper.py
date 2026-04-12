@@ -97,7 +97,8 @@ def people_mapping_handler(project_id, rows, mapped_to_index):
     db.session.commit()
 
     return {
-        'created': created_people,
+        'created': assigned,
+        'created_people': created_people,
         'skipped': skipped 
     }
 

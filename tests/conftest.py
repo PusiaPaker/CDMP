@@ -51,12 +51,15 @@ def app_ctx(app):
 
 @pytest.fixture
 def make_user(app_ctx):
-    def _make_user(username="user", password="password123", email=None):
+    def _make_user(username="user", password="password123", email=None, full_name=None):
         if email is None:
             email = f"{username}@example.com"
+        if full_name is None:
+            full_name = username
 
         user = User(
             username=username,
+            full_name=full_name,
             password=generate_password_hash(password),
             email=email,
         )
@@ -69,8 +72,13 @@ def make_user(app_ctx):
 
 @pytest.fixture
 def make_project(app_ctx):
-    def _make_project(owner_id, title="Project A", description="Test project"):
-        project = Project(owner_id=owner_id, title=title, description=description)
+    def _make_project(owner_id, title="Project A", description="Test project", budget_amount=None):
+        project = Project(
+            owner_id=owner_id,
+            title=title,
+            description=description,
+            budget_amount=budget_amount,
+        )
         db.session.add(project)
         db.session.commit()
         return project

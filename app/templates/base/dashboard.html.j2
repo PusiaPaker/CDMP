@@ -11,17 +11,76 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/buttons.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/cards.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/footer.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/components/popup-box.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
         {% block extra_css %}{% endblock %}
     </head>
 
     <body>
-        {% with messages = get_flashed_messages() %}
-            {% for message in messages %}
-                <div class="alert alert-warning" role="alert">
-                    {{ message }}
+        {% with popup_messages = get_flashed_messages(with_categories=true) %}
+            {% if popup_messages %}
+                <div class="popup-box-overlay" data-popup-box>
+                    <div class="popup-box-window" role="alertdialog" aria-modal="true">
+                        <button type="button" class="popup-box-close" aria-label="Close" data-popup-box-close>&times;</button>
+
+                        {% for category, message in popup_messages %}
+                            <section class="popup-box-panel popup-box-panel-{{ category|replace('_', '-') }}">
+                                <p class="popup-box-kicker">
+                                    {% if category == "success" %}
+                                        Update Complete
+                                    {% elif category == "error" %}
+                                        Action Needed
+                                    {% else %}
+                                        Notice
+                                    {% endif %}
+                                </p>
+
+                                {% if message is mapping %}
+                                    <h2 class="popup-box-title">{{ message.title }}</h2>
+
+                                    {% if message.body %}
+                                        <p class="popup-box-body">{{ message.body }}</p>
+                                    {% endif %}
+
+                                    {% if message.created is defined or message.skipped is defined %}
+                                        <div class="popup-box-stats">
+                                            {% if message.created is defined %}
+                                                <article class="popup-box-stat">
+                                                    <span class="popup-box-stat-label">Inserted</span>
+                                                    <strong class="popup-box-stat-value">{{ message.created }}</strong>
+                                                </article>
+                                            {% endif %}
+
+                                            {% if message.skipped is defined %}
+                                                <article class="popup-box-stat">
+                                                    <span class="popup-box-stat-label">Skipped</span>
+                                                    <strong class="popup-box-stat-value">{{ message.skipped }}</strong>
+                                                </article>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <h2 class="popup-box-title">
+                                        {% if category == "error" %}
+                                            Something went wrong
+                                        {% elif category == "success" %}
+                                            Success
+                                        {% else %}
+                                            Notice
+                                        {% endif %}
+                                    </h2>
+                                    <p class="popup-box-body">{{ message }}</p>
+                                {% endif %}
+                            </section>
+                        {% endfor %}
+
+                        <div class="popup-box-actions">
+                            <button type="button" class="button" data-popup-box-close>Continue</button>
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
+            {% endif %}
         {% endwith %}
 
         <div class="dashboard-layout">
@@ -50,17 +109,20 @@
                     <nav class="sidebar-nav">
                         <a href="{{ url_for('dashboard.main') }}"
                            class="sidebar-link{% if request.endpoint == 'dashboard.main' %} active{% endif %}">
-                            Dashboard
+                            <i class="bi bi-speedometer2 sidebar-link-icon" aria-hidden="true"></i>
+                            <span class="sidebar-link-text">Dashboard</span>
                         </a>
 
                         <a href="{{ url_for('dashboard.timeline') }}"
                            class="sidebar-link{% if request.endpoint == 'dashboard.timeline' %} active{% endif %}">
-                            Calendar
+                            <i class="bi bi-calendar3 sidebar-link-icon" aria-hidden="true"></i>
+                            <span class="sidebar-link-text">Calendar</span>
                         </a>
 
                         <a href="{{ url_for('project.create') }}"
                            class="sidebar-link{% if request.endpoint == 'project.create' %} active{% endif %}">
-                            New Project
+                            <i class="bi bi-plus-circle sidebar-link-icon" aria-hidden="true"></i>
+                            <span class="sidebar-link-text">New Project</span>
                         </a>
                     </nav>
 
@@ -71,15 +133,42 @@
                             <p class="sidebar-section-title">Current Project</p>
 
                             <div class="sidebar-project-list">
-                                <a href="{{ url_for('project.home', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.home' %} active{% endif %}">Home</a>
-                                <a href="{{ url_for('project.calendar', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.calendar' %} active{% endif %}">Calendar</a>
-                                <a href="{{ url_for('project.file_list', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.file_list' %} active{% endif %}">Files</a>
-                                <a href="{{ url_for('project.people', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.people' %} active{% endif %}">People</a>
-                                <a href="{{ url_for('project.visualizations', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.visualizations' %} active{% endif %}">Visualizations</a>
-                                <a href="{{ url_for('project.timeline', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.timeline' %} active{% endif %}">Timeline</a>
-                                <a href="{{ url_for('project.reports', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.reports' %} active{% endif %}">Reports</a>
-                                <a href="{{ url_for('project.finance', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.finance' %} active{% endif %}">Finance</a>
-                                <a href="{{ url_for('project.settings', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.settings' %} active{% endif %}">Settings</a>
+                                <a href="{{ url_for('project.home', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.home' %} active{% endif %}">
+                                    <i class="bi bi-house-door sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Home</span>
+                                </a>
+                                <a href="{{ url_for('project.calendar', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.calendar' %} active{% endif %}">
+                                    <i class="bi bi-calendar2-week sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Calendar</span>
+                                </a>
+                                <a href="{{ url_for('project.file_list', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.file_list' %} active{% endif %}">
+                                    <i class="bi bi-folder2-open sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Files</span>
+                                </a>
+                                <a href="{{ url_for('project.people', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.people' %} active{% endif %}">
+                                    <i class="bi bi-people sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">People</span>
+                                </a>
+                                <a href="{{ url_for('project.visualizations', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.visualizations' %} active{% endif %}">
+                                    <i class="bi bi-bar-chart-line sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Visualizations</span>
+                                </a>
+                                <a href="{{ url_for('project.timeline', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.timeline' %} active{% endif %}">
+                                    <i class="bi bi-calendar3 sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Timeline</span>
+                                </a>
+                                <a href="{{ url_for('project.reports', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.reports' %} active{% endif %}">
+                                    <i class="bi bi-file-earmark-bar-graph sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Reports</span>
+                                </a>
+                                <a href="{{ url_for('project.finance', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.finance' %} active{% endif %}">
+                                    <i class="bi bi-cash-stack sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Finance</span>
+                                </a>
+                                <a href="{{ url_for('project.settings', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.settings' %} active{% endif %}">
+                                    <i class="bi bi-sliders sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Settings</span>
+                                </a>
                             </div>
                         </div>
                     {% endif %}
@@ -91,7 +180,8 @@
                             {% for id, project_data in sidebar_projects.items() %}
                                 <a href="{{ url_for('project.home', project_id=id) }}"
                                    class="sidebar-link{% if request.view_args and request.view_args.get('project_id')|string == id|string %} active{% endif %}">
-                                    {{ project_data['title'] }}
+                                    <i class="bi bi-folder sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">{{ project_data['title'] }}</span>
                                 </a>
                             {% endfor %}
                         </div>
@@ -110,6 +200,14 @@
                         
                         <div class="topbar-right">
                             {% block topbar_right %}
+                                <a href="{{ url_for('dashboard.about_your_data') }}" class="topbar-link">
+                                    <i class="bi bi-question-circle" aria-hidden="true"></i>
+                                    About Your Data
+                                </a>
+                                <a href="{{ url_for('dashboard.account_settings') }}" class="topbar-link">
+                                    <i class="bi bi-people" aria-hidden="true"></i>
+                                    Account Settings
+                                </a>
                                 <a href="{{ url_for('authentication.logout') }}" class="topbar-link">Logout</a>
                             {% endblock %}
                         </div>
@@ -146,6 +244,7 @@
 
         <script src="{{ url_for('static', filename='js/components/sidebar-toggle.js') }}"></script>
         {% block extra_js %}{% endblock %}
+        <script src="{{ url_for('static', filename='js/components/popup-box.js') }}"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

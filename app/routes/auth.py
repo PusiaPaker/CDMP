@@ -33,6 +33,16 @@ def _build_unique_username(email: str) -> str:
 
     return candidate
 
+
+def _is_strong_password(password: str) -> bool:
+    return (
+        len(password) >= 10
+        and any(character.isdigit() for character in password)
+        and any(character.islower() for character in password)
+        and any(character.isupper() for character in password)
+        and any(not character.isalnum() for character in password)
+    )
+
 @AuthBP.route("/logout")
 def logout():
     session.clear()
@@ -188,9 +198,23 @@ def google_callback():
 @AuthBP.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         email = request.form.get("email", "").strip().lower()
+
+        if not full_name:
+            return render_template(
+                "auth/register.html",
+                error="Full name is required.",
+                google_sign_in_enabled=_google_enabled(),
+            ), 400
+        if not _is_strong_password(password):
+            return render_template(
+                "auth/register.html",
+                error="Password must be 10+ characters and include uppercase, lowercase, number, and special character.",
+                google_sign_in_enabled=_google_enabled(),
+            ), 400
 
         user = db.session.query(User).filter_by(username=username).first()
         if user:
@@ -201,11 +225,15 @@ def register():
             return render_template("auth/register.html", error="Email is already in use.", google_sign_in_enabled=_google_enabled()), 401
         
 
-        new_user = User(username=username, password=generate_password_hash(password), email=email)
+        new_user = User(
+            username=username,
+            full_name=full_name,
+            password=generate_password_hash(password),
+            email=email,
+        )
         db.session.add(new_user)
         db.session.commit()
 
         return redirect(url_for("authentication.login"))
 
     return render_template("auth/register.html", google_sign_in_enabled=_google_enabled())
-

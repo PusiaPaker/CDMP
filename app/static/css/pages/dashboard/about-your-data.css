@@ -1,0 +1,30 @@
+.about-data-card {
+    max-width: 920px;
+}
+
+.about-data-card-body {
+    gap: 1.5rem;
+}
+
+.about-data-entry {
+    display: grid;
+    gap: 0.65rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.about-data-entry:first-of-type {
+    padding-top: 0.35rem;
+}
+
+.about-data-question {
+    margin: 0;
+    color: var(--color-text-primary);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.about-data-answer {
+    margin: 0;
+}

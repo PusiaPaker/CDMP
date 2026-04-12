@@ -22,6 +22,7 @@ def getUsers():
         res.append({
             "id": user.id,
             "username": user.username,
+            "full_name": user.full_name,
             "password": user.password,
             "email": user.email,
         })
@@ -57,6 +58,7 @@ def populateDatabase():
 def registerUser(username: str, password: str):
     user = User(
         username = username,
+        full_name = username,
         password = generate_password_hash(password),
         email = username + "@gmail.com",
     )
@@ -67,6 +69,7 @@ def registerUser(username: str, password: str):
     return jsonify({
         "id": user.id,
         "username": user.username,
+        "full_name": user.full_name,
         "password": user.password,
         "email": user.email,
     }), 201
@@ -84,4 +87,3 @@ def deleteUser(username: str):
     return jsonify({
         "message": f"user '{username}' deleted"
     }), 200
-

@@ -27,6 +27,8 @@ body {
      padding: var(--space-lg);
      overflow-y: auto;
      overflow-x: hidden;
+     scrollbar-gutter: stable;
+     min-width: 0;
 }
 
 .content-container {
@@ -39,6 +41,14 @@ body {
 
 .dashboard-layout.is-sidebar-collapsed .content-container {
     max-width: min(1720px, calc(100vw - 120px));
+}
+
+.page-content {
+    min-width: 0;
+}
+
+.page-content {
+    min-width: 0;
 }
 
 /* For Mobile Devices */

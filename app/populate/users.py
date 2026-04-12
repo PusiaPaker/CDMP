@@ -9,10 +9,11 @@ def checkUserInDatabase(username) -> bool:
         exists().where(User.username == username)
     )).scalar()
 
-def createUser(name, passwd, email=None) -> User | None:
+def createUser(name, passwd, email=None, full_name=None) -> User | None:
     if not checkUserInDatabase(name):
         return User(
                 username = name,
+                full_name = full_name if full_name else name,
                 password = generate_password_hash(passwd),
                 email = email if email else name + "@gmail.com",
                 )
