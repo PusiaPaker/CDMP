@@ -109,7 +109,7 @@ def _build_calendar_weeks(year: int, month: int, events: list[dict]) -> list[lis
 @DashBP.before_request
 def require_login():
     if "user_id" not in session:
-        return redirect(url_for("authentication.login", next=request.path))
+        return redirect(url_for("mainPage"))
 
 @DashBP.route("/")
 def main():
