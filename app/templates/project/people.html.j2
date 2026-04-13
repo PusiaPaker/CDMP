@@ -32,23 +32,6 @@
                 </div>
             </div>
 
-            <div id="modal" class="modal">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }}">
-                        <label>Add New Person</label>
-                        <div class="form-section">
-                            <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required>
-                            <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required>
-                            <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120">
-                            <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254">
-                            <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32">
-                            <input class="button" type="submit" value="Submit">
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             {% if people_rows and people_rows|length > 0 %}
                 <div class="people-table-wrapper">
                     <table class="people-table">
@@ -89,6 +72,23 @@
                 <p class="section-empty-text">No people assigned yet.</p>
             {% endif %}
         </section>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }}">
+                <label>Add New Person</label>
+                <div class="form-section">
+                    <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required>
+                    <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required>
+                    <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120">
+                    <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254">
+                    <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32">
+                    <input class="button" type="submit" value="Submit">
+                </div>
+            </form>
+        </div>
     </div>
 {% endblock %}
 

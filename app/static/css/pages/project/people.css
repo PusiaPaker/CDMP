@@ -8,8 +8,16 @@
 }
 
 .people-page-grid .section-header {
-    align-items: flex-start;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
     margin-bottom: 1.25rem;
+}
+
+.people-page-grid .section-header h2 {
+    margin: 0;
+    line-height: 1.05;
 }
 
 .people-table-wrapper {
@@ -80,6 +88,7 @@
 
 .people-page-actions {
     display: flex;
+    align-items: center;
     gap: var(--space-sm);
     flex-wrap: wrap;
     margin-left: auto;

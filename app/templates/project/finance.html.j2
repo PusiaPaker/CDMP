@@ -50,29 +50,6 @@
                     </div>
                 </div>
 
-                <div id="modal" class="modal finance-modal">
-                    <div class="modal-content">
-                        <span class="close">&times;</span>
-                        <form class="project-form" method="POST" action="{{ url_for('project.finance', project_id=project['id']) }}">
-                            <label>Add New Expense</label>
-                            <div class="form-section">
-                                <input class="form-input" type="text" name="expense_name" placeholder="Expense Name" maxlength="150" required />
-                                <input class="form-input" type="text" name="amount" placeholder="Amount" inputmode="decimal" required />
-                                <input class="form-input" type="date" name="expense_date" required />
-                                <select class="form-input" name="recurrence_type" required>
-                                    <option value="">Frequency</option>
-                                    <option value="one_time">One Time</option>
-                                    <option value="monthly">Monthly</option>
-                                    <option value="annual">Annual</option>
-                                </select>
-                                <input class="form-input" type="text" name="expense_purpose" placeholder="Purpose" />
-                                <input class="form-input" type="text" name="category" placeholder="Category" maxlength="64" />
-                                <input class="button" type="submit" value="Submit" />
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
                 {% if expenses %}
                     <div class="finance-table-wrapper">
                         <table class="finance-table">
@@ -113,6 +90,29 @@
                     <p class="section-empty-text">No expenses added yet.</p>
                 {% endif %}
             </section>
+        </div>
+
+        <div id="modal" class="modal finance-modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form class="project-form" method="POST" action="{{ url_for('project.finance', project_id=project['id']) }}">
+                    <label>Add New Expense</label>
+                    <div class="form-section">
+                        <input class="form-input" type="text" name="expense_name" placeholder="Expense Name" maxlength="150" required />
+                        <input class="form-input" type="text" name="amount" placeholder="Amount" inputmode="decimal" required />
+                        <input class="form-input" type="date" name="expense_date" required />
+                        <select class="form-input" name="recurrence_type" required>
+                            <option value="">Frequency</option>
+                            <option value="one_time">One Time</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="annual">Annual</option>
+                        </select>
+                        <input class="form-input" type="text" name="expense_purpose" placeholder="Purpose" />
+                        <input class="form-input" type="text" name="category" placeholder="Category" maxlength="64" />
+                        <input class="button" type="submit" value="Submit" />
+                    </div>
+                </form>
+            </div>
         </div>
 
         <div class="finance-panel" data-finance-panel="analysis"{% if active_finance_tab != 'analysis' %} hidden{% endif %}>

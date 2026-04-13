@@ -6,18 +6,29 @@ const btn = document.getElementById("modal-btn");
 // Get the <span> element that closes the modal
 const span = document.getElementsByClassName("close")[0];
 
-// When the user clicks on the button, open the modal
-btn.onclick = function() {
-  modal.style.display = "block";
-}
+if (modal && btn && span) {
+  const openModal = function() {
+    modal.style.display = "block";
+    document.body.classList.add("modal-open");
+  };
 
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
-
-window.onclick = function(event) {
-  if (event.target == modal) {
+  const closeModal = function() {
     modal.style.display = "none";
-  }
+    document.body.classList.remove("modal-open");
+  };
+
+  btn.onclick = openModal;
+  span.onclick = closeModal;
+
+  window.addEventListener("click", function(event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  window.addEventListener("keydown", function(event) {
+    if (event.key === "Escape" && modal.style.display === "block") {
+      closeModal();
+    }
+  });
 }
