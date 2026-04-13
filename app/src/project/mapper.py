@@ -2,6 +2,7 @@ from decimal import Decimal, InvalidOperation
 from sqlalchemy import select, exists, and_, insert
 
 from app.core import db
+from app.src.people_accounts import get_user_by_email
 from app.tables import Expense, Project, ProjectPerson, Person, TimelineEvent
 from app.src.utilities import normalize_expense_frequency, parse_import_date
 
@@ -51,9 +52,6 @@ def people_mapping_handler(project_id, rows, mapped_to_index):
         title = _get(row, title_i)
         role_level = _get(row, role_level_i)
 
-        if email:
-            email = email.strip().lower()
-
         if not name and not email:
             skipped += 1
             continue
@@ -64,15 +62,24 @@ def people_mapping_handler(project_id, rows, mapped_to_index):
         person = None
 
         if email:
+            matching_user = get_user_by_email(email)
             person = db.session.execute(
                 select(Person).where(Person.email == email)
             ).scalar_one_or_none()
 
             if not person:
-                person = Person(name=name, email=email, phone=phone, title=title)
+                person = Person(
+                    user_id=matching_user.id if matching_user else None,
+                    name=name,
+                    email=email,
+                    phone=phone,
+                    title=title,
+                )
                 db.session.add(person)
                 db.session.flush()
                 created_people += 1
+            if matching_user and not person.user_id:
+                person.user_id = matching_user.id
         else:
             person = Person(name=name, email=None, phone=phone, title=title)
             db.session.add(person)

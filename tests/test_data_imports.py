@@ -40,8 +40,6 @@ def test_people_import_counts_existing_person_assigned_to_project_as_created(app
     assert commit_status["created_people"] == 0
     assert commit_status["skipped"] == 0
     assert db.session.query(ProjectPerson).filter_by(project_id=project.id, person_id=existing_person.id).count() == 1
-
-
 def test_expenses_import_accepts_flexible_dates_amount_formats_and_aliases(app_ctx, make_user, make_project):
     owner = make_user(username="owner")
     project = make_project(owner_id=owner.id, title="Expense Import Project")

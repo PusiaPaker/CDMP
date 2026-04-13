@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.core import db, oauth
 from app.src.google_calendar import encrypt_google_refresh_token
+from app.src.people_accounts import link_people_for_user
 from app.src.user_display import get_user_display_name
 from app.tables import GoogleAuthIdentity, GoogleCalendarToken, User
 
@@ -64,6 +65,9 @@ def login():
         user = db.session.query(User).filter_by(username=username).first()
         if not user or not check_password_hash(user.password, password):
             return render_template("auth/login.html", error="Bad username or password", google_sign_in_enabled=_google_enabled()), 401
+
+        if link_people_for_user(user.id, user.email):
+            db.session.commit()
 
         remember = request.form.get("remember_me") == "true"
         next_url = _safe_next_url(request.args.get("next"))
@@ -199,6 +203,7 @@ def google_callback():
     elif existing_calendar_token and granted_scope:
         existing_calendar_token.scopes = granted_scope
 
+    link_people_for_user(user.id, email)
     db.session.commit()
 
     session.clear()
@@ -242,6 +247,8 @@ def register():
             email=email,
         )
         db.session.add(new_user)
+        db.session.flush()
+        link_people_for_user(new_user.id, new_user.email)
         db.session.commit()
 
         return redirect(url_for("authentication.login"))

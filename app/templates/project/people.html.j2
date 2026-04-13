@@ -60,7 +60,7 @@
                                     <td>{{ p.phone or "" }}</td>
                                     <td class="people-account-column">
                                         <span class="people-account-badge{% if p.user_id %} linked{% endif %}">
-                                            {% if p.user_id %}Linked{% else %}Not registered{% endif %}
+                                            {% if p.user_id %}Registered{% else %}Not registered{% endif %}
                                         </span>
                                     </td>
                                     {% if can_edit_project %}

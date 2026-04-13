@@ -1,12 +1,13 @@
 from flask import render_template, session, request, redirect, url_for, jsonify, abort
-from sqlalchemy import select, exists, and_, insert
+from sqlalchemy import select, and_, insert
 import re
 
 from .project import ProjectBP
+from app.src.people_accounts import get_user_by_email, reconcile_project_people_accounts
 from app.src.project.queries import user_has_project_access, user_can_edit_project
 from app.src.project.files import parse_csv_headers_preview, parse_xlsx_headers_preview, read_all_csv_rows, read_all_xlsx_rows
 
-from app.tables import Project, ProjectPerson, PersonReport, Person, User
+from app.tables import Project, ProjectPerson, PersonReport, Person
 from app.core import db
 from app.src.utilities import normalize_role_to_level
 
@@ -30,16 +31,14 @@ def people(project_id):
         if not re.match(phone_number_pattern, phone):
             phone = ""
 
-        existing_person = db.session.execute(
-            select(Person).where(Person.email == email)
-        ).first()
+        existing_person = None
+        if email:
+            existing_person = db.session.execute(select(Person).where(Person.email == email)).first()
 
         if not existing_person:
-            existing_user = db.session.execute(
-                select(User).where(User.email == email)
-            ).first()
+            existing_user = get_user_by_email(email)
             if existing_user:
-                new_person = Person(user_id=existing_user[0].id, name=name, email=email, phone=phone, title=title)
+                new_person = Person(user_id=existing_user.id, name=name, email=email, phone=phone, title=title)
             else:
                 new_person = Person(name=name, email=email, phone=phone, title=title)
             db.session.add(new_person)
@@ -48,11 +47,18 @@ def people(project_id):
             db.session.add(ProjectPerson(project_id=project_id, person_id=new_person.id, role_level=role))
             db.session.commit()
         else:
+            person = existing_person[0]
             existing_proj_person = db.session.execute(
-                select(ProjectPerson).where(ProjectPerson.person_id == existing_person[0].id)
+                select(ProjectPerson).where(ProjectPerson.person_id == person.id)
             ).first()
+            linked_existing_person = False
+            existing_user = get_user_by_email(person.email)
+            if existing_user and not person.user_id:
+                person.user_id = existing_user.id
+                linked_existing_person = True
             if not existing_proj_person:
-                db.session.add(ProjectPerson(project_id=project_id, person_id=existing_person[0].id, role_level=role))
+                db.session.add(ProjectPerson(project_id=project_id, person_id=person.id, role_level=role))
+            if not existing_proj_person or linked_existing_person:
                 db.session.commit()
 
         return redirect(url_for('project.people', project_id=project_id))
@@ -61,6 +67,9 @@ def people(project_id):
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
+
+    if reconcile_project_people_accounts(project_id):
+        db.session.commit()
 
     project_member_ids = select(ProjectPerson.person_id).where(
         ProjectPerson.project_id == project_id
