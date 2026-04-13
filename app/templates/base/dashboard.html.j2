@@ -177,6 +177,10 @@
                                     <i class="bi bi-cash-stack sidebar-link-icon" aria-hidden="true"></i>
                                     <span class="sidebar-link-text">Finance</span>
                                 </a>
+                                <a href="{{ url_for('project.share', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.share' %} active{% endif %}">
+                                    <i class="bi bi-share sidebar-link-icon" aria-hidden="true"></i>
+                                    <span class="sidebar-link-text">Share</span>
+                                </a>
                                 <a href="{{ url_for('project.settings', project_id=current_project_id) }}" class="sidebar-link{% if request.endpoint == 'project.settings' %} active{% endif %}">
                                     <i class="bi bi-sliders sidebar-link-icon" aria-hidden="true"></i>
                                     <span class="sidebar-link-text">Settings</span>
