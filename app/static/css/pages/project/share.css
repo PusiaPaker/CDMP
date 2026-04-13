@@ -1,0 +1,33 @@
+.manage-permission-section { 
+    margin-top: var(--space-md);
+}
+
+.user-permission-table {
+    border-collapse: collapse;
+    width: 50%;
+    background-color: var(--color-bg);
+    padding: var(--space-lg);
+}
+
+th, td {
+    border: 1px solid var(--color-border);
+    padding: var(--space-sm);
+    text-align: left;
+}
+
+th {
+    background-color: var(--color-accent);
+    color: var(--color-bg);
+}
+
+tr:nth-child(even) {
+    background-color: var(--color-surface);
+}
+
+.share-form {
+    width: 30%;
+}
+form > #modal-btn {
+    margin-top: auto;
+    width: fit-content;
+}

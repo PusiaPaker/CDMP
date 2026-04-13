@@ -1,0 +1,106 @@
+{% extends "base/dashboard.html.j2" %}
+
+{% block title %}
+    Pandata | {{ active_project.title }} - Share
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/share.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/components/modal.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/project/project-form.css') }}">
+{% endblock %}
+
+{% block page_header %}
+    <h1>Share</h1>
+    <p class="page-subtitle">Manage project user permissions.</p>
+    <p class="page-subtitle">Only project <strong>Owners</strong> can manage project permissions.</p>
+{% endblock %}
+
+{% block page_header_actions %}
+    <a href="{{ url_for('project.home', project_id=active_project_id) }}" class="button-secondary">← Back</a>
+{% endblock %}
+
+{% block main_content %}
+<section class="project-section">
+    <div class="section-header">
+        <h2>Users with Access:</h2>
+    </div>
+    <table class="user-permission-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Access Level</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in authorized_users %}
+            <tr>
+                <td>{{ user[0].username }}</td>
+                <td>{{ user[0].full_name }}</td>
+                <td>{{ user[0].email }}</td>
+                <td>{{ user[1].capitalize() }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </section>
+
+    <section class="project-section manage-permission-section">
+    {% if is_owner %}
+    <div class="section-header">
+        <h2>Grant or Change Access</h2>
+    </div>
+    <form method="POST" class="project-form share-form" id="share-form" action="{{ url_for('project.share', project_id=active_project_id) }}">
+        <div class="form-section">
+            <input class="form-input"
+                   type="text" 
+                   id="username" 
+                   name="username" 
+                   minlength="3" 
+                   maxlength="25" 
+                   autocomplete="off"
+                   placeholder="Username..."
+                   required>
+        </div>
+        <div class="form-section">
+            <select class="form-input" id="permission-select" aria-label="Level of Access" name="role" required>
+                <option value="viewer" title="Viewers can not edit projects.">Viewer</option>
+                <option value="editor" title="Editors can edit project data.">Editor</option>
+                <option value="remove" title="Remove user access to project.">Remove</option>
+                <option value="owner" title="Owners have admin access to projects.">Owner</option>
+            </select>
+        </div>
+        <div class="form-alert error" style="display: none;" id="username-error" role="alert">
+            Please input valid username.
+        </div>
+        {% if error %}
+            <div class="form-alert error" role="alert">
+                {{ error }}
+            </div>
+        {% endif %}
+        <p id="modal-btn" class="button">Submit</p>
+        <div id="modal" class="modal">
+            <div class="modal-content warning">
+                <span class="close warning">&times;</span>
+                <h2 class="modal-header warning">WARNING!</h2>
+                <p>Giving another user project ownership permissions grants them total control over a project.</p>
+                <p>This means they could delete the project, or remove your ownership permissions.</p>
+                <p>Only give this permission to completely trustworthy users.</p>
+                <div class="modal-button">
+                    <button type="submit" class="button">I know what I'm doing</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+
+    {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{{ url_for('static', filename='js/pages/share-modal.js') }}"></script>
+{% endblock %}

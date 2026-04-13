@@ -19,10 +19,24 @@
   border-radius: 10px;
   width: 20%; /* Could be more or less, depending on screen size */
 }
+.modal-content.warning {
+  background-color: var(--color-danger-bg-soft);
+  border-color: var(--color-danger-border);
+  color: var(--color-danger);
+}
+.modal-button {
+  text-align: center;
+}
+.modal-content.warning > .modal-button > button {
+  background-color: var(--color-danger);
+}
 
 .modal-header {
-    font-weight: bold;
-    font-size: 125%;
+  font-weight: bold;
+  font-size: 125%;
+}
+.modal-header.warning {
+  text-align: center;
 }
 
 .close {
@@ -31,10 +45,17 @@
   font-size: 28px;
   font-weight: bold;
 }
+.close.warning {
+  color: var(--color-danger-border);
+}
 
 .close:hover,
 .close:focus {
   color: var(--color-text-primary);
   text-decoration: none;
   cursor: pointer;
+}
+.close.warning:hover,
+.close.warning:focus {
+  color: var(--color-danger);
 }
