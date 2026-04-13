@@ -71,7 +71,8 @@ html, body {
     gap: var(--space-lg);
 }
 
-.dashboard-layout.is-sidebar-collapsed .content-container {
+.dashboard-layout.is-sidebar-collapsed .content-container,
+html.sidebar-prefers-collapsed .dashboard-layout .content-container {
     max-width: min(1720px, calc(100vw - 120px));
 }
 

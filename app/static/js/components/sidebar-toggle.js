@@ -1,4 +1,5 @@
 (function () {
+    const root = document.documentElement;
     const layout = document.querySelector(".dashboard-layout");
     const sidebar = document.getElementById("app-sidebar");
     const toggle = document.getElementById("app-sidebar-toggle");
@@ -11,6 +12,7 @@
 
     const applyState = (collapsed) => {
         const shouldCollapse = collapsed && !mobileQuery.matches;
+        root.classList.toggle("sidebar-prefers-collapsed", shouldCollapse);
         layout.classList.toggle("is-sidebar-collapsed", shouldCollapse);
         toggle.setAttribute("aria-expanded", String(!shouldCollapse));
         toggle.setAttribute(

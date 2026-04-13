@@ -2,6 +2,11 @@ html,
 body {
     margin: 0;
     min-height: 100%;
+    background-color: #eef3ff;
+}
+
+@view-transition {
+    navigation: auto;
 }
 
 *,
@@ -17,6 +22,61 @@ body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+}
+
+.dashboard-body.is-page-transitioning .page-content,
+.dashboard-body.is-page-transitioning .page-header,
+.dashboard-body.is-page-transitioning .site-footer {
+    opacity: 0;
+    transform: translateY(6px);
+    pointer-events: none;
+}
+
+.page-header,
+.page-content,
+.site-footer {
+    transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 180ms;
+    animation-timing-function: ease;
+}
+
+::view-transition-old(root) {
+    animation-name: app-shell-fade-out;
+}
+
+::view-transition-new(root) {
+    animation-name: app-shell-fade-in;
+}
+
+@keyframes app-shell-fade-out {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.985;
+    }
+}
+
+@keyframes app-shell-fade-in {
+    from {
+        opacity: 0.985;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 1ms;
+    }
 }
 
 a {
