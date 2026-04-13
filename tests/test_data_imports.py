@@ -3,6 +3,7 @@ from datetime import date, datetime
 from decimal import Decimal
 
 from app.core import db
+from app.routes.project.timeline import _parse_ics_events
 from app.src.project.mapper import expenses_mapping_handler, events_mapping_handler, people_mapping_handler
 from app.tables import Expense, Person, ProjectPerson, TimelineEvent
 
@@ -203,3 +204,29 @@ def test_timeline_import_skips_missing_titles_dates_and_invalid_date_values(app_
     assert imported_events[0].title == "Valid Milestone"
     assert imported_events[0].start_date == datetime(2026, 7, 4)
     assert imported_events[0].end_date is None
+
+
+def test_ics_import_treats_same_day_events_as_deadlines():
+    raw_text = """BEGIN:VCALENDAR
+BEGIN:VEVENT
+SUMMARY:Design Review
+DTSTART:20260415T090000
+DTEND:20260415T103000
+DESCRIPTION:Review final mockups
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Launch Window
+DTSTART:20260420T090000
+DTEND:20260422T170000
+END:VEVENT
+END:VCALENDAR"""
+
+    parsed_events, skipped = _parse_ics_events(raw_text)
+
+    assert skipped == 0
+    assert len(parsed_events) == 2
+    assert parsed_events[0]["title"] == "Design Review"
+    assert parsed_events[0]["start_date"] == datetime(2026, 4, 15, 9, 0)
+    assert parsed_events[0]["end_date"] is None
+    assert parsed_events[1]["title"] == "Launch Window"
+    assert parsed_events[1]["end_date"] == datetime(2026, 4, 22, 17, 0)
