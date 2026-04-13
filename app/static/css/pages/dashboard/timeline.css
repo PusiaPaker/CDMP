@@ -448,13 +448,13 @@ body.modal-open {
     padding: 0.7rem 0.85rem;
 }
 
-.vis-item.timeline-single-date-object,
-.vis-item.timeline-phase-object {
+.vis-item.vis-box.timeline-single-date-object,
+.vis-item.vis-range.timeline-phase-object {
     padding: 0.12rem 0.45rem;
     line-height: 1.2;
 }
 
-.vis-item.timeline-single-date-object {
+.vis-item.vis-box.timeline-single-date-object {
     background: var(--timeline-project-soft, rgba(99, 102, 241, 0.14));
     border: 2px dashed var(--timeline-project-color, #6366f1);
     color: #000;
@@ -464,14 +464,14 @@ body.modal-open {
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
 }
 
-.vis-item.timeline-single-date-object.vis-selected {
+.vis-item.vis-box.timeline-single-date-object.vis-selected {
     background: var(--timeline-project-soft, rgba(99, 102, 241, 0.14));
     border-color: var(--timeline-project-color, #6366f1);
     color: var(--color-text-primary);
     box-shadow: 0 0 0 2px rgba(17, 24, 39, 0.12);
 }
 
-.vis-item.timeline-phase-object {
+.vis-item.vis-range.timeline-phase-object {
     background: var(--timeline-project-color, #6366f1);
     border-color: var(--timeline-project-color, #6366f1);
     color: #fff;
@@ -480,7 +480,7 @@ body.modal-open {
     box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.14);
 }
 
-.vis-item.timeline-phase-object.vis-selected {
+.vis-item.vis-range.timeline-phase-object.vis-selected {
     background: var(--timeline-project-color, #6366f1);
     border-color: var(--timeline-project-color, #6366f1);
     color: #fff;
