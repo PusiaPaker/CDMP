@@ -1,14 +1,21 @@
+.project-list-section {
+    display: grid;
+    gap: var(--space-lg);
+}
+
 .project-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: var(--space-md);
+    gap: var(--space-lg);
 }
 
 .project-card-meta {
     display: grid;
     gap: 0.75rem;
-    padding-top: 0.5rem;
-    border-top: 1px solid var(--color-border);
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.48);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.44);
 }
 
 .project-card-meta-item {
@@ -36,8 +43,19 @@
 }
 
 .empty-state {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    padding: var(--space-lg);
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: var(--space-xl);
+}
+
+.empty-state h2 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
+}
+
+.empty-state p {
+    margin: 0 0 1.25rem;
+    color: var(--color-text-secondary);
+    max-width: 36rem;
 }

@@ -1,20 +1,24 @@
-{% extends './auth/auth.html' %}
+{% extends 'auth/auth.html' %}
 
 {% block header %}
-    <div class="container-fluid">
-        <h1 class="ps-2 mb-5 display-3 project-title text-center">C.D.M.P</h1>
+    <div class="auth-hero">
+        <p class="auth-kicker">Pandata Workspace</p>
+        <h1 class="project-title">C.D.M.P</h1>
+        <p class="auth-subtitle">Create an account to start organizing schedules, files, budgets, and project teams.</p>
     </div>
 {% endblock %}
 
-{% block css %} 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+{% block css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
-{% endblock %}{% block title %}Register{% endblock %}
+{% endblock %}
+
+{% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="login-container container-fluid w-25 p-3">
-    <form action="/register" method="POST">
-        <legend class="text-center">Create an Account</legend> 
+<div class="login-container">
+    <form action="/register" method="POST" class="auth-form">
+        <legend class="auth-form-title">Create an Account</legend>
+        <p class="auth-form-copy">Set up your workspace and invite your team into a cleaner project flow.</p>
         {% if error %}
         <div class="mb-3 text-danger">{{ error }}</div>
         {% endif %}
@@ -32,7 +36,7 @@
         </div>
         <div class="mb-3">
             <label for="pass" class="form-label">Password</label>
-            <input type="password" name="password" id="password" class="form-control" required>
+            <input type="password" name="password" id="pass" class="form-control" required>
         </div>
         <div class="mb-3">
             <button type="submit" class="btn btn-purp">Create Account</button>
@@ -47,8 +51,8 @@
         </a>
     </div>
     {% endif %}
-    <p class="mb-0">
-        Have an Account?
+    <p class="auth-switch-copy">
+        Have an account?
         <a href="{{ url_for('authentication.login') }}">Login</a>
     </p>
 </div>

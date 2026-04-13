@@ -5,19 +5,43 @@
     --space-sm: 8px;
     --space-md: 16px;
     --space-lg: 24px;
+    --space-xl: 32px;
 
-    --color-bg: #f8f9fb;
-    --color-surface: #ffffff;
+    --font-body: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+    --font-display: "Space Grotesk", "Plus Jakarta Sans", "Segoe UI", sans-serif;
+
+    --color-bg: #eef3ff;
+    --color-bg-secondary: #f7f9ff;
+    --color-surface: rgba(255, 255, 255, 0.7);
+    --color-surface-strong: rgba(255, 255, 255, 0.82);
+    --color-surface-solid: #ffffff;
 
     --color-sidebar-bg: #1f2933;
-    --color-sidebar-text: #e5e7eb;
+    --color-sidebar-text: #eef2ff;
 
-    --color-border: #e5e7eb;
+    --color-border: rgba(99, 102, 241, 0.16);
+    --color-border-strong: rgba(99, 102, 241, 0.28);
 
-    --color-text-primary: #111827;
-    --color-text-secondary: #6b7280;
+    --color-text-primary: #172033;
+    --color-text-secondary: #5f6b85;
 
     --color-accent: #6366f1;
+    --color-accent-strong: #4338ca;
+    --color-accent-soft: rgba(99, 102, 241, 0.12);
+
+    --gradient-page:
+        linear-gradient(180deg, #f8faff 0%, #f1f5ff 52%, #eef3ff 100%);
+    --gradient-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(250, 252, 255, 0.7));
+    --gradient-surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(251, 253, 255, 0.8));
+    --gradient-accent: linear-gradient(135deg, #8b93ff 0%, #6366f1 48%, #3730a3 100%);
+    --gradient-sidebar: linear-gradient(180deg, rgba(18, 25, 48, 0.94), rgba(30, 41, 76, 0.9));
+
+    --glass-border: rgba(255, 255, 255, 0.46);
+    --glass-blur: blur(18px);
+    --shadow-soft: 0 18px 40px rgba(35, 48, 93, 0.1);
+    --shadow-card: 0 24px 60px rgba(35, 48, 93, 0.16);
+    --shadow-button: 0 14px 28px rgba(67, 56, 202, 0.24);
+    --ring-focus: 0 0 0 4px rgba(99, 102, 241, 0.16);
 
     --color-danger: #b42318;
     --color-danger-border: #f3b3ad;

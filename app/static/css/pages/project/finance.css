@@ -23,19 +23,20 @@
     align-items: center;
     justify-content: center;
     padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--color-border);
-    background: var(--color-surface);
+    border-radius: 14px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.56);
     color: var(--color-text-primary);
     font: inherit;
     font-weight: 600;
     cursor: pointer;
+    box-shadow: var(--shadow-soft);
 }
 
 .finance-tab-button.is-active {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-surface);
+    background: var(--gradient-accent);
+    border-color: transparent;
+    color: #ffffff;
 }
 
 .finance-panel {
@@ -52,9 +53,9 @@
 }
 
 .finance-section {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
     padding: var(--space-lg);
 }
 
@@ -104,7 +105,7 @@
 .finance-table {
     width: 100%;
     border-collapse: collapse;
-    background: var(--color-surface);
+    background: rgba(255, 255, 255, 0.34);
 }
 
 .finance-table th,
@@ -127,7 +128,7 @@
 }
 
 .finance-table tbody tr:hover {
-    background: rgba(0, 0, 0, 0.02);
+    background: rgba(99, 102, 241, 0.06);
 }
 
 .finance-table-delete {
@@ -152,10 +153,10 @@
 }
 
 .finance-stat-card {
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
     padding: var(--space-md);
-    background: var(--color-surface);
+    background: rgba(255, 255, 255, 0.54);
 }
 
 .finance-stat-label {

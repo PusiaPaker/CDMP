@@ -1,5 +1,37 @@
 .page-header {
-    margin-bottom: var(--space-lg);
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+    padding: 28px;
+    border-radius: 28px;
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-card);
+    backdrop-filter: var(--glass-blur);
+}
+
+.page-header::before,
+.page-header::after {
+    content: "";
+    position: absolute;
+    border-radius: 999px;
+    pointer-events: none;
+}
+
+.page-header::before {
+    width: 160px;
+    height: 160px;
+    top: -72px;
+    right: -48px;
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.12), transparent 72%);
+}
+
+.page-header::after {
+    width: 120px;
+    height: 120px;
+    bottom: -68px;
+    left: 22%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.08), transparent 74%);
 }
 
 .page-header-main {
@@ -8,12 +40,15 @@
     align-items: flex-start;
     gap: var(--space-lg);
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
 }
 
 .page-header-text {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
+    max-width: 720px;
 }
 
 /* sets margin 0 for common text styles */
@@ -21,8 +56,21 @@
     margin: 0;
 }
 
+.page-header-text h1,
+.page-header-text h2 {
+    font-family: var(--font-display);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.page-header-text h1 {
+    font-size: clamp(2rem, 4vw, 3.2rem);
+}
+
 .page-header-text p {
     color: var(--color-text-secondary);
+    font-size: 1.02rem;
+    line-height: 1.7;
 }
 
 .page-header-actions {
@@ -30,4 +78,6 @@
     align-items: center;
     gap: var(--space-sm);
     flex-wrap: wrap;
+    position: relative;
+    z-index: 1;
 }

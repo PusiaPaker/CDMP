@@ -1,34 +1,36 @@
 {% extends 'auth/auth.html' %}
 
 {% block header %}
-    <div class="container-fluid">
-        <h1 class="ps-2 mb-5 display-3 project-title text-center">C.D.M.P</h1>
+    <div class="auth-hero">
+        <p class="auth-kicker">Pandata Workspace</p>
+        <h1 class="project-title">C.D.M.P</h1>
+        <p class="auth-subtitle">Project planning, timelines, files, and reporting in one polished workspace.</p>
     </div>
 {% endblock %}
 
-{% block css %} 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+{% block css %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/auth.css') }}">
 {% endblock %}
 
 {% block content %}
-<div class="login-container container-fluid w-25 p-3">
-    <form action="/login" method="POST">
-        <legend class="text-center">{% block title %}Login{% endblock %}</legend> 
+<div class="login-container">
+    <form action="/login" method="POST" class="auth-form">
+        <legend class="auth-form-title">{% block title %}Login{% endblock %}</legend>
+        <p class="auth-form-copy">Sign in to continue managing your projects.</p>
         <div class="mb-3">
             <label for="username" class="form-label">Username</label>
             <input name="username" id="username" class="form-control" required>
         </div>
         <div class="mb-3">
             <label for="pass" class="form-label">Password</label>
-            <input type="password" name="password" id="password" class="form-control" required>
+            <input type="password" name="password" id="pass" class="form-control" required>
         </div>
         <div class="mb-3 form-check checkbox-purp">
             <input type="checkbox" class="form-check-input" id="remember_me" name="remember_me" value="true">
             <label class="form-check-label" for="remember_me">Remember me for 30 days</label>
         </div>
         {% if error %}
-        <p class="text-danger">{{error}}</p>
+        <p class="text-danger">{{ error }}</p>
         {% endif %}
         <div class="mb-3">
             <button type="submit" class="btn btn-purp">Login</button>
@@ -43,6 +45,9 @@
         </a>
     </div>
     {% endif %}
-    <a class="mb-0" href="{{ url_for('authentication.register') }}">Register</a>
+    <p class="auth-switch-copy">
+        Need an account?
+        <a href="{{ url_for('authentication.register') }}">Register</a>
+    </p>
 </div>
 {% endblock %}

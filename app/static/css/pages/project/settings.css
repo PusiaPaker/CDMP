@@ -5,9 +5,9 @@
 }
 
 .settings-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
     padding: var(--space-lg);
 }
 
@@ -20,6 +20,8 @@
 .danger-copy h3 {
     margin: 0 0 6px 0;
     color: var(--color-text-primary);
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
 }
 
 .settings-card-header p,
@@ -86,16 +88,17 @@
     justify-content: space-between;
     gap: 16px;
     padding: 14px 16px;
-    border: 1px solid var(--color-border);
-    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
     text-decoration: none;
     color: inherit;
     transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+    background: rgba(255, 255, 255, 0.44);
 }
 
 .settings-action-row:hover {
-    background: #fafafa;
-    border-color: #d9dde5;
+    background: rgba(255, 255, 255, 0.72);
+    border-color: var(--glass-border);
     transform: translateY(-1px);
 }
 
@@ -120,8 +123,8 @@
     align-items: center;
     justify-content: center;
     padding: 11px 16px;
-    border-radius: 10px;
-    background: #dc2626;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #ef4444, #b91c1c);
     color: white;
     text-decoration: none;
     font-weight: 600;
@@ -130,7 +133,7 @@
 }
 
 .danger-button:hover {
-    filter: brightness(0.96);
+    filter: brightness(1.02);
     transform: translateY(-1px);
 }
 

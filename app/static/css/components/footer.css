@@ -1,5 +1,6 @@
-footer {
-    margin: 1rem 0;
+.site-footer {
+    margin: 1.5rem 0 0;
     text-align: center;
-    color: var(--color-text-primary);
+    color: var(--color-text-secondary);
+    font-size: 0.92rem;
 }

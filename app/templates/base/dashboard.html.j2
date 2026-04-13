@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Dashboard{% endblock %}</title>
-        
+
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/layout/dashboard.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/sidebar.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/components/topbar.css') }}">
@@ -17,7 +23,7 @@
         {% block extra_css %}{% endblock %}
     </head>
 
-    <body>
+    <body class="dashboard-body">
         {% with popup_messages = get_flashed_messages(with_categories=true) %}
             {% if popup_messages %}
                 <div class="popup-box-overlay" data-popup-box>
@@ -84,26 +90,32 @@
         {% endwith %}
 
         <div class="dashboard-layout">
-           <aside class="sidebar" id="app-sidebar">
-                <button
-                    type="button"
-                    class="sidebar-toggle"
-                    id="app-sidebar-toggle"
-                    aria-controls="app-sidebar"
-                    aria-expanded="true"
-                    aria-label="Collapse navigation sidebar"
-                    title="Collapse navigation sidebar"
-                >
-                    <span class="sidebar-toggle-icon" aria-hidden="true">&larr;</span>
-                    <span class="sr-only">Toggle navigation sidebar</span>
-                </button>
-
+            <aside class="sidebar" id="app-sidebar">
                 <div class="sidebar-inner">
-                    <div class="sidebar-logo">
-                        <a href="{{ url_for('dashboard.main') }}" class="logo-link">
-                            <span class="logo-mark" aria-hidden="true">P</span>
-                            <span class="logo-text">Pandata</span>
-                        </a>
+                    <div class="sidebar-header">
+                        <div class="sidebar-logo">
+                            <a href="{{ url_for('dashboard.main') }}" class="logo-link">
+                                <img
+                                    src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}"
+                                    alt="Pandata logo"
+                                    class="sidebar-logo-image"
+                                >
+                                <span class="logo-text">Pandata</span>
+                            </a>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="sidebar-toggle"
+                            id="app-sidebar-toggle"
+                            aria-controls="app-sidebar"
+                            aria-expanded="true"
+                            aria-label="Collapse navigation sidebar"
+                            title="Collapse navigation sidebar"
+                        >
+                            <i class="bi bi-chevron-left sidebar-toggle-icon" aria-hidden="true"></i>
+                            <span class="sr-only">Toggle navigation sidebar</span>
+                        </button>
                     </div>
 
                     <nav class="sidebar-nav">
@@ -187,7 +199,7 @@
                         </div>
                     </div>
                 </div>
-            </aside> 
+            </aside>
 
             <div class="main-area">
                 <header class="topbar">
@@ -197,7 +209,7 @@
                                 <!-- Just Empty for now, if we need to put something on the left side we can -->
                             {% endblock %}
                         </div>
-                        
+
                         <div class="topbar-right">
                             {% block topbar_right %}
                                 <a href="{{ url_for('dashboard.about_your_data') }}" class="topbar-link">
@@ -221,24 +233,22 @@
                                 <div class="page-header-text">
                                     {% block page_header %}{% endblock %}
                                 </div>
-                                
+
                                 <div class="page-header-actions">
                                     {% block page_header_actions %}{% endblock %}
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="page-content">
-                            {% block main_content %}{% endblock %}  
+                            {% block main_content %}{% endblock %}
                         </div>
                     </div>
 
-                    <footer>
-                        &copy; 2026 Pandata · Kent State University
+                    <footer class="site-footer">
+                        &copy; 2026 Pandata &middot; Kent State University
                     </footer>
                 </main>
-
-                
             </div>
         </div>
 

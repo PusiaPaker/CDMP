@@ -1,8 +1,10 @@
 
 .project-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
     padding: var(--space-lg);
     display: flex;
     flex-direction: column;
@@ -12,12 +14,23 @@
     text-decoration: none;
     color: inherit;
 
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    backdrop-filter: var(--glass-blur);
+    box-shadow: var(--shadow-card);
+}
+
+.project-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 4px;
+    background: var(--gradient-accent);
 }
 
 .project-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    transform: translateY(-4px);
+    box-shadow: 0 30px 60px rgba(35, 48, 93, 0.2);
+    border-color: rgba(255, 255, 255, 0.68);
 }
 
 .project-card-body {
@@ -25,6 +38,8 @@
     flex-direction: column;
     gap: var(--space-sm);
     height: 100%;
+    position: relative;
+    z-index: 1;
 }
 
 .project-card-title,
@@ -36,12 +51,14 @@
     color: var(--color-text-primary);
     font-size: 1.35rem;
     line-height: 1.2;
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
 }
 
 .project-card-description {
     color: var(--color-text-secondary);
     flex: 1;
-    line-height: 1.5;
+    line-height: 1.65;
 }
 
 .project-card-actions {

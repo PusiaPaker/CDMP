@@ -3,40 +3,54 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-sm);
-    padding: 10px 14px;
-    border-radius: 10px;
+    padding: 11px 16px;
+    border-radius: 14px;
     text-decoration: none;
     font-weight: 600;
     border: 1px solid transparent;
-    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
 }
 
 .button {
-    background: var(--color-accent);
-    color: var(--color-surface);
+    background: var(--gradient-accent);
+    color: #ffffff;
+    box-shadow: var(--shadow-button);
 }
 
 .button:hover {
-    filter: brightness(0.95);
+    transform: translateY(-1px);
+    filter: brightness(1.02);
 }
 
 .button-secondary {
-    background: var(--color-surface);
+    background: rgba(255, 255, 255, 0.6);
     color: var(--color-text-primary);
-    border-color: var(--color-border);
+    border-color: var(--glass-border);
+    backdrop-filter: blur(14px);
+    box-shadow: var(--shadow-soft);
 }
 
 .button-secondary:hover {
-    background: var(--color-bg);
+    background: rgba(255, 255, 255, 0.86);
+    transform: translateY(-1px);
 }
 
 .button-danger {
-    background: transparent;
+    background: rgba(254, 243, 242, 0.7);
     color: var(--color-danger);
     border-color: var(--color-danger-border);
+    box-shadow: 0 14px 28px rgba(180, 35, 24, 0.08);
 }
 
 .button-danger:hover {
     background: var(--color-danger-bg-soft);
+    transform: translateY(-1px);
+}
+
+.button:focus-visible,
+.button-secondary:focus-visible,
+.button-danger:focus-visible {
+    outline: none;
+    box-shadow: var(--ring-focus);
 }

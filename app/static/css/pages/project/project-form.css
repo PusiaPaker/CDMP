@@ -6,9 +6,9 @@
 
 .project-form-card,
 .project-form-help-card {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
+    background: var(--gradient-surface);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
     padding: var(--space-lg);
 }
 
@@ -20,6 +20,8 @@
 .project-form-help-card h3 {
     margin: 0 0 8px 0;
     color: var(--color-text-primary);
+    font-family: var(--font-display);
+    letter-spacing: -0.03em;
 }
 
 .project-form-card-header p,
@@ -49,8 +51,8 @@
 .form-textarea {
     width: 100%;
     border: 1px solid var(--color-border);
-    border-radius: 10px;
-    background: #fff;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.72);
     padding: 12px 14px;
     font: inherit;
     color: var(--color-text-primary);
@@ -61,8 +63,8 @@
 
 .form-input:focus,
 .form-textarea:focus {
-    border-color: rgba(59, 130, 246, 0.5);
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+    border-color: var(--color-border-strong);
+    box-shadow: var(--ring-focus);
 }
 
 .form-textarea {

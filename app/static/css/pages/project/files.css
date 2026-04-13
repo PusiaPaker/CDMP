@@ -6,6 +6,7 @@
 .files-table {
     width: 100%;
     border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.34);
 }
 
 .files-table th, .files-table td {
@@ -25,7 +26,7 @@ td.center, th.center {
 .table-link {
     text-decoration: none;
     font-weight: 500;
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     color: var(--color-accent);
 }
 .table-link.del {

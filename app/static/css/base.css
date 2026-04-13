@@ -4,14 +4,59 @@ body {
     min-height: 100%;
 }
 
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
 body {
-    color: #111827;
+    font-family: var(--font-body);
+    color: var(--color-text-primary);
+    background: var(--gradient-page);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
 a {
-    color: #3730a3;
+    color: var(--color-accent-strong);
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.14em;
 }
 
 a:hover {
-    color: #312e81;
+    color: var(--color-accent);
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+::selection {
+    background: rgba(99, 102, 241, 0.2);
+}
+
+::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.22);
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
 }
