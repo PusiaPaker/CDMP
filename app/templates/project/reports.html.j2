@@ -34,19 +34,21 @@
                 <button type="submit" class="button reports-download-button">Preview Report</button>
             </form>
         </section>
+        
+        {% if can_edit_project %}
+            <section class="reports-page-container">
+                <div class="reports-card-copy">
+                    <h2>Save Copy to Files</h2>
+                    <p class="reports-card-text">
+                        Store a generated PDF inside this project so it appears in the Pandata files list for later use.
+                    </p>
+                </div>
 
-        <section class="reports-page-container">
-            <div class="reports-card-copy">
-                <h2>Save Copy to Files</h2>
-                <p class="reports-card-text">
-                    Store a generated PDF inside this project so it appears in the Pandata files list for later use.
-                </p>
-            </div>
-
-            <form action="{{ url_for('project.save_report_to_files', project_id=project.id) }}" class="reports-action-form">
-                <button type="submit" class="button reports-download-button">Save Copy in Files</button>
-            </form>
-        </section>
+                <form action="{{ url_for('project.save_report_to_files', project_id=project.id) }}" class="reports-action-form">
+                    <button type="submit" class="button reports-download-button">Save Copy in Files</button>
+                </form>
+            </section>
+        {% endif %}
     </div>
 {% endblock %}
 

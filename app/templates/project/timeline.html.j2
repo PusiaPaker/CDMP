@@ -17,12 +17,14 @@
 
 {% block page_header_actions %}
     <a href="{{ url_for('project.calendar', project_id=project['id']) }}" class="button-secondary">Calendar</a>
-    <a
-        href="{{ url_for('data.column_mapper', project_id=project['id'], table_type='timeline') }}"
-        class="button"
-    >
-        Import CSV/XLSX With Dates
-    </a>
+    {% if can_edit_project %}
+        <a
+            href="{{ url_for('data.column_mapper', project_id=project['id'], table_type='timeline') }}"
+            class="button"
+        >
+            Import CSV/XLSX With Dates
+        </a>
+    {% endif %}
 {% endblock %}
 
 {% block main_content %}

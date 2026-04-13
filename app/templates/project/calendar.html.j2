@@ -14,12 +14,14 @@
 {% block page_header_actions %}
     <a href="{{ url_for('project.timeline', project_id=project['id']) }}" class="button-secondary">Timeline</a>
     <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">Back to Project</a>
-    <a
-        href="{{ url_for('data.column_mapper', project_id=project['id'], table_type='timeline') }}"
-        class="button"
-    >
-        Import CSV/XLSX With Dates
-    </a>
+    {% if can_edit_project %}
+        <a
+            href="{{ url_for('data.column_mapper', project_id=project['id'], table_type='timeline') }}"
+            class="button"
+        >
+            Import CSV/XLSX With Dates
+        </a>
+    {% endif %}
 {% endblock %}
 
 {% block main_content %}
@@ -113,7 +115,8 @@
                     </div>
                 </div>
             </section>
-
+            
+            {% if can_edit_project %}
             <aside class="calendar-sidebar">
                 <section class="project-section" id="event-form">
                     <div class="section-header">
@@ -177,6 +180,7 @@
                     <p class="section-empty-text">Click an event directly on the calendar to edit its details, move it to another project, or send it back to Unlisted.</p>
                 </section>
             </aside>
+            {% endif %}
         </div>
     </div>
 

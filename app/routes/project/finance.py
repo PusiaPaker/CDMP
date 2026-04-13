@@ -1,10 +1,11 @@
 from decimal import Decimal, InvalidOperation
 
-from flask import render_template, abort, request, redirect, url_for, flash
+from flask import render_template, abort, request, redirect, url_for, flash, session
 
 from app.core import db
 from app.tables import Expense, Project
 from app.src.utilities import normalize_expense_frequency, parse_import_date
+from app.src.project.queries import user_has_project_access, user_can_edit_project
 
 from .project import ProjectBP
 
@@ -23,7 +24,13 @@ def finance(project_id):
     if not project:
         return abort(404)
 
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     if request.method == "POST":
+        if not user_can_edit_project(session["user_id"], project_id):
+            return render_template("error/unauthorized.html"), 403
+
         expense_name = request.form.get("expense_name", "").strip()
         expense_purpose = request.form.get("expense_purpose", "").strip() or None
         amount = request.form.get("amount", "").strip()
@@ -88,11 +95,22 @@ def finance(project_id):
         finance_running_total_data=chart_data,
         finance_budget_forecast_data=budget_forecast_chart_data,
         finance_category_split_data=category_split_chart_data,
+        can_edit_project=user_can_edit_project(session["user_id"], project_id),
     ), 200
 
 
 @ProjectBP.route("/<project_id>/finance/<expense_id>")
 def delete_project_expense(project_id, expense_id):
+    project = db.session.get(Project, project_id)
+    if not project:
+        return abort(404)
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     expense = (
         db.session.query(Expense)
         .filter(Expense.project_id == project_id, Expense.id == expense_id)

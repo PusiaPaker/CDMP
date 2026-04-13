@@ -1,10 +1,11 @@
-from flask import render_template, abort, request, jsonify
+from flask import render_template, abort, request, jsonify, session
 from sqlalchemy import select
 
 from app.core import db
 from app.tables import Project, TimelineEvent, Person, ProjectPerson, PersonReport
 from app.src.project.visualizations import *
 from app.src.utilities import normalize_role_to_level
+from app.src.project.queries import user_has_project_access, user_can_edit_project
 
 from .project import ProjectBP
 
@@ -13,6 +14,9 @@ def visualizations(project_id):
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
     
     event_distribution_data = build_event_distribution(project_id)
     role_distribution_data = build_role_distribution(project_id)
@@ -69,4 +73,5 @@ def visualizations(project_id):
         people_rows=people_rows,
         reporting_links=reporting_links,
         people_nodes=people_nodes,
+        can_edit_project=user_can_edit_project(session["user_id"], project_id),
     ), 200 

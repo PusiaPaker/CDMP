@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 
 from app.core import db
 from app.src.user_display import get_user_display_name
+from app.src.project.queries import user_has_project_access, user_can_edit_project
 from app.tables import Project, User, File
 
 from .project import ProjectBP
@@ -17,6 +18,9 @@ def reports(project_id):
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     recent_saved_reports = (
         db.session.execute(
@@ -35,6 +39,7 @@ def reports(project_id):
         project=project,
         active_project_id=project.id,
         recent_saved_reports=recent_saved_reports,
+        can_edit_project=user_can_edit_project(session["user_id"], project_id),
     ), 200
 
 
@@ -43,6 +48,9 @@ def download_report(project_id):
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     user = db.session.get(User, session.get("user_id"))
     
@@ -59,6 +67,12 @@ def save_report_to_files(project_id):
     project = db.session.get(Project, project_id)
     if not project:
         return abort(404)
+
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     user = db.session.get(User, session.get("user_id"))
 

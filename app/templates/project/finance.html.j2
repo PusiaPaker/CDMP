@@ -42,12 +42,14 @@
                 <div class="section-header">
                     <h2>Expenses List</h2>
 
-                    <div class="finance-section-actions">
-                        <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='expenses') }}" class="button">
-                            Import CSV/XLSX
-                        </a>
-                        <a id="modal-btn" class="button-secondary">Add New</a>
-                    </div>
+                    {% if can_edit_project %}
+                        <div class="finance-section-actions">
+                            <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='expenses') }}" class="button">
+                                Import CSV/XLSX
+                            </a>
+                            <a id="modal-btn" class="button-secondary">Add New</a>
+                        </div>
+                    {% endif %}
                 </div>
 
                 {% if expenses %}
@@ -61,7 +63,9 @@
                                     <th>Date</th>
                                     <th>Frequency</th>
                                     <th>Category</th>
-                                    <th></th>
+                                    {% if can_edit_project %}
+                                        <th></th>
+                                    {% endif %}
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,14 +77,16 @@
                                         <td>{{ expense.expense_date }}</td>
                                         <td>{{ expense.recurrence_type }}</td>
                                         <td>{{ expense.category }}</td>
-                                        <td>
-                                            <a
-                                                class="finance-table-delete"
-                                                href="{{ url_for('project.delete_project_expense', project_id=project['id'], expense_id=expense.id) }}"
-                                            >
-                                                Delete
-                                            </a>
-                                        </td>
+                                        {% if can_edit_project %}
+                                            <td>
+                                                <a
+                                                    class="finance-table-delete"
+                                                    href="{{ url_for('project.delete_project_expense', project_id=project['id'], expense_id=expense.id) }}"
+                                                >
+                                                    Delete
+                                                </a>
+                                            </td>
+                                        {% endif %}
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -92,28 +98,30 @@
             </section>
         </div>
 
-        <div id="modal" class="modal finance-modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
-                <form class="project-form" method="POST" action="{{ url_for('project.finance', project_id=project['id']) }}">
-                    <label>Add New Expense</label>
-                    <div class="form-section">
-                        <input class="form-input" type="text" name="expense_name" placeholder="Expense Name" maxlength="150" required />
-                        <input class="form-input" type="text" name="amount" placeholder="Amount" inputmode="decimal" required />
-                        <input class="form-input" type="date" name="expense_date" required />
-                        <select class="form-input" name="recurrence_type" required>
-                            <option value="">Frequency</option>
-                            <option value="one_time">One Time</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="annual">Annual</option>
-                        </select>
-                        <input class="form-input" type="text" name="expense_purpose" placeholder="Purpose" />
-                        <input class="form-input" type="text" name="category" placeholder="Category" maxlength="64" />
-                        <input class="button" type="submit" value="Submit" />
-                    </div>
-                </form>
+        {% if can_edit_project %}
+            <div id="modal" class="modal finance-modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <form class="project-form" method="POST" action="{{ url_for('project.finance', project_id=project['id']) }}">
+                        <label>Add New Expense</label>
+                        <div class="form-section">
+                            <input class="form-input" type="text" name="expense_name" placeholder="Expense Name" maxlength="150" required />
+                            <input class="form-input" type="text" name="amount" placeholder="Amount" inputmode="decimal" required />
+                            <input class="form-input" type="date" name="expense_date" required />
+                            <select class="form-input" name="recurrence_type" required>
+                                <option value="">Frequency</option>
+                                <option value="one_time">One Time</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="annual">Annual</option>
+                            </select>
+                            <input class="form-input" type="text" name="expense_purpose" placeholder="Purpose" />
+                            <input class="form-input" type="text" name="category" placeholder="Category" maxlength="64" />
+                            <input class="button" type="submit" value="Submit" />
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         <div class="finance-panel" data-finance-panel="analysis"{% if active_finance_tab != 'analysis' %} hidden{% endif %}>
             <div class="finance-stats-grid">

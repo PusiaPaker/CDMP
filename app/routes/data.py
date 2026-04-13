@@ -10,7 +10,7 @@ from app.tables import Project, ProjectPerson, Person, TimelineEvent
 
 from app.src.project.files import path_to_file_from_disk
 from .project import ProjectBP
-from app.src.project.queries import user_has_project_access
+from app.src.project.queries import user_has_project_access, user_can_edit_project
 from app.src.project.files import parse_csv_headers_preview, parse_xlsx_headers_preview, read_all_csv_rows, read_all_xlsx_rows
 from app.src.constants import table_type_columns
 from app.src.project.mapper import *
@@ -30,10 +30,13 @@ TABLE_TYPE_REDIRECTS = {
 # this is upposed to be flexible enough to work with any kind of spreadsheet (people, timeline, ...)
 @DataBP.route('/<project_id>/<table_type>/columnmapper', methods=['POST', 'GET'])
 def column_mapper(project_id, table_type):
+    project = db.session.get(Project, project_id)
     if not user_has_project_access(session["user_id"], project_id):
         return render_template("error/404.html"), 404
 
-    project = db.session.get(Project, project_id)
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     if not project:
         return render_template("error/404.html"), 404
 
@@ -114,6 +117,9 @@ def column_mapper_commit(project_id, table_type):
     error = None
     if not user_has_project_access(session["user_id"], project_id):
         return render_template("error/404.html"), 404
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     project = db.session.get(Project, project_id)
     if not project:

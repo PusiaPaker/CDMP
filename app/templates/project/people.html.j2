@@ -21,15 +21,16 @@
         <section class="project-section">
             <div class="section-header">
                 <h2>Assigned People</h2>
-
-                <div class="people-page-actions">
-                    <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}" class="button">
-                        Import CSV/XLSX
-                    </a>
-                    <a id="modal-btn" class="button-secondary">
-                        Add New
-                    </a>
-                </div>
+                {% if can_edit_project %}
+                    <div class="people-page-actions">
+                        <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}" class="button">
+                            Import CSV/XLSX
+                        </a>
+                        <a id="modal-btn" class="button-secondary">
+                            Add New
+                        </a>
+                    </div>
+                {% endif %}
             </div>
 
             {% if people_rows and people_rows|length > 0 %}
@@ -43,7 +44,9 @@
                                 <th>Email</th>
                                 <th>Phone</th>
                                 <th class="people-account-column">Account</th>
-                                <th class="people-delete-column"></th>
+                                {% if can_edit_project %}
+                                    <th class="people-delete-column"></th>
+                                {% endif %}
                             </tr>
                         </thead>
 
@@ -60,9 +63,11 @@
                                             {% if p.user_id %}Linked{% else %}Not registered{% endif %}
                                         </span>
                                     </td>
-                                    <td class="people-delete-column">
-                                        <a class="people-table-delete" href="{{ url_for('project.delete_project_person', project_id=project['id'], person_id=p['id']) }}">Delete</a>
-                                    </td>
+                                    {% if can_edit_project %}
+                                        <td class="people-delete-column">
+                                            <a class="people-table-delete" href="{{ url_for('project.delete_project_person', project_id=project['id'], person_id=p['id']) }}">Delete</a>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -74,22 +79,24 @@
         </section>
     </div>
 
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }}">
-                <label>Add New Person</label>
-                <div class="form-section">
-                    <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required>
-                    <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required>
-                    <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120">
-                    <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254">
-                    <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32">
-                    <input class="button" type="submit" value="Submit">
-                </div>
-            </form>
+    {% if can_edit_project %}
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }}">
+                    <label>Add New Person</label>
+                    <div class="form-section">
+                        <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required>
+                        <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required>
+                        <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120">
+                        <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254">
+                        <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32">
+                        <input class="button" type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}

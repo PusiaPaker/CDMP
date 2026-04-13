@@ -228,7 +228,7 @@
             } catch (error) {
                 checkbox.checked = !checkedState;
                 console.error(error);
-                alert("Could not update reporting matrix.");
+                alert("Unauthorized. Could not update reporting matrix.");
             } finally {
                 checkbox.disabled = false;
             }

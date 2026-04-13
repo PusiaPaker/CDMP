@@ -11,7 +11,7 @@ from app.core import db
 from app.src.project_colors import build_project_color_map, get_project_color
 from app.tables import Project, TimelineEvent, UnlistedTimelineEvent
 from app.src.calendar_assignment import get_assignment_project_options
-from app.src.project.queries import get_projects_for_user, user_has_project_access
+from app.src.project.queries import get_projects_for_user, user_has_project_access, user_can_edit_project
 
 from .project import ProjectBP
 
@@ -20,10 +20,10 @@ MONTH_CALENDAR = Calendar(firstweekday=6)
 
 def _get_project_or_404(project_id: str) -> Project:
     project = db.session.get(Project, project_id)
-    if not project or not user_has_project_access(session["user_id"], project_id):
+    if not project:
         abort(404)
-    return project
 
+    return project
 
 def _resolve_month_request() -> tuple[int, int]:
     today = date.today()
@@ -262,6 +262,10 @@ def _build_timeline_visualization_events(events: list[TimelineEvent]) -> list[di
 @ProjectBP.route("/<project_id>/calendar/", methods=["GET"])
 def calendar(project_id):
     project = _get_project_or_404(project_id)
+    
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     user_id = session["user_id"]
     project_colors = build_project_color_map(get_projects_for_user(user_id).keys())
     year, month = _resolve_month_request()
@@ -326,6 +330,7 @@ def calendar(project_id):
         year_options=year_options,
         previous_month_link=_build_month_link(project.id, previous_year, previous_month, selected_date),
         next_month_link=_build_month_link(project.id, following_year, following_month, selected_date),
+        can_edit_project=user_can_edit_project(session["user_id"], project_id),
     ), 200
 
 
@@ -340,12 +345,15 @@ def timeline(project_id):
         active_project_id=project.id,
         timeline_visualization_events=_build_timeline_visualization_events(all_events),
         timeline_event_count=len(all_events),
+        can_edit_project=user_can_edit_project(session["user_id"], project_id),
     ), 200
 
 
 @ProjectBP.route("/<project_id>/timeline/events", methods=["POST"])
 def create_timeline_event(project_id):
     project = _get_project_or_404(project_id)
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     title = (request.form.get("title") or "").strip()
     description = (request.form.get("description") or "").strip() or None
@@ -415,6 +423,9 @@ def delete_timeline_event(project_id, event_id):
     project = _get_project_or_404(project_id)
     event = db.session.get(TimelineEvent, event_id)
 
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     if not event or event.project_id != project.id:
         return abort(404)
 
@@ -436,6 +447,10 @@ def delete_timeline_event(project_id, event_id):
 @ProjectBP.route("/<project_id>/timeline/import", methods=["POST"])
 def import_timeline_events(project_id):
     project = _get_project_or_404(project_id)
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     calendar_file = request.files.get("calendar_file")
 
     if not calendar_file or not calendar_file.filename:
