@@ -18,14 +18,15 @@
 {% endblock %}
 
 {% block page_header_actions %}
-    <a href="{{ url_for('project.home', project_id=active_project_id) }}" class="button-secondary">← Back</a>
+    <a href="{{ url_for('project.home', project_id=active_project_id) }}" class="button-secondary">&larr; Back</a>
 {% endblock %}
 
 {% block main_content %}
 <section class="project-section">
     <div class="section-header">
-        <h2>Users with Access:</h2>
+        <h2>Users with Access</h2>
     </div>
+
     <table class="user-permission-table">
         <thead>
             <tr>
@@ -41,40 +42,68 @@
                 <td>{{ user[0].username }}</td>
                 <td>{{ user[0].full_name }}</td>
                 <td>{{ user[0].email }}</td>
-                <td>{{ user[1].capitalize() }}</td>
+                <td class="access-level-cell">
+                    {% if is_owner and user[0].id != session['user_id'] %}
+                        <form
+                            method="POST"
+                            class="access-level-form"
+                            action="{{ url_for('project.share', project_id=active_project_id) }}"
+                            data-role-form
+                        >
+                            <input type="hidden" name="username" value="{{ user[0].username }}">
+                            <label class="sr-only" for="access-level-{{ user[0].id }}">
+                                Access level for {{ user[0].username }}
+                            </label>
+                            <select
+                                id="access-level-{{ user[0].id }}"
+                                name="role"
+                                class="access-level-select"
+                                data-role-select
+                                data-original-value="{{ user[1] }}"
+                                aria-label="Access level for {{ user[0].username }}"
+                            >
+                                <option value="viewer"{% if user[1] == "viewer" %} selected{% endif %}>Viewer</option>
+                                <option value="editor"{% if user[1] == "editor" %} selected{% endif %}>Editor</option>
+                                <option value="owner"{% if user[1] == "owner" %} selected{% endif %}>Owner</option>
+                                <option value="remove">Remove</option>
+                            </select>
+                        </form>
+                    {% else %}
+                        <span class="access-level-badge access-level-{{ user[1] }}">
+                            {{ user[1].capitalize() }}{% if user[0].id == session['user_id'] %} (You){% endif %}
+                        </span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    </section>
+</section>
 
-    <section class="project-section manage-permission-section">
+<section class="project-section manage-permission-section">
     {% if is_owner %}
     <div class="section-header">
-        <h2>Grant or Change Access</h2>
+        <h2>Grant Access</h2>
     </div>
     <form method="POST" class="project-form share-form" id="share-form" action="{{ url_for('project.share', project_id=active_project_id) }}">
         <div class="form-section">
             <input class="form-input"
-                   type="text" 
-                   id="username" 
-                   name="username" 
-                   minlength="3" 
-                   maxlength="25" 
+                   type="email"
+                   id="email"
+                   name="email"
                    autocomplete="off"
-                   placeholder="Username..."
+                   placeholder="Email address..."
                    required>
         </div>
         <div class="form-section">
             <select class="form-input" id="permission-select" aria-label="Level of Access" name="role" required>
                 <option value="viewer" title="Viewers can not edit projects.">Viewer</option>
                 <option value="editor" title="Editors can edit project data.">Editor</option>
-                <option value="remove" title="Remove user access to project.">Remove</option>
                 <option value="owner" title="Owners have admin access to projects.">Owner</option>
             </select>
         </div>
-        <div class="form-alert error" style="display: none;" id="username-error" role="alert">
-            Please input valid username.
+        <div class="form-alert error" style="display: none;" id="email-error" role="alert">
+            Please input a valid email address.
         </div>
         {% if error %}
             <div class="form-alert error" role="alert">
@@ -95,8 +124,6 @@
             </div>
         </div>
     </form>
-
-
     {% endif %}
 </section>
 {% endblock %}

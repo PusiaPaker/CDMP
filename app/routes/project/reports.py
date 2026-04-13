@@ -6,6 +6,7 @@ from flask import render_template, abort, send_file, session, redirect, url_for
 from werkzeug.utils import secure_filename
 
 from app.core import db
+from app.src.user_display import get_user_display_name
 from app.tables import Project, User, File
 
 from .project import ProjectBP
@@ -46,7 +47,7 @@ def download_report(project_id):
     user = db.session.get(User, session.get("user_id"))
     
     return send_file(
-        generate_report_pdf(project, user.full_name if user else "Unknown"),
+        generate_report_pdf(project, get_user_display_name(user, default="Unknown")),
         mimetype="application/pdf",
         as_attachment=False,
         download_name=get_report_file_name(project.title),
@@ -61,7 +62,7 @@ def save_report_to_files(project_id):
 
     user = db.session.get(User, session.get("user_id"))
 
-    report_pdf = generate_report_pdf(project, user.username if user else "Unknown")
+    report_pdf = generate_report_pdf(project, get_user_display_name(user, default="Unknown"))
     original_file_name = secure_filename(get_report_file_name(project.title))
 
     temp_id = str(uuid.uuid4())

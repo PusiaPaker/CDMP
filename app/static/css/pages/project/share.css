@@ -1,33 +1,118 @@
-.manage-permission-section { 
+.manage-permission-section {
     margin-top: var(--space-md);
 }
 
 .user-permission-table {
+    width: 100%;
     border-collapse: collapse;
-    width: 50%;
-    background-color: var(--color-bg);
-    padding: var(--space-lg);
+    background: rgba(255, 255, 255, 0.34);
+    border-radius: 18px;
+    overflow: hidden;
 }
 
-th, td {
+.user-permission-table th,
+.user-permission-table td {
     border: 1px solid var(--color-border);
-    padding: var(--space-sm);
+    padding: 0.85rem 1rem;
     text-align: left;
+    vertical-align: middle;
 }
 
-th {
-    background-color: var(--color-accent);
-    color: var(--color-bg);
+.user-permission-table th {
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--color-text-primary);
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
-tr:nth-child(even) {
-    background-color: var(--color-surface);
+.user-permission-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .share-form {
-    width: 30%;
+    width: min(420px, 100%);
 }
-form > #modal-btn {
+
+.share-form > #modal-btn {
     margin-top: auto;
     width: fit-content;
+}
+
+.access-level-cell {
+    min-width: 180px;
+}
+
+.access-level-form {
+    position: relative;
+    display: inline-flex;
+    width: 100%;
+    max-width: 180px;
+}
+
+.access-level-form::after {
+    content: "\25BE";
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-text-secondary);
+    pointer-events: none;
+    font-size: 0.8rem;
+}
+
+.access-level-select {
+    width: 100%;
+    appearance: none;
+    border: 1px solid var(--glass-border);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--color-text-primary);
+    padding: 0.6rem 2.2rem 0.6rem 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+}
+
+.access-level-select:hover {
+    background: rgba(255, 255, 255, 0.88);
+}
+
+.access-level-select:focus {
+    outline: none;
+    border-color: var(--color-border-strong);
+    box-shadow: var(--ring-focus);
+}
+
+.access-level-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.72);
+    color: var(--color-text-primary);
+    font-weight: 700;
+}
+
+.access-level-owner {
+    background: rgba(99, 102, 241, 0.18);
+}
+
+.access-level-editor {
+    background: rgba(56, 189, 248, 0.14);
+}
+
+.access-level-viewer {
+    background: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 900px) {
+    .user-permission-table {
+        display: block;
+        overflow-x: auto;
+    }
 }

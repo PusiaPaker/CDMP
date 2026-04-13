@@ -3,14 +3,24 @@
     gap: var(--space-md);
 }
 
+.people-page-grid .project-section {
+    padding: clamp(20px, 3vw, 32px);
+}
+
+.people-page-grid .section-header {
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
 .people-table-wrapper {
-    margin-top: 3rem;
+    margin-top: 1.5rem;
     overflow-x: auto;
 }
 
 .people-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     background: rgba(255, 255, 255, 0.34);
 }
 
@@ -31,6 +41,7 @@
 
 .people-table td {
     color: var(--color-text-primary);
+    word-break: break-word;
 }
 
 .people-table tbody tr:hover {
@@ -41,9 +52,19 @@
     font-weight: 600;
 }
 
+.people-account-column {
+    width: 150px;
+}
+
+.people-delete-column {
+    width: 90px;
+    text-align: center;
+}
+
 .people-account-badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     padding: 6px 10px;
     border-radius: 999px;
     font-size: 0.85rem;
@@ -61,21 +82,51 @@
     display: flex;
     gap: var(--space-sm);
     flex-wrap: wrap;
-}
-
-@media (max-width: 900px) {
-    .people-table th,
-    .people-table td {
-        padding: 10px 12px;
-    }
+    margin-left: auto;
+    justify-content: flex-end;
 }
 
 .people-table-delete {
     color: var(--color-danger);
     text-decoration: none;
     font-weight: 500;
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
 }
 
 .people-table-delete:hover {
     text-decoration: underline;
+}
+
+.people-page-grid .section-empty-text {
+    display: inline-flex;
+    align-items: center;
+    max-width: min(100%, 420px);
+    padding: 0.95rem 1.1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.56);
+    box-shadow: var(--shadow-soft);
+    line-height: 1.6;
+}
+
+@media (max-width: 1100px) {
+    .people-table {
+        min-width: 900px;
+        table-layout: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .people-page-actions {
+        margin-left: 0;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .people-table th,
+    .people-table td {
+        padding: 10px 12px;
+    }
 }

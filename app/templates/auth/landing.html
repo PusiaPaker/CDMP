@@ -1,32 +1,53 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Pandata</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
 </head>
 <body>
-    <main>
-        <img class="landing-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}" alt="Pandata logo">
-        <h1 class="landing-title">Pandata</h1>
-        <p class="landing-description">A data management platform for consultants</p>
-        <a href="{{ url_for('authentication.login') }}">
-            <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
-            <span>Login</span>
-        </a>
-        <a href="{{ url_for('authentication.register') }}">
-            <i class="bi bi-person-plus" aria-hidden="true"></i>
-            <span>Create an Account</span>
-        </a>
-        <a href="{{ url_for('authentication.about') }}">
-            <i class="bi bi-info-circle" aria-hidden="true"></i>
-            <span>About Pandata</span>
-        </a>
+    <main class="landing-shell">
+        <section class="landing-hero">
+            <div class="landing-brand">
+                <img class="landing-logo" src="{{ url_for('static', filename='assets/logo/pandata-logo.png') }}" alt="Pandata logo">
+                <p class="landing-kicker">Consulting Data Workspace</p>
+                <h1 class="landing-title">Pandata</h1>
+                <p class="landing-description">
+                    Pandata helps consultants manage timelines, files, people, budgets, and reporting in one clear workspace.
+                </p>
+                <p class="landing-lead">
+                    Keep project information organized, share access with the right people, and turn day-to-day project data into visuals and polished summaries your team can actually use.
+                </p>
+                <div class="landing-highlights" aria-label="Platform highlights">
+                    <span>Timeline Planning</span>
+                    <span>Permission Sharing</span>
+                    <span>Project Reports</span>
+                </div>
+            </div>
+
+            <div class="landing-actions">
+                <a href="{{ url_for('authentication.login') }}" class="landing-action landing-action-primary">
+                    <i class="bi bi-box-arrow-in-right" aria-hidden="true"></i>
+                    <span>Login</span>
+                </a>
+                <a href="{{ url_for('authentication.register') }}" class="landing-action landing-action-secondary">
+                    <i class="bi bi-person-plus" aria-hidden="true"></i>
+                    <span>Create an Account</span>
+                </a>
+                <a href="{{ url_for('authentication.about') }}" class="landing-action landing-action-secondary">
+                    <i class="bi bi-info-circle" aria-hidden="true"></i>
+                    <span>About Pandata</span>
+                </a>
+            </div>
+        </section>
     </main>
-    <footer>Pandata &copy; 2026 · Kent State University</footer>
+    <footer class="landing-footer">Pandata &copy; 2026 &middot; Kent State University</footer>
 </body>
 </html>

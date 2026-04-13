@@ -11,52 +11,56 @@
 {% endblock %}
 
 {% block page_header_actions %}
-    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">← Back</a>
-    <a href="{{ url_for('project.file_upload', project_id=project['id'])}}" class="button">Upload Files</a>
+    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">&larr; Back</a>
+    <a href="{{ url_for('project.file_upload', project_id=project['id']) }}" class="button">Upload Files</a>
 {% endblock %}
 
 {% block main_content %}
     <div class="files-page-grid">
-
         <section class="project-section">
             <div class="section-header">
                 <h2>Project Files</h2>
             </div>
 
             {% if files %}
-                <table class="files-table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Uploaded</th>
-                            <th class="center">Download</th>
-                            <th class="center">Delete</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for file in files %}
+                <div class="files-table-wrapper">
+                    <table class="files-table">
+                        <thead>
                             <tr>
-                                <td>{{ file.file_name_original }}</td>
-                                <td>{{ file.file_category }}</td>
-                                <td>{{ file.description or "" }}</td>
-                                <td>{{ file.upload_date }}</td>
-                                <td class="center"><a class="table-link" href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}" target="_blank">
-                                    &plus;
-                                </a></td>
-                                <td class="center"><a class="table-link del" href="{{ url_for('project.delete_file', project_id=project['id'], file_id=file['id']) }}">
-                                    &times;
-                                </a></td>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th>Uploaded</th>
+                                <th class="center files-table-action">Download</th>
+                                <th class="center files-table-action">Delete</th>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                            {% for file in files %}
+                                <tr>
+                                    <td>{{ file.file_name_original }}</td>
+                                    <td>{{ file.file_category }}</td>
+                                    <td>{{ file.description or "" }}</td>
+                                    <td>{{ file.upload_date }}</td>
+                                    <td class="center files-table-action">
+                                        <a class="table-link" href="{{ url_for('project.download_file', project_id=project['id'], file_id=file['id']) }}" target="_blank">
+                                            &plus;
+                                        </a>
+                                    </td>
+                                    <td class="center files-table-action">
+                                        <a class="table-link del" href="{{ url_for('project.delete_file', project_id=project['id'], file_id=file['id']) }}">
+                                            &times;
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% else %}
                 <p class="section-empty-text">No files uploaded yet.</p>
-            {% endif %} 
-
+            {% endif %}
         </section>
     </div>
 {% endblock %}

@@ -16,34 +16,36 @@
 {% endblock %}
 
 {% block main_content %}
-<section class="project-section">
-    <div class="section-header">
-        <h2>Upload File</h2>
-    </div>
-
-    {% if error %}
-        <p class="section-empty-text">{{ error }}</p>
-    {% endif %}
-
-    <form method="POST" enctype="multipart/form-data" class="upload-form">
-        <input type="hidden" name="table_type" value="{{ table_type }}">
-
-        <div class="form-row">
-            <label class="form-label" for="file">Choose file</label>
-
-            <div class="file-picker-row">
-                <label for="file" class="button-secondary file-picker-button">Choose File</label>
-                <span id="selected-file-name" class="selected-file-name">No file selected</span>
+    <div class="import-page-grid">
+        <section class="project-section import-page-section">
+            <div class="section-header">
+                <h2>Upload File</h2>
             </div>
 
-            <input type="file" id="file" name="file" required class="hidden-file-input">
-        </div> 
+            {% if error %}
+                <p class="section-empty-text">{{ error }}</p>
+            {% endif %}
 
-        <div class="form-actions">
-            <button type="submit" class="button">Continue</button>
-        </div>
-    </form>
-</section>
+            <form method="POST" enctype="multipart/form-data" class="upload-form">
+                <input type="hidden" name="table_type" value="{{ table_type }}">
+
+                <div class="form-row">
+                    <label class="form-label" for="file">Choose file</label>
+
+                    <div class="file-picker-row">
+                        <label for="file" class="button-secondary file-picker-button">Choose File</label>
+                        <span id="selected-file-name" class="selected-file-name">No file selected</span>
+                    </div>
+
+                    <input type="file" id="file" name="file" required class="hidden-file-input">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="button">Continue</button>
+                </div>
+            </form>
+        </section>
+    </div>
 {% endblock %}
 
 {% block extra_js %}

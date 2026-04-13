@@ -16,6 +16,7 @@ from app.src.calendar_assignment import (
 from app.src.google_calendar import GoogleCalendarSyncError, has_google_calendar_connection, sync_primary_google_calendar
 from app.src.project_colors import build_project_color_map, get_project_color
 from app.src.project.queries import get_projects_for_user, user_has_project_access, user_is_project_owner
+from app.src.user_display import get_user_display_name
 
 from app.core import db
 from app.tables import User, TimelineEvent, Project, Role, UnlistedTimelineEvent
@@ -116,7 +117,7 @@ def main():
     user_id = session["user_id"]
 
     user = db.session.get(User, user_id)
-    display_name = (user.full_name or user.username) if user else "User"
+    display_name = get_user_display_name(user)
 
     projects = get_projects_for_user(user_id)
 
@@ -546,5 +547,6 @@ def account_settings():
     return render_template(
         "dashboard/account_settings.html.j2",
         current_user=user,
+        current_user_display_name=get_user_display_name(user),
         owned_projects=owned_projects,
     ), 200

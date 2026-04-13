@@ -20,6 +20,15 @@
     gap: var(--space-md);
 }
 
+.calendar-sidebar .project-section {
+    padding: clamp(20px, 3vw, 32px);
+}
+
+.calendar-sidebar .section-header {
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
 .calendar-toolbar {
     display: grid;
     grid-template-columns: auto 1fr auto;
@@ -283,7 +292,7 @@ body.modal-open {
 .import-csv-link {
     display: flex;
     width: fit-content;
-    margin: 12px auto 0;
+    margin: 12px 0 0;
     background: #6b7280;
     border-color: #4b5563;
     color: #fff;
@@ -512,6 +521,18 @@ body.modal-open {
 .vis-item.timeline-phase-object.vis-selected {
     background: #4f6ea8;
     border-color: #3f5a89;
+}
+
+.calendar-sidebar .section-empty-text {
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    padding: 0.95rem 1.1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.56);
+    box-shadow: var(--shadow-soft);
+    line-height: 1.6;
 }
 
 @media (max-width: 1280px) {

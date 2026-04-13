@@ -13,12 +13,11 @@
 {% endblock %}
 
 {% block page_header_actions %}
-    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">← Back</a>
+    <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">&larr; Back</a>
 {% endblock %}
 
 {% block main_content %}
     <div class="people-page-grid">
-
         <section class="project-section">
             <div class="section-header">
                 <h2>Assigned People</h2>
@@ -27,7 +26,6 @@
                     <a href="{{ url_for('data.column_mapper', project_id=active_project_id, table_type='people') }}" class="button">
                         Import CSV/XLSX
                     </a>
-                    <br>
                     <a id="modal-btn" class="button-secondary">
                         Add New
                     </a>
@@ -37,20 +35,19 @@
             <div id="modal" class="modal">
                 <div class="modal-content">
                     <span class="close">&times;</span>
-                    <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }} ">
+                    <form class="project-form" method="POST" action="{{ url_for('project.people', project_id=project['id']) }}">
                         <label>Add New Person</label>
                         <div class="form-section">
-                            <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required/>
-                            <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required/>
-                            <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120"/>
-                            <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254"/>
-                            <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32"/>
-                        <input class="button" type="submit" value="Submit"/>
+                            <input class="form-input" type="text" name="name" placeholder="Name" maxlength="120" required>
+                            <input class="form-input" type="text" name="role" placeholder="Role Level" maxlength="120" required>
+                            <input class="form-input" type="text" name="title" placeholder="Title" maxlength="120">
+                            <input class="form-input" type="email" name="email" placeholder="Email" minlength="5" maxlength="254">
+                            <input class="form-input" type="tel" name="phone" placeholder="Phone" maxlength="32">
+                            <input class="button" type="submit" value="Submit">
                         </div>
                     </form>
                 </div>
             </div>
-
 
             {% if people_rows and people_rows|length > 0 %}
                 <div class="people-table-wrapper">
@@ -62,8 +59,8 @@
                                 <th>Title</th>
                                 <th>Email</th>
                                 <th>Phone</th>
-                                <th>Account</th>
-                                <th></th>
+                                <th class="people-account-column">Account</th>
+                                <th class="people-delete-column"></th>
                             </tr>
                         </thead>
 
@@ -75,12 +72,12 @@
                                     <td>{{ p.title or "" }}</td>
                                     <td>{{ p.email or "" }}</td>
                                     <td>{{ p.phone or "" }}</td>
-                                    <td>
+                                    <td class="people-account-column">
                                         <span class="people-account-badge{% if p.user_id %} linked{% endif %}">
                                             {% if p.user_id %}Linked{% else %}Not registered{% endif %}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="people-delete-column">
                                         <a class="people-table-delete" href="{{ url_for('project.delete_project_person', project_id=project['id'], person_id=p['id']) }}">Delete</a>
                                     </td>
                                 </tr>
@@ -93,7 +90,6 @@
             {% endif %}
         </section>
     </div>
-
 {% endblock %}
 
 {% block extra_js %}

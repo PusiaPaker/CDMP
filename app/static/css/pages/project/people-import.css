@@ -1,3 +1,30 @@
+.import-page-grid {
+    display: grid;
+    gap: var(--space-md);
+}
+
+.import-page-section {
+    width: min(100%, 760px);
+    padding: clamp(20px, 3vw, 32px);
+}
+
+.import-page-section .section-header {
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.import-page-section .section-empty-text {
+    display: inline-flex;
+    align-items: center;
+    max-width: min(100%, 460px);
+    padding: 0.95rem 1.1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.56);
+    box-shadow: var(--shadow-soft);
+    line-height: 1.6;
+}
+
 .upload-form {
     display: flex;
     flex-direction: column;
@@ -13,6 +40,7 @@
 .form-actions {
     display: flex;
     gap: var(--space-sm);
+    margin-top: 0.25rem;
 }
 
 .hidden-file-input {
@@ -36,11 +64,18 @@
 }
 
 .selected-file-name {
+    display: inline-flex;
+    align-items: center;
     color: var(--color-text-secondary);
     font-size: 0.95rem;
+    line-height: 1.5;
 }
 
 @media (max-width: 700px) {
+    .import-page-section {
+        width: 100%;
+    }
+
     .file-picker-row {
         flex-direction: column;
         align-items: flex-start;

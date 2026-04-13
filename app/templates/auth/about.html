@@ -1,12 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>About Pandata</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/base/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pages/landing.css') }}">
 </head>
 <body>
-    <main>
+    <main class="about-shell">
         <section class="about-page">
             <div class="about-card">
                 <h1 class="about-title">About Pandata</h1>
@@ -14,29 +20,29 @@
                 <h3>Quick Overview</h3>
                 <p class="about-copy">
                     Pandata is a consulting data management platform built to help consultants manage multiple
-                     ongoing projects in one place. It features multiple data visualizations tools (timelines, calendar, people, financial, files),
-                    and is able to integrate with Google Calendar data. Additionally, Pandata features 
-                     a PDF report generator, that can be used to create shareable summaries of a project's
-                    ongoing state.
+                    ongoing projects in one place. It features multiple data visualization tools including timelines,
+                    calendars, people, financial tracking, and file organization. Pandata also integrates with
+                    Google Calendar data and includes a PDF report generator for shareable project summaries.
                 </p>
-                <h3>How Your Data is Handled</h3>
+
+                <h3>How Your Data Is Handled</h3>
                 <p class="about-copy">
-                    All data uploaded by a user for a specific project (files, manual entries, spreadsheet imports)
-                    are only accessible to the project owner, and other users that are explicity given view/edit access.
-                    Pandata does <b>NOT</b> share the data with any third party systems. Moreover, Pandata uses
-                    your data exclusively to generate visualizations, analysis and project reports. If a user wishes to,
-                    a user can completely remove all the data that has been uploaded for any project form Pandata.
+                    All data uploaded by a user for a specific project, including files, manual entries, and spreadsheet imports,
+                    is only accessible to the project owner and any users explicitly granted view or edit access.
+                    Pandata does <strong>not</strong> share your project data with third-party systems. Your data is used exclusively
+                    to generate visualizations, analysis, and project reports, and project owners can remove it at any time.
                 </p>
-                <h3>Who created Pandata?</h3>
+
+                <h3>Who Created Pandata?</h3>
                 <p class="about-copy">
-                    The platform was created as part of the Kent State University's Spring 2026 
-                    Computer Science Capstone class by João Donaton, Antek Chelstowki, Miles Keffer, 
-                    Tristian Clayman, and Antonio Chiefallo.
+                    The platform was created as part of Kent State University's Spring 2026 Computer Science Capstone class
+                    by Joao Donaton, Antek Chelstowki, Miles Keffer, Tristian Clayman, and Antonio Chiefallo.
                 </p>
-                <a class="about-back-link" href="{{ url_for('mainPage') }}">Back</a>
+
+                <a class="landing-action landing-action-secondary about-back-link" href="{{ url_for('mainPage') }}">Back</a>
             </div>
         </section>
     </main>
-    <footer>Pandata &copy; 2026 · Kent State University</footer>
+    <footer class="landing-footer">Pandata &copy; 2026 &middot; Kent State University</footer>
 </body>
 </html>

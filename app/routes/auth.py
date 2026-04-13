@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from app.core import db, oauth
 from app.src.google_calendar import encrypt_google_refresh_token
+from app.src.user_display import get_user_display_name
 from app.tables import GoogleAuthIdentity, GoogleCalendarToken, User
 
 AuthBP = Blueprint('authentication', __name__)
@@ -151,6 +152,8 @@ def google_callback():
         identity.email_verified = email_verified
         identity.full_name = full_name
         identity.picture_url = picture_url
+        if full_name:
+            user.full_name = full_name
     else:
         existing_user = db.session.query(User).filter_by(email=email).first()
         if existing_user:
@@ -162,6 +165,7 @@ def google_callback():
 
         user = User(
             username=_build_unique_username(email),
+            full_name=full_name,
             password=generate_password_hash(secrets.token_urlsafe(48)),
             email=email,
         )

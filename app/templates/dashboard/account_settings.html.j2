@@ -16,7 +16,7 @@
         <section class="project-form-card">
             <div class="project-form-card-header">
                 <h2>Change Password</h2>
-                <p>Update the password for {{ current_user.full_name or current_user.username }}.</p>
+                <p>Update the password for {{ current_user_display_name }}.</p>
             </div>
 
             <form class="project-form" method="POST" action="{{ url_for('dashboard.account_settings') }}">

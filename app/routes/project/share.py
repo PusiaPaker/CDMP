@@ -34,9 +34,15 @@ def share(project_id):
         return render()
     elif request.method == 'POST':
         username = request.form.get("username", "").strip()
+        email = request.form.get("email", "").strip().lower()
         form_role = request.form.get("role", "viewer")
 
-        user = db.session.query(User).filter_by(username=username).first()
+        user = None
+        if email:
+            user = db.session.query(User).filter_by(email=email).first()
+        elif username:
+            user = db.session.query(User).filter_by(username=username).first()
+
         if not user:
             return render("Error: User not found.")
         elif user.id == session['user_id']:
@@ -70,5 +76,3 @@ def share(project_id):
 
         db.session.commit()    
         return redirect(url_for('project.share', project_id=project_id))
-
-    

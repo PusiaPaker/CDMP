@@ -1,39 +1,72 @@
-const modal = document.getElementById("modal");
+(function () {
+  const modal = document.getElementById("modal");
+  const btn = document.getElementById("modal-btn");
+  const span = document.getElementsByClassName("close")[0];
+  const dependentFormElement = document.getElementById("permission-select");
+  const formInQuestion = document.getElementById("share-form");
+  const emailError = document.getElementById("email-error");
 
-// Get the button that opens the modal
-const btn = document.getElementById("modal-btn");
+  if (btn && modal && span && dependentFormElement && formInQuestion) {
+    btn.onclick = function () {
+      const selectedOption = dependentFormElement.options[dependentFormElement.selectedIndex].text;
+      const emailValue = formInQuestion["email"].value.trim();
+      const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
 
-// Get the <span> element that closes the modal
-const span = document.getElementsByClassName("close")[0];
+      if (selectedOption === "Owner" && emailValid) {
+        modal.style.display = "block";
+      } else if (emailValid) {
+        formInQuestion.submit();
+      } else if (emailError) {
+        emailError.style.display = "block";
+      }
+    };
 
-const dependent_form_element = document.getElementById("permission-select");
-const form_in_question = document.getElementById("share-form");
+    span.onclick = function () {
+      modal.style.display = "none";
+    };
 
-const username_error = document.getElementById("username-error");
+    window.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
 
-// When the user clicks on the button, open the modal
-btn.onclick = function() {
-  var selectedOption = dependent_form_element.options[dependent_form_element.selectedIndex].text;
-  let usernameValue = form_in_question["username"].value;
-
-  const usernameValid = usernameValue.length >= 3;
-
-  if (selectedOption === "Owner" && usernameValid) {
-    modal.style.display = "block";
-  } else if (usernameValid) {
-    form_in_question.submit();
-  } else {
-    username_error.style.display = "block";
+    formInQuestion["email"]?.addEventListener("input", () => {
+      if (emailError) {
+        emailError.style.display = "none";
+      }
+    });
   }
-}
 
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-  modal.style.display = "none";
-}
+  const roleSelects = document.querySelectorAll("[data-role-select]");
 
-window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-}
+  roleSelects.forEach((select) => {
+    select.addEventListener("change", () => {
+      const form = select.closest("[data-role-form]");
+      if (!form) {
+        return;
+      }
+
+      const originalValue = select.dataset.originalValue || "";
+      const nextValue = select.value;
+      const username = form.querySelector('input[name="username"]')?.value || "this user";
+
+      let confirmed = true;
+
+      if (nextValue === "owner") {
+        confirmed = window.confirm(
+          `Give ${username} owner access? Owners can change permissions and delete the project.`
+        );
+      } else if (nextValue === "remove") {
+        confirmed = window.confirm(`Remove ${username}'s access to this project?`);
+      }
+
+      if (!confirmed) {
+        select.value = originalValue;
+        return;
+      }
+
+      form.submit();
+    });
+  });
+})();

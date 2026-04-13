@@ -3,36 +3,114 @@
     gap: var(--space-md);
 }
 
+.files-page-grid .project-section {
+    padding: clamp(20px, 3vw, 32px);
+}
+
+.files-page-grid .section-header {
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.files-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
 .files-table {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
     background: rgba(255, 255, 255, 0.34);
 }
 
-.files-table th, .files-table td {
+.files-table th,
+.files-table td {
     text-align: left;
-    padding: var(--space-sm);
+    padding: 0.85rem 1rem;
     border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+    word-break: break-word;
 }
 
 .files-table th {
     color: var(--color-text-secondary);
     font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
 }
 
-td.center, th.center {
+.files-table td:nth-child(1) {
+    width: 24%;
+}
+
+.files-table td:nth-child(2) {
+    width: 16%;
+}
+
+.files-table td:nth-child(3) {
+    width: 32%;
+}
+
+.files-table td:nth-child(4) {
+    width: 16%;
+}
+
+td.center,
+th.center {
     text-align: center;
 }
+
+.files-table-action {
+    width: 88px;
+}
+
 .table-link {
     text-decoration: none;
     font-weight: 500;
     font-size: 1.25rem;
     color: var(--color-accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 999px;
 }
+
 .table-link.del {
     color: var(--color-danger);
 }
 
 .table-link:hover {
-    text-decoration: underline;
+    text-decoration: none;
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.table-link.del:hover {
+    background: rgba(180, 35, 24, 0.08);
+}
+
+.files-page-grid .section-empty-text {
+    display: inline-flex;
+    align-items: center;
+    max-width: min(100%, 420px);
+    padding: 0.95rem 1.1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.56);
+    box-shadow: var(--shadow-soft);
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .files-page-grid .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .files-table {
+        min-width: 760px;
+        table-layout: auto;
+    }
 }
