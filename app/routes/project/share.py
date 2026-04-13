@@ -22,7 +22,7 @@ def share(project_id):
     is_owner = user_is_project_owner(session["user_id"], project_id)
 
     def render(error=""):
-        return render_template("project/share.html", 
+        return render_template("project/share.html.j2", 
                 authorized_users=authorized_users, 
                 is_owner=is_owner,
                 error=error,
@@ -40,7 +40,7 @@ def share(project_id):
         if not user:
             return render("Error: User not found.")
         elif user.id == session['user_id']:
-            return render("Why are you trying to change your own permissions? What a chud.")
+            return render("You shouldn't change your own permissions.")
 
         existing_role = db.session.query(Role).filter(
             and_(
