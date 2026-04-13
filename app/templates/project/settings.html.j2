@@ -50,9 +50,11 @@
             </div>
 
             <div class="settings-actions">
-                <a href="{{ url_for('project.edit', project_id=project.id) }}" class="button">
-                    Edit Project
-                </a>
+                {% if can_edit_project %}
+                    <a href="{{ url_for('project.edit', project_id=project.id) }}" class="button">
+                        Edit Project
+                    </a>
+                {% endif %}
             </div>
         </article>
 
@@ -63,13 +65,15 @@
             </div>
 
             <div class="settings-action-list">
-                <a href="{{ url_for('project.file_upload', project_id=project.id) }}" class="settings-action-row">
-                    <div>
-                        <h3>Upload Files</h3>
-                        <p>Add files and map project data.</p>
-                    </div>
-                    <span>→</span>
-                </a>
+                {% if can_edit_project %}
+                    <a href="{{ url_for('project.file_upload', project_id=project.id) }}" class="settings-action-row">
+                        <div>
+                            <h3>Upload Files</h3>
+                            <p>Add files and map project data.</p>
+                        </div>
+                        <span>→</span>
+                    </a>
+                {% endif %}
 
                 <a href="{{ url_for('project.visualizations', project_id=project.id) }}" class="settings-action-row">
                     <div>
@@ -81,7 +85,7 @@
 
                 <a href="{{ url_for('project.people', project_id=project.id) }}" class="settings-action-row">
                     <div>
-                        <h3>Manage People</h3>
+                        <h3>{% if can_edit_project %}Manage People{% else %}View People{% endif %}</h3>
                         <p>View assigned people and project roles.</p>
                     </div>
                     <span>→</span>

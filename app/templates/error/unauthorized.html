@@ -1,0 +1,16 @@
+{% extends "error/base.html" %}
+
+{% block title %}403 Unauthorized{% endblock %}
+
+{% block content %}
+    <h1>403</h1>
+    <h2>Unauthorized</h2>
+
+    <p>
+        You do not have permission to access this project.
+    </p>
+
+    <a href="{{ url_for('dashboard.main') }}">
+        Go to Dashboard
+    </a>
+{% endblock %}

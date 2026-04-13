@@ -11,12 +11,12 @@ from app.src.project.queries import get_users_from_project, user_is_project_owne
 
 @ProjectBP.route('/<project_id>/share', methods=['GET', 'POST'])
 def share(project_id):
-    if not user_has_project_access(session['user_id'], project_id):
-        return render_template("error/404.html"), 404
-
     project = db.session.get(Project, project_id)
     if not project:
         return render_template("error/404.html"), 404
+
+    if not user_has_project_access(session['user_id'], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     authorized_users = get_users_from_project(project_id)
     is_owner = user_is_project_owner(session["user_id"], project_id)
@@ -33,6 +33,9 @@ def share(project_id):
     if request.method == 'GET':
         return render()
     elif request.method == 'POST':
+        if not is_owner:
+            return render_template("error/unauthorized.html"), 403
+
         username = request.form.get("username", "").strip()
         email = request.form.get("email", "").strip().lower()
         form_role = request.form.get("role", "viewer")

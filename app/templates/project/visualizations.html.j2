@@ -136,6 +136,7 @@
                                                     aria-label="{{ person.name }} reports to {{ manager.name }}"
                                                     title="{{ person.name }} → {{ manager.name }}"
                                                     {% if reporting_link_key in reporting_links %}checked{% endif %}
+                                                    {% if not can_edit_project %}disabled{% endif %}
                                                 />
                                             {% endif %}
                                         </td> 

@@ -12,7 +12,9 @@
 
 {% block page_header_actions %}
     <a href="{{ url_for('project.home', project_id=project['id']) }}" class="button-secondary">&larr; Back</a>
-    <a href="{{ url_for('project.file_upload', project_id=project['id']) }}" class="button">Upload Files</a>
+    {% if can_edit_project %}
+        <a href="{{ url_for('project.file_upload', project_id=project['id']) }}" class="button">Upload Files</a>
+    {% endif %}
 {% endblock %}
 
 {% block main_content %}
@@ -32,7 +34,9 @@
                                 <th>Description</th>
                                 <th>Uploaded</th>
                                 <th class="center files-table-action">Download</th>
-                                <th class="center files-table-action">Delete</th>
+                                {% if can_edit_project %}
+                                    <th class="center files-table-action">Delete</th>
+                                {% endif %}
                             </tr>
                         </thead>
 
@@ -48,11 +52,13 @@
                                             &plus;
                                         </a>
                                     </td>
-                                    <td class="center files-table-action">
-                                        <a class="table-link del" href="{{ url_for('project.delete_file', project_id=project['id'], file_id=file['id']) }}">
-                                            &times;
-                                        </a>
-                                    </td>
+                                    {% if can_edit_project %}
+                                        <td class="center files-table-action">
+                                            <a class="table-link del" href="{{ url_for('project.delete_file', project_id=project['id'], file_id=file['id']) }}">
+                                                &times;
+                                            </a>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>

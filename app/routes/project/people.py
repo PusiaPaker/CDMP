@@ -3,7 +3,7 @@ from sqlalchemy import select, exists, and_, insert
 import re
 
 from .project import ProjectBP
-from app.src.project.queries import user_has_project_access
+from app.src.project.queries import user_has_project_access, user_can_edit_project
 from app.src.project.files import parse_csv_headers_preview, parse_xlsx_headers_preview, read_all_csv_rows, read_all_xlsx_rows
 
 from app.tables import Project, ProjectPerson, PersonReport, Person, User
@@ -12,7 +12,13 @@ from app.src.utilities import normalize_role_to_level
 
 @ProjectBP.route("/<project_id>/people/", methods=['GET', 'POST'])
 def people(project_id):
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     if request.method == 'POST':
+        if not user_can_edit_project(session["user_id"], project_id):
+            return render_template("error/unauthorized.html"), 403
+
         name = request.form['name']
         role = request.form['role']
         title = request.form['title']
@@ -104,10 +110,17 @@ def people(project_id):
         people_rows=people_rows,
         reporting_links=reporting_links,
         people_nodes=people_nodes,
+        can_edit_project=user_can_edit_project(session["user_id"], project_id),
         ), 200
 
 @ProjectBP.route("/<project_id>/people/<person_id>")
 def delete_project_person(project_id, person_id):
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     projperson_to_delete = db.session.execute(
         select(ProjectPerson)
         .where(
@@ -132,6 +145,12 @@ def delete_project_person(project_id, person_id):
 
 @ProjectBP.route("/<project_id>/people/updatematrix", methods=["POST"])
 def update_reporting_matrix(project_id):
+    if not user_has_project_access(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
+
     payload = request.get_json()
 
     person_id = payload["person_id"]

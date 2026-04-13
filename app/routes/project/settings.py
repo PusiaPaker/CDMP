@@ -7,7 +7,7 @@ from flask import current_app, render_template, redirect, url_for, jsonify, sess
 import uuid
 
 from .project import ProjectBP
-from app.src.project.queries import get_projects_for_user, user_is_project_owner, user_has_project_access
+from app.src.project.queries import get_projects_for_user, user_is_project_owner, user_has_project_access, user_can_edit_project
 
 from app.core import db
 from app.tables import Expense, Project, Role, ProjectPerson, File, TimelineEvent
@@ -67,15 +67,17 @@ def settings(project_id):
         return render_template("error/404.html"), 404
 
     if not user_has_project_access(session["user_id"], project_id):
-        return redirect(url_for('dashboard.main'))
+        return render_template("error/unauthorized.html"), 403
 
     is_owner = user_is_project_owner(session["user_id"], project_id)
+    can_edit_project = user_can_edit_project(session["user_id"], project_id)
 
     return render_template(
         "project/settings.html.j2",
         project=project,
         active_project_id=project.id,
-        is_owner=is_owner
+        is_owner=is_owner,
+        can_edit_project=can_edit_project,
     ), 200
 
 @ProjectBP.route('/edit/<project_id>', methods=['GET', 'POST'])
@@ -85,7 +87,10 @@ def edit(project_id):
         return render_template("error/404.html"), 404
 
     if not user_has_project_access(session["user_id"], project_id):
-        return redirect(url_for('dashboard.main'))
+        return render_template("error/unauthorized.html"), 403
+
+    if not user_can_edit_project(session["user_id"], project_id):
+        return render_template("error/unauthorized.html"), 403
 
     if request.method == 'GET':
         return render_template(

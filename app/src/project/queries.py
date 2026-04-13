@@ -5,30 +5,29 @@ from sqlalchemy import select, exists, and_
 from app.core import db
 from app.tables import Role, Project, User, TimelineEvent
 
-def user_has_project_access(user_id: str, project_id: str) -> bool:
+
+# Old functions got replaces, mostly for the abstraction purposes.
+def get_user_project_role(user_id: str, project_id: str) -> str | None:
     return db.session.execute(
-        select(
-            exists().where(
-                and_(
-                    Role.user_id == user_id,
-                    Role.project_id == project_id,
-                )
+        select(Role.role).where(
+            and_(
+                Role.user_id == user_id,
+                Role.project_id == project_id,
             )
         )
-    ).scalar()
+    ).scalar_one_or_none()
+
+
+def user_has_project_access(user_id: str, project_id: str) -> bool:
+    return get_user_project_role(user_id, project_id) is not None
+
+
+def user_can_edit_project(user_id: str, project_id: str) -> bool:
+    return get_user_project_role(user_id, project_id) in {"owner", "editor"}
+
 
 def user_is_project_owner(user_id: str, project_id: str) -> bool:
-    return db.session.execute(
-        select(
-            exists().where(
-                and_(
-                    Role.user_id == user_id,
-                    Role.project_id == project_id,
-                    Role.role == "owner"
-                )
-            )
-        )
-    ).scalar()
+    return get_user_project_role(user_id, project_id) == "owner"
 
 def get_projects_for_user(user_id: str) -> dict[str, dict[str, str]]:
     projects = (
