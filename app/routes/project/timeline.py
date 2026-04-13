@@ -158,7 +158,7 @@ def _parse_ics_events(raw_text: str) -> tuple[list[dict], int]:
                 if parsed_end_date < start_date:
                     parsed_end_date = start_date
 
-                if parsed_end_date != start_date:
+                if parsed_end_date.date() != start_date.date():
                     end_date = parsed_end_date
 
         parsed_events.append(

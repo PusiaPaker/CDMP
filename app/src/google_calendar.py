@@ -116,6 +116,18 @@ def _parse_google_event_dates(event: dict) -> tuple[datetime | None, datetime | 
     return start_date, end_date
 
 
+def _should_skip_google_event(event: dict) -> bool:
+    event_type = (event.get("eventType") or "").strip().lower()
+    if event_type == "birthday":
+        return True
+
+    if event.get("birthdayProperties"):
+        return True
+
+    normalized_title = " ".join(((event.get("summary") or "").strip().casefold()).split())
+    return normalized_title in {"happy birthday", "happy birthday!"}
+
+
 def _fetch_primary_calendar_events(access_token: str) -> list[dict]:
     page_token = None
     events: list[dict] = []
@@ -202,6 +214,9 @@ def sync_primary_google_calendar(user_id: str) -> GoogleCalendarSyncResult:
     for google_event in google_events:
         google_event_id = (google_event.get("id") or "").strip()
         if not google_event_id:
+            continue
+
+        if _should_skip_google_event(google_event):
             continue
 
         seen_event_ids.add(google_event_id)
