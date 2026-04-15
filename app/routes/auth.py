@@ -23,6 +23,19 @@ def _safe_next_url(candidate: str | None) -> str:
     return url_for("dashboard.main")
 
 
+def _google_redirect_uri() -> str:
+    configured_redirect = current_app.config.get("GOOGLE_REDIRECT_URI", "").strip()
+    if configured_redirect:
+        return configured_redirect
+
+    app_base_url = current_app.config.get("APP_BASE_URL", "").strip().rstrip("/")
+    callback_path = url_for("authentication.google_callback")
+    if app_base_url:
+        return f"{app_base_url}{callback_path}"
+
+    return url_for("authentication.google_callback", _external=True)
+
+
 def _build_unique_username(email: str) -> str:
     base = email.split("@", 1)[0].strip().lower()
     base = re.sub(r"[^a-z0-9._-]+", "-", base).strip(".-_") or "user"
@@ -91,7 +104,7 @@ def login_google():
     session["google_oidc_nonce"] = secrets.token_urlsafe(24)
 
     return oauth.google.authorize_redirect(
-        url_for("authentication.google_callback", _external=True),
+        _google_redirect_uri(),
         nonce=session["google_oidc_nonce"],
         prompt="consent select_account",
         access_type="offline",

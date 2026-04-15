@@ -34,4 +34,7 @@ class Config:
         "GOOGLE_DISCOVERY_URL",
         "https://accounts.google.com/.well-known/openid-configuration",
     ).strip()
+    APP_BASE_URL = os.getenv("APP_BASE_URL", "").strip().rstrip("/")
+    GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "").strip()
     GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)
+    TRUST_PROXY_HEADERS = _as_bool(os.getenv("TRUST_PROXY_HEADERS"), default=False)

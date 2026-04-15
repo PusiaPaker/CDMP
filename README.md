@@ -59,3 +59,12 @@ http://localhost:5000
 FILE_UPLOAD_STORAGE_PATH=c:/whatever/path/to/store/files
 ```
 - (replace the value to match your api keys or paths on your system)
+
+## Google Sign-In
+- Set `SECRET_KEY` to a real random secret
+- Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from your Google OAuth client.
+- If users are signing in through a deployed URL, set either:
+  - `GOOGLE_REDIRECT_URI=https://your-domain/login/google/callback`
+  - or `APP_BASE_URL=https://your-domain`
+- If the app is behind a reverse proxy or load balancer, set `TRUST_PROXY_HEADERS=true`.
+- Add the exact callback URL you use to the Google Cloud Console authorized redirect URIs list.
