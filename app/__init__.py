@@ -2,6 +2,7 @@ from flask import Flask, session, render_template, redirect, url_for
 from flask_session import Session
 import os
 from sqlalchemy import inspect, text
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from app.config import Config
 from app.src.commands import CommandsBP
@@ -27,6 +28,9 @@ def create_app():
     app = Flask(__name__, template_folder='./templates/')
     app.config.from_object(Config)
     app.config['UPLOAD_FOLDER'] = os.getenv('FILE_UPLOAD_STORAGE_PATH')
+
+    if app.config.get("TRUST_PROXY_HEADERS"):
+        app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     if app.config.get("GOOGLE_OAUTH_ENABLED") and app.config.get("SECRET_KEY") == "dev-insecure-change-me":
         raise RuntimeError("Set a strong SECRET_KEY before enabling Google Sign-In.")
